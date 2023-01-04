@@ -13,10 +13,10 @@ tf-fmt-check:
     terraform fmt -check -diff -recursive
 
 # Runs tflint over modules
-tflint path="aws/b2b_personalization/modules":
+tflint:
     #!/usr/bin/env bash
     set -eux -o pipefail
-    for dir in $(find {{path}} -type d -not -path */node_modules*); do
+    for dir in $(find . -type d -not -path */node_modules*); do
         if [ -d "$dir" ]; then
             tflint $dir
         fi

@@ -1,0 +1,59 @@
+module "security_group" {
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-security-group?ref=v4.16.0"
+
+  name        = "${var.name}-sg"
+  description = "Security group of the ECS services ALB"
+  vpc_id      = var.vpc_id
+
+  # client ip is the ip of the nlb living in the same private subnet as the alb
+  ingress_cidr_blocks = var.subnets_cidr_blocks
+  ingress_with_cidr_blocks = [
+    {
+      from_port   = var.listener_port
+      to_port     = var.listener_port
+      protocol    = "tcp"
+      description = "Allow NLB inbound traffic on ALB listener"
+
+  }]
+  egress_cidr_blocks = var.subnets_cidr_blocks
+  egress_with_cidr_blocks = [
+    {
+      from_port   = 0
+      to_port     = 0
+      protocol    = "-1"
+      description = "Allow ALB outboud traffic to instances in the private subnets"
+  }]
+
+  tags = var.tags
+}
+
+resource "aws_lb" "this" {
+  name                       = var.name
+  subnets                    = var.subnets
+  security_groups            = [module.security_group.security_group_id]
+  internal                   = true
+  drop_invalid_header_fields = true
+  tags                       = var.tags
+}
+
+resource "aws_lb_listener" "listener" {
+  load_balancer_arn = aws_lb.this.id
+  port              = var.listener_port
+  protocol          = "HTTP"
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.name}-listener"
+    }
+  )
+
+  default_action {
+    type = "fixed-response"
+
+    fixed_response {
+      content_type = var.listener_default_response.content_type
+      message_body = var.listener_default_response.message_body
+      status_code  = var.listener_default_response.status_code
+    }
+  }
+}

@@ -102,6 +102,7 @@ resource "aws_api_gateway_deployment" "tenant" {
       aws_api_gateway_resource.documents.id,
       aws_api_gateway_method.documents.id,
       aws_api_gateway_integration.documents.id,
+      aws_api_gateway_integration.documents.request_parameters,
       var.enable_usage_plan,
       var.usage_plan_api_key_id,
       var.usage_plan_quota_settings,

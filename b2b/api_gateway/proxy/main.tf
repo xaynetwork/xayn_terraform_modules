@@ -38,6 +38,7 @@ resource "aws_api_gateway_method" "proxy" {
   authorization      = "CUSTOM"
   authorizer_id      = aws_api_gateway_authorizer.lambda_authorizer.id
   request_parameters = { "method.request.path.proxy" = true }
+  api_key_required   = true
 }
 
 resource "aws_api_gateway_integration" "proxy" {
@@ -69,6 +70,7 @@ resource "aws_api_gateway_method" "documents" {
   http_method      = "POST"
   authorization    = "CUSTOM"
   authorizer_id    = aws_api_gateway_authorizer.lambda_authorizer.id
+  api_key_required = true
 }
 
 resource "aws_api_gateway_integration" "documents" {

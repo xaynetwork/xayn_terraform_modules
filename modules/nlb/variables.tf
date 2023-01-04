@@ -23,6 +23,12 @@ variable "listener_port" {
   type        = number
 }
 
+variable "alb_health_check_path" {
+  description = "The path of the ALB health check"
+  type        = string
+  default     = "/health"
+}
+
 variable "tags" {
   description = "Map of tags for the deployment"
   type        = map(string)

@@ -1,0 +1,16 @@
+{
+  "name": "maintenance_lambda_function",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "version": "node --version",
+    "pack": "zip -r function.zip .",
+    "locally": "node run-locally.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-ssm": "^3.211.0",
+    "node-fetch": "3.3.0",
+    "pg": "^8.8.0"
+  }
+}

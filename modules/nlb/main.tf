@@ -4,7 +4,12 @@ resource "aws_lb_target_group" "target_group" {
   port        = var.listener_port
   protocol    = "TCP"
   vpc_id      = var.vpc_id
-  tags        = var.tags
+
+  health_check {
+    path = var.alb_health_check_path
+  }
+
+  tags = var.tags
 }
 
 resource "aws_lb_target_group_attachment" "target_group_attachment" {

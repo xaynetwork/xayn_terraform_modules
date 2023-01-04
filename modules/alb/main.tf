@@ -57,3 +57,24 @@ resource "aws_lb_listener" "listener" {
     }
   }
 }
+
+resource "aws_lb_listener_rule" "health_check" {
+  listener_arn = aws_lb_listener.listener.arn
+
+  action {
+    type = "fixed-response"
+    fixed_response {
+      content_type = "text/plain"
+      message_body = "OK"
+      status_code  = "200"
+    }
+  }
+
+  condition {
+    path_pattern {
+      values = [var.health_check_path]
+    }
+  }
+
+  tags = var.tags
+}

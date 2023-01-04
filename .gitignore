@@ -1,0 +1,13 @@
+.DS_Store
+
+# Local .terraform directories
+**/.terraform/*
+**/.terragrunt-cache/*
+# .tfstate files
+*.tfstate
+*.tfstate.*
+# Terraform variables
+*_credentials.tfvars
+
+# Key Creation 
+**/api-key.yaml 

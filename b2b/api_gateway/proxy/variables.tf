@@ -80,6 +80,15 @@ variable "usage_plan_throttle_settings" {
   }
 }
 
+variable "default_method_throttle_settings" {
+  description = "API request burst and rate (rps) limit for all methods, including those that don't require an API key"
+  type = object({
+    burst_limit = number
+    rate_limit  = number
+  })
+  default = null
+}
+
 variable "tags" {
   description = "Map of tags for the deployment"
   type        = map(string)

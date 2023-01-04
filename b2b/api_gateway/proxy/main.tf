@@ -129,7 +129,9 @@ resource "aws_api_gateway_method_settings" "tenant" {
 
   method_path = "*/*"
   settings {
-    logging_level = "INFO"
+    logging_level          = "INFO"
+    throttling_burst_limit = var.default_method_throttle_settings != null ? var.default_method_throttle_settings.burst_limit : var.usage_plan_throttle_settings.burst_limit * 3
+    throttling_rate_limit  = var.default_method_throttle_settings != null ? var.default_method_throttle_settings.rate_limit : var.usage_plan_throttle_settings.rate_limit * 3
   }
 
   depends_on = [

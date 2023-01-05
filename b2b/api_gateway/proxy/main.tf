@@ -38,6 +38,7 @@ resource "aws_api_gateway_method" "proxy" {
   authorization      = "CUSTOM"
   authorizer_id      = aws_api_gateway_authorizer.lambda_authorizer.id
   request_parameters = { "method.request.path.proxy" = true }
+  api_key_required   = true
 }
 
 resource "aws_api_gateway_integration" "proxy" {
@@ -54,6 +55,38 @@ resource "aws_api_gateway_integration" "proxy" {
     "integration.request.path.proxy" : "method.request.path.proxy"
     "integration.request.header.X-Tenant-Id" = "'${var.tenant}'"
   }
+  timeout_milliseconds = 8000
+}
+
+resource "aws_api_gateway_resource" "documents" {
+  rest_api_id = aws_api_gateway_rest_api.tenant.id
+  parent_id   = aws_api_gateway_rest_api.tenant.root_resource_id
+  path_part   = "documents"
+}
+
+resource "aws_api_gateway_method" "documents" {
+  rest_api_id      = aws_api_gateway_rest_api.tenant.id
+  resource_id      = aws_api_gateway_resource.documents.id
+  http_method      = "POST"
+  authorization    = "CUSTOM"
+  authorizer_id    = aws_api_gateway_authorizer.lambda_authorizer.id
+  api_key_required = true
+}
+
+resource "aws_api_gateway_integration" "documents" {
+  rest_api_id             = aws_api_gateway_rest_api.tenant.id
+  resource_id             = aws_api_gateway_resource.documents.id
+  http_method             = aws_api_gateway_method.documents.http_method
+  type                    = "HTTP_PROXY"
+  integration_http_method = "POST"
+  uri                     = "http://${var.nlb_dns_name}/documents"
+  passthrough_behavior    = "WHEN_NO_MATCH"
+  connection_type         = "VPC_LINK"
+  connection_id           = var.nlb_vpc_link_id
+  request_parameters = {
+    "integration.request.header.X-Tenant-Id" = "'${var.tenant}'"
+  }
+  timeout_milliseconds = 29000
 }
 
 resource "aws_api_gateway_deployment" "tenant" {
@@ -66,6 +99,10 @@ resource "aws_api_gateway_deployment" "tenant" {
       aws_api_gateway_resource.proxy.id,
       aws_api_gateway_method.proxy.id,
       aws_api_gateway_integration.proxy.id,
+      aws_api_gateway_resource.documents.id,
+      aws_api_gateway_method.documents.id,
+      aws_api_gateway_integration.documents.id,
+      aws_api_gateway_integration.documents.request_parameters,
       var.enable_usage_plan,
       var.usage_plan_api_key_id,
       var.usage_plan_quota_settings,

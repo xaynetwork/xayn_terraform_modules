@@ -12,6 +12,15 @@ tf-fmt:
 tf-fmt-check:
     terraform fmt -check -diff -recursive
 
+# Runs tfsec over modules
+tfsec:
+    #!/usr/bin/env bash
+    tfsec .
+
+# Runs checkov over modules
+checkov:
+    checkov -d .
+
 # Runs tflint over modules
 tflint:
     #!/usr/bin/env bash

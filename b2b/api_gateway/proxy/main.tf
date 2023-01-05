@@ -200,3 +200,10 @@ resource "aws_api_gateway_integration" "options_cors" {
     "integration.request.header.X-Tenant-Id" = "'${var.tenant}'"
   }
 }
+
+# aws waf
+resource "aws_wafv2_web_acl_association" "api_gateway" {
+  count        = var.web_acl_arn != null ? 1 : 0
+  resource_arn = aws_api_gateway_stage.tenant.arn
+  web_acl_arn  = var.web_acl_arn
+}

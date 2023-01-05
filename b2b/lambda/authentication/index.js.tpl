@@ -51,6 +51,5 @@ function build_policy(api_token, methodArn, effect) {
         },
       ],
     },
-    usageIdentifierKey: api_token
   };
 }

@@ -11,7 +11,7 @@ variable "whitelist" {
 }
 
 variable "ip_rate_limit" {
-  description = "Maximum number of allowed request for every 5 minutes"
+  description = "Maximum number of allowed requests for every 5 minutes"
   type        = number
   default     = 2000
 }

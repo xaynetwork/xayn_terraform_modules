@@ -32,13 +32,13 @@ module "security_group" {
       cidr_blocks = "0.0.0.0/0"
     },
     {
-      description = "For comunicating with Elasticsearch"
+      description = "For communicating with Elasticsearch"
       from_port   = 9243
       to_port     = 9243
       protocol    = "tcp"
     },
     {
-      description = "For comunicating with Postgres"
+      description = "For communicating with Postgres"
       from_port   = 5432
       to_port     = 5432
       protocol    = "tcp"

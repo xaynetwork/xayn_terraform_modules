@@ -8,7 +8,7 @@ default:
 tf-fmt:
     terraform fmt -recursive
 
-# Checks formating of terraform files
+# Checks formatting of terraform files
 tf-fmt-check:
     terraform fmt -check -diff -recursive
 

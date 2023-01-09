@@ -5,7 +5,7 @@ variable "log_retention_in_days" {
 }
 
 variable "nlb_arn" {
-  description = "The network loadbalancer that receives the proxied traffic (arn)"
+  description = "The network load balancer that receives the proxied traffic (arn)"
   type        = string
 }
 

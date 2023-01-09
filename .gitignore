@@ -10,5 +10,5 @@
 # Terraform variables
 *_credentials.tfvars
 
-# Key Creation 
-**/api-key.yaml 
+# Key Creation
+**/api-key.yaml

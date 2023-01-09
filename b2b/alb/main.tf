@@ -21,7 +21,7 @@ module "security_group" {
       from_port   = 0
       to_port     = 0
       protocol    = "-1"
-      description = "Allow ALB outboud traffic to instances in the private subnets"
+      description = "Allow ALB outbound traffic to instances in the private subnets"
   }]
 
   tags = var.tags

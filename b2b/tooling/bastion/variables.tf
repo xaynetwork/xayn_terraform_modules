@@ -1,5 +1,5 @@
 variable "name" {
-  description = "Name of the bastion ressources"
+  description = "Name of the bastion resources"
   type        = string
 }
 

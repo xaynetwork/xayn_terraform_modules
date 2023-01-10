@@ -132,8 +132,8 @@ resource "aws_route53_record" "this" {
   name    = var.url_name
   type    = "A"
   alias {
-    name                   = module.cdn.cloudfront_distribution_domain_name
-    zone_id                = module.cdn.cloudfront_distribution_hosted_zone_id
+    name                   = aws_s3_bucket.static_website.bucket_domain_name
+    zone_id                = aws_s3_bucket.static_website.hosted_zone_id
     evaluate_target_health = false
   }
 }

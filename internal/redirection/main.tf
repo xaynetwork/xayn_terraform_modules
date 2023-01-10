@@ -27,14 +27,14 @@ locals {
 }
 
 module "acm" {
-  source  = "terraform-aws-modules/acm/aws"
+  source = "terraform-aws-modules/acm/aws"
 
   providers = {
     aws = aws.us-east-1
   }
 
-  domain_name  = "support.xayn.com"
-  zone_id      = var.hosted_zone_id
+  domain_name = "support.xayn.com"
+  zone_id     = var.hosted_zone_id
 
   subject_alternative_names = [
     "*.support.xayn.com",
@@ -69,7 +69,7 @@ module "cdn" {
   }
 
   default_cache_behavior = {
-    target_origin_id           = "s3_one"
+    target_origin_id       = "s3_one"
     viewer_protocol_policy = "redirect-to-https"
 
     allowed_methods = ["GET", "HEAD", "OPTIONS"]

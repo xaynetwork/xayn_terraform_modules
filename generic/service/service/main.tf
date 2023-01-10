@@ -77,10 +77,13 @@ resource "aws_ecs_service" "this" {
   }
 
   health_check_grace_period_seconds = var.health_check_grace_period_seconds
-  load_balancer {
-    target_group_arn = aws_lb_target_group.service.arn
-    container_name   = var.name
-    container_port   = var.container_port
+  dynamic "load_balancer" {
+    for_each = length(aws_lb_target_group.service) > 0 ? [1] : [] 
+    content {
+      target_group_arn = aws_lb_target_group.service[0].arn
+      container_name   = var.name
+      container_port   = var.container_port
+    }
   }
 
   # ignore desired_count as it will be dynamic through the autoscaling group
@@ -93,14 +96,15 @@ resource "aws_ecs_service" "this" {
 }
 
 resource "aws_lb_target_group" "service" {
+  count       = var.alb == null ? 0 : 1
   name        = "${var.name}-tg"
-  port        = var.alb_listener_port
+  port        = var.alb.listener_port
   protocol    = "HTTP"
   vpc_id      = var.vpc_id
   target_type = "ip"
 
   health_check {
-    path = var.alb_health_path
+    path = var.alb.health_path
   }
 
   tags = var.tags
@@ -111,25 +115,26 @@ resource "aws_lb_target_group" "service" {
 }
 
 resource "aws_lb_listener_rule" "service" {
-  listener_arn = var.alb_listener_arn
+  count        = var.alb == null ? 0 : 1
+  listener_arn = var.alb.listener_arn
 
   action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.service.arn
+    target_group_arn = aws_lb_target_group.service[0].arn
   }
 
   condition {
     path_pattern {
-      values = var.alb_routing_path_pattern
+      values = var.alb.routing_path_pattern
     }
   }
 
   dynamic "condition" {
-    for_each = length(var.alb_routing_header) > 0 ? [1] : []
+    for_each = var.alb_routing_header_condition != null ? [1] : []
     content {
       http_header {
-        http_header_name = "X-Tenant-Id"
-        values           = [var.alb_routing_header]
+        http_header_name = var.alb_routing_header_condition.name
+        values           = [var.alb_routing_header_condition.value]
       }
     }
   }

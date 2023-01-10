@@ -36,24 +36,14 @@ variable "container_port" {
 }
 
 ## alb
-variable "alb_listener_arn" {
-  description = "ARN of the ALB listener"
-  type        = string
-}
-
-variable "alb_listener_port" {
-  description = "Port of the ALB listener"
-  type        = number
-}
-
-variable "alb_health_path" {
-  description = "The health check path of the service"
-  type        = string
-}
-
-variable "alb_routing_path_pattern" {
-  description = "The path patterns that needs to match in order to route request to this service"
-  type        = list(string)
+variable "alb" {
+  type = object({
+    listener_arn         = string
+    listener_port        = number
+    health_path          = string
+    routing_path_pattern = list(string)
+  })
+  default = null
 }
 
 # optional parameters
@@ -150,10 +140,13 @@ variable "health_check_grace_period_seconds" {
 }
 
 ## other
-variable "alb_routing_header" {
-  description = "If set, the path patterns and the X-Tenant-Id header must match in order to route request to this service"
-  type        = string
-  default     = ""
+variable "alb_routing_header_condition" {
+  description = "If set, the path patterns and the header[key] == value must match in order to route request to this service"
+  type = object({
+    name  = string
+    value = string
+  })
+  default = null
 }
 
 variable "tags" {

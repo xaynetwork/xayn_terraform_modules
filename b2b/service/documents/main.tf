@@ -1,5 +1,5 @@
 module "task_role" {
-  source = "../role"
+  source = "../../../generic/service/role"
 
   description = "${var.tenant}'s task execution role for documents API ECS service"
   path        = "/${var.tenant}/"
@@ -8,7 +8,7 @@ module "task_role" {
 }
 
 module "secret_policy" {
-  source = "../secret_policy"
+  source = "../../../generic/service/secret_policy"
 
   role_name          = module.task_role.name
   ssm_parameter_arns = [var.elasticsearch_password_ssm_parameter_arn, var.postgres_password_ssm_parameter_arn]
@@ -46,7 +46,7 @@ module "security_group" {
 }
 
 module "service" {
-  source = "../service"
+  source = "../../../generic/service/service"
 
   name               = "${var.tenant}-documents-api"
   security_group_ids = [module.security_group.security_group_id]
@@ -55,11 +55,17 @@ module "service" {
   vpc_id     = var.vpc_id
   subnet_ids = var.subnet_ids
 
-  alb_listener_arn         = var.alb_listener_arn
-  alb_listener_port        = var.alb_listener_port
-  alb_health_path          = "/health"
-  alb_routing_path_pattern = ["/documents", "/documents/*"]
-  alb_routing_header       = var.tenant
+  alb = {
+    listener_arn         = var.alb_listener_arn
+    listener_port        = var.alb_listener_port
+    health_path          = "/health"
+    routing_path_pattern = ["/documents", "/documents/*"]
+  }
+
+  alb_routing_header_condition = {
+    name   = "X-Tenant-Id"
+    value = var.tenant
+  }
 
   container_cpu           = var.container_cpu
   container_memory        = var.container_memory
@@ -87,7 +93,7 @@ module "service" {
 }
 
 module "asg" {
-  source = "../asg"
+  source = "../../../generic/service/asg"
 
   cluster_name = var.cluster_name
   service_name = module.service.name

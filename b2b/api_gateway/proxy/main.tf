@@ -1,5 +1,9 @@
+locals {
+  api_name =  "api_${var.tenant}"
+}
+
 resource "aws_api_gateway_rest_api" "tenant" {
-  name           = "api_${var.tenant}"
+  name           = local.api_name
   description    = "API for ${var.tenant}"
   api_key_source = var.enable_usage_plan ? "AUTHORIZER" : "HEADER"
 

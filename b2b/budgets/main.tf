@@ -8,7 +8,7 @@ resource "aws_budgets_budget" "budget_account" {
 
   cost_filter {
     name   = "TagKeyValue"
-    values = ["${each.key}${"$"}${each.value}"]
+    values = ["user:${each.key}${"$"}${each.value}"]
   }
 
   notification {
@@ -16,6 +16,14 @@ resource "aws_budgets_budget" "budget_account" {
     threshold                  = var.threshold_value
     threshold_type             = "PERCENTAGE"
     notification_type          = "ACTUAL"
+    subscriber_email_addresses = var.notification_email
+  }
+
+  notification {
+    comparison_operator        = "GREATER_THAN"
+    threshold                  = 100
+    threshold_type             = "PERCENTAGE"
+    notification_type          = "FORECASTED"
     subscriber_email_addresses = var.notification_email
   }
 }

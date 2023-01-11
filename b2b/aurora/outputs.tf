@@ -1,3 +1,8 @@
+output "cluster_name" {
+  description = "Name of the aurora cluster"
+  value       = var.name
+}
+
 output "postgres_url" {
   description = "DB URL"
   value       = aws_ssm_parameter.postgres_url.value

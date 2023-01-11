@@ -133,7 +133,7 @@ resource "aws_route53_record" "record_ipv4" {
   type    = "A"
   alias {
     name                   = module.cdn.outputs.cloudfront_distribution_domain_name
-    zone_id                = aws_s3_bucket.static_website.hosted_zone_id
+    zone_id                = module.cdn.outputs.cloudfront_distribution_hosted_zone_id
     evaluate_target_health = false
   }
 }
@@ -144,7 +144,7 @@ resource "aws_route53_record" "record_ipv6" {
   type    = "AAAA"
   alias {
     name                   = module.cdn.outputs.cloudfront_distribution_domain_name
-    zone_id                = aws_s3_bucket.static_website.hosted_zone_id
+    zone_id                = module.cdn.outputs.cloudfront_distribution_hosted_zone_id
     evaluate_target_health = false
   }
 }

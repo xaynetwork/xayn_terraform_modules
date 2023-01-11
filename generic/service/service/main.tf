@@ -78,7 +78,7 @@ resource "aws_ecs_service" "this" {
 
   health_check_grace_period_seconds = var.health_check_grace_period_seconds
   dynamic "load_balancer" {
-    for_each = length(aws_lb_target_group.service) > 0 ? [1] : [] 
+    for_each = length(aws_lb_target_group.service) > 0 ? [1] : []
     content {
       target_group_arn = aws_lb_target_group.service[0].arn
       container_name   = var.name

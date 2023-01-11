@@ -13,14 +13,14 @@ resource "aws_s3_bucket_public_access_block" "bucket_access" {
   restrict_public_buckets = true
 }
 
-# resource "aws_s3_bucket_website_configuration" "bucket_website" {
-#   bucket = aws_s3_bucket.static_website.bucket
+resource "aws_s3_bucket_website_configuration" "bucket_website" {
+  bucket = aws_s3_bucket.static_website.bucket
 
-#   redirect_all_requests_to {
-#     host_name = var.host_name
-#     protocol  = "https"
-#   }
-# }
+  redirect_all_requests_to {
+    host_name = var.host_name
+    protocol  = "https"
+  }
+}
 
 # locals {
 #   s3_origin_id = "S3Origin"
@@ -132,7 +132,7 @@ resource "aws_route53_record" "this" {
   name    = var.url_name
   type    = "A"
   alias {
-    name                   = aws_s3_bucket.static_website.bucket_domain_name
+    name                   = aws_s3_bucket_website_configuration.bucket_website.website_domain
     zone_id                = aws_s3_bucket.static_website.hosted_zone_id
     evaluate_target_health = false
   }

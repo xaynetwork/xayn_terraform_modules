@@ -19,4 +19,5 @@ module "elasticsearch_index" {
 
   function_arn = var.function_arn
   skip_delete  = var.skip_delete
+  aws_profile  = var.aws_profile
 }

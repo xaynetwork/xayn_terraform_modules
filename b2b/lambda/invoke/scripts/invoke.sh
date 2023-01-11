@@ -4,8 +4,9 @@ invoke_lambda() {
     local FUNCTION_NAME=$1
     local PAYLOAD=$2
     local OUTPUT=$3
+    local PROFILE=$4
 
-    aws lambda invoke --function-name "$FUNCTION_NAME" --payload "$PAYLOAD" "$OUTPUT"
+    aws lambda invoke --function-name "$FUNCTION_NAME" --payload "$PAYLOAD" "$OUTPUT" --profile "$PROFILE"
 
     local CODE
     CODE=$(jq '.statusCode' "$OUTPUT")
@@ -17,4 +18,4 @@ invoke_lambda() {
     fi
 }
 
-invoke_lambda "$1" "$2" "$3"
+invoke_lambda "$1" "$2" "$3" "$4"

@@ -63,7 +63,7 @@ module "service" {
   }
 
   alb_routing_header_condition = {
-    name   = "X-Tenant-Id"
+    name  = "X-Tenant-Id"
     value = var.tenant
   }
 

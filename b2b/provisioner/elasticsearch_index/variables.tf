@@ -33,3 +33,8 @@ variable "skip_delete" {
   type        = bool
   default     = true
 }
+
+variable "aws_profile" {
+  description = "AWS Profile with witch the provisioner should be executed"
+  type        = string
+}

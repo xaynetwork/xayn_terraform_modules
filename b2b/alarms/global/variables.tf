@@ -72,7 +72,7 @@ variable "create_aurora_alarms" {
 variable "aurora_cluster_name" {
   description = "Name of the aurora cluster"
   type        = string
-  default = null
+  default     = null
 }
 
 variable "aurora_read_latency_threshold" {

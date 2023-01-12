@@ -1,5 +1,5 @@
 locals {
-  api_name =  "api_${var.tenant}"
+  api_name = "api_${var.tenant}"
 }
 
 resource "aws_api_gateway_rest_api" "tenant" {

@@ -40,6 +40,7 @@ module "alb_services_5xx_error_alarm" {
   evaluation_periods  = 1
   threshold           = var.alb_services_5xx_error_threshold
   period              = 60
+  treat_missing_data  = "notBreaching"
 
   namespace   = "AWS/ApplicationELB"
   metric_name = "HTTPCode_Target_5XX_Count"
@@ -66,6 +67,7 @@ module "alb_5xx_error_alarm" {
   evaluation_periods  = 1
   threshold           = var.alb_5xx_error_threshold
   period              = 60
+  treat_missing_data  = "notBreaching"
 
   namespace   = "AWS/ApplicationELB"
   metric_name = "HTTPCode_ELB_5XX_Count"
@@ -92,6 +94,7 @@ module "alb_4xx_error_alarm" {
   evaluation_periods  = 1
   threshold           = var.alb_4xx_error_threshold
   period              = 60
+  treat_missing_data  = "notBreaching"
 
   namespace   = "AWS/ApplicationELB"
   metric_name = "HTTPCode_ELB_4XX_Count"
@@ -118,6 +121,7 @@ module "waf_all_requests_alarm" {
   evaluation_periods  = 2
   threshold           = var.waf_all_requests_threshold
   period              = 60
+  treat_missing_data  = "notBreaching"
 
   namespace   = "AWS/WAFV2"
   metric_name = "CountedRequests"
@@ -146,6 +150,7 @@ module "waf_all_requests_blocked_alarm" {
   evaluation_periods  = 1
   threshold           = var.waf_all_blocked_requests_threshold
   period              = 60
+  treat_missing_data  = "notBreaching"
 
   namespace   = "AWS/WAFV2"
   metric_name = "BlockedRequests"
@@ -174,6 +179,7 @@ module "waf_ip_rate_limit_alarm" {
   evaluation_periods  = 1
   threshold           = var.waf_ip_rate_limit_threshold
   period              = 60
+  treat_missing_data  = "notBreaching"
 
   namespace   = "AWS/WAFV2"
   metric_name = "BlockedRequests"
@@ -202,17 +208,15 @@ module "aurora_read_latency_alarm" {
   evaluation_periods  = 1
   threshold           = var.aurora_read_latency_threshold
 
-  metric_query {
+  metric_query = [{
     id          = "e1"
     expression  = "m1*1000"
     label       = "latency_into_milliseconds"
     return_data = "true"
-  }
-
-  metric_query {
+    }, {
     id = "m1"
 
-    metric {
+    metric = [{
       namespace   = "AWS/RDS"
       metric_name = "ReadLatency"
       period      = 60
@@ -221,8 +225,8 @@ module "aurora_read_latency_alarm" {
       dimensions = {
         DBClusterIdentifier = var.aurora_cluster_name
       }
-    }
-  }
+    }]
+  }]
 
   alarm_actions = [module.notify_slack.slack_topic_arn]
   ok_actions    = [module.notify_slack.slack_topic_arn]
@@ -241,17 +245,15 @@ module "aurora_write_latency_alarm" {
   evaluation_periods  = 1
   threshold           = var.aurora_write_latency_threshold
 
-  metric_query {
+  metric_query = [{
     id          = "e1"
     expression  = "m1*1000"
     label       = "latency_into_milliseconds"
     return_data = "true"
-  }
-
-  metric_query {
+    }, {
     id = "m1"
 
-    metric {
+    metric = [{
       namespace   = "AWS/RDS"
       metric_name = "WriteLatency"
       period      = 60
@@ -260,8 +262,8 @@ module "aurora_write_latency_alarm" {
       dimensions = {
         DBClusterIdentifier = var.aurora_cluster_name
       }
-    }
-  }
+    }]
+  }]
 
   alarm_actions = [module.notify_slack.slack_topic_arn]
   ok_actions    = [module.notify_slack.slack_topic_arn]

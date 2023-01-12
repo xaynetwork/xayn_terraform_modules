@@ -51,8 +51,8 @@ variable "ecs_users_service_name" {
   default     = null
 }
 
-variable "ecs_documents_service_name" {
-  description = "Name of the documents service"
+variable "ecs_users_log_group_name" {
+  description = "Name of the users log group"
   type        = string
   default     = null
 }
@@ -63,10 +63,46 @@ variable "users_service_cpu_threshold" {
   default     = 90
 }
 
+variable "ecs_users_log_pattern" {
+  description = "A valid CloudWatch Logs filter pattern for extracting metric data out of ingested log events"
+  type        = string
+  default     = "ERROR"
+}
+
+variable "ecs_users_log_error_threshold" {
+  description = "Threshold of the users log errors"
+  type        = number
+  default     = 0
+}
+
+variable "ecs_documents_service_name" {
+  description = "Name of the documents service"
+  type        = string
+  default     = null
+}
+
+variable "ecs_documents_log_group_name" {
+  description = "Name of the documents log group"
+  type        = string
+  default     = null
+}
+
 variable "documents_service_cpu_threshold" {
   description = "Threshold of the CPU usage in percentage"
   type        = number
   default     = 90
+}
+
+variable "ecs_documents_log_pattern" {
+  description = "A valid CloudWatch Logs filter pattern for extracting metric data out of ingested log events"
+  type        = string
+  default     = "ERROR"
+}
+
+variable "ecs_documents_log_error_threshold" {
+  description = "Threshold of the documents log errors"
+  type        = number
+  default     = 0
 }
 
 variable "tags" {

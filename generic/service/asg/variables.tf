@@ -13,11 +13,6 @@ variable "min_tasks" {
   description = "Min number of scalable service tasks"
   type        = number
   default     = 2
-
-  validation {
-    condition     = var.min_tasks > 1
-    error_message = "At least two tasks should be running to ensure HA"
-  }
 }
 
 variable "max_tasks" {

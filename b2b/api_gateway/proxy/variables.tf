@@ -95,6 +95,36 @@ variable "default_method_throttle_settings" {
   default = null
 }
 
+variable "create_alarms" {
+  description = "Whether to create API Gateway alarms"
+  type        = bool
+  default     = false
+}
+
+variable "sns_topic_arn" {
+  description = "ARN of the SNS topic"
+  type        = string
+  default     = null
+}
+
+variable "http_5xx_error_threshold" {
+  description = "Threshold of the API Gateway HTTP 5XX errors"
+  type        = number
+  default     = 0
+}
+
+variable "integration_latency_threshold" {
+  description = "Threshold of the average API Gateway integration latency in milliseconds"
+  type        = number
+  default     = 250
+}
+
+variable "latency_threshold" {
+  description = "Threshold of the average API Gateway latency in milliseconds"
+  type        = number
+  default     = 300
+}
+
 variable "tags" {
   description = "Map of tags for the deployment"
   type        = map(string)

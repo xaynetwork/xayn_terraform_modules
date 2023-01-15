@@ -211,3 +211,88 @@ resource "aws_wafv2_web_acl_association" "api_gateway" {
   resource_arn = aws_api_gateway_stage.tenant.arn
   web_acl_arn  = var.web_acl_arn
 }
+
+# cloudwatch alarms
+module "http_5xx_error_alarm" {
+  count   = var.create_alarms ? 1 : 0
+  source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
+  version = "4.2.1"
+
+  alarm_name          = "api_gateway_5xx_error"
+  alarm_description   = "Number of API Gateway HTTP-5XX errors > ${var.http_5xx_error_threshold}. It may indicate an issue within the NLB integration or with the lambda authorizer."
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  threshold           = var.http_5xx_error_threshold
+  period              = 60
+  treat_missing_data  = "notBreaching"
+
+  namespace   = "AWS/ApiGateway"
+  metric_name = "5XXError"
+  statistic   = "Sum"
+
+  dimensions = {
+    ApiName = local.api_name
+    Stage   = "default"
+  }
+
+  alarm_actions = [var.sns_topic_arn]
+  ok_actions    = [var.sns_topic_arn]
+
+  tags = var.tags
+}
+
+module "integration_latency_alarm" {
+  count   = var.create_alarms ? 1 : 0
+  source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
+  version = "4.2.1"
+
+  alarm_name          = "api_gateway_integration_latency"
+  alarm_description   = "High API Gateway integration latency. Average integration latency > ${var.integration_latency_threshold}ms"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 2
+  threshold           = var.integration_latency_threshold
+  period              = 60
+  treat_missing_data  = "notBreaching"
+
+  namespace   = "AWS/ApiGateway"
+  metric_name = "IntegrationLatency"
+  statistic   = "Average"
+
+  dimensions = {
+    ApiName = local.api_name
+    Stage   = "default"
+  }
+
+  alarm_actions = [var.sns_topic_arn]
+  ok_actions    = [var.sns_topic_arn]
+
+  tags = var.tags
+}
+
+module "latency_alarm" {
+  count   = var.create_alarms ? 1 : 0
+  source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
+  version = "4.2.1"
+
+  alarm_name          = "api_gateway_latency"
+  alarm_description   = "High API Gateway latency. Average latency > ${var.latency_threshold}ms"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 2
+  threshold           = var.latency_threshold
+  period              = 60
+  treat_missing_data  = "notBreaching"
+
+  namespace   = "AWS/ApiGateway"
+  metric_name = "Latency"
+  statistic   = "Average"
+
+  dimensions = {
+    ApiName = local.api_name
+    Stage   = "default"
+  }
+
+  alarm_actions = [var.sns_topic_arn]
+  ok_actions    = [var.sns_topic_arn]
+
+  tags = var.tags
+}

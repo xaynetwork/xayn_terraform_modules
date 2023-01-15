@@ -1,6 +1,6 @@
-# AWS Terraform module for redirectioning websites with S3
+# AWS Terraform module for redirecting websites with S3
 
-Terraform module which creates an S3 bucket that will be used to host a static website to redirection to a certain website.
+Terraform module which creates a S3 bucket that will be used for redirection to a certain website.
 
 ## Usage
 
@@ -8,9 +8,9 @@ Terraform module which creates an S3 bucket that will be used to host a static w
 module "redirection" {
   source = "../../modules/redirection"
 
-  url_name       = "example.xayn.com"
+  domain_name    = "example.xayn.com"
   hosted_zone_id = "my_hosted_zone"
-  host_name      = "emaple.example.com/example"
+  host_name      = "example.example.com/example"
 
   # Optional
   tags = {

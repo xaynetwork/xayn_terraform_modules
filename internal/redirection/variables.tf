@@ -1,5 +1,5 @@
-variable "url_name" {
-  description = "The name of the static url to redirection"
+variable "domain_name" {
+  description = "The name of domain that is used for the redirection"
   type        = string
 }
 
@@ -9,7 +9,7 @@ variable "hosted_zone_id" {
 }
 
 variable "host_name" {
-  description = "The hostname of the destination url"
+  description = "Name of the host where requests are redirected"
   type        = string
 }
 

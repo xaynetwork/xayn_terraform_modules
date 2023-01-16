@@ -46,7 +46,7 @@ variable "health_check_path" {
 variable "create_alarms" {
   description = "Whether to create ALB alarms"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "sns_topic_arn" {

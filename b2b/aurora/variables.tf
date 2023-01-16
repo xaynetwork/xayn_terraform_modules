@@ -78,7 +78,7 @@ variable "monitoring_interval" {
 variable "create_alarms" {
   description = "Whether to create Aurora alarms"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "sns_topic_arn" {

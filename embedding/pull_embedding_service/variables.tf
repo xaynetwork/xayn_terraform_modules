@@ -1,13 +1,3 @@
-variable "tenant" {
-  description = "Name of the tenant"
-  type        = string
-
-  validation {
-    condition     = can(regex("^[a-z0-9]{2,18}$", var.tenant))
-    error_message = "Only alphanumeric characters are allowed in 'tenant', and must be 2-18 characters"
-  }
-}
-
 variable "cluster_id" {
   description = "ID of the ECS cluster"
   type        = string
@@ -33,26 +23,6 @@ variable "subnet_ids" {
 variable "container_image" {
   description = "Specifies value of the container image"
   type        = string
-}
-
-# The keep-alive default is 61. So the service timeout is higher than the ALB timeout
-variable "keep_alive" {
-  description = "Keep alive timeout for services in seconds"
-  type        = string
-  default     = "61"
-}
-
-# A "request_timeout"of "0" means that it is disabled
-variable "request_timeout" {
-  description = "Client request timeout for services in seconds"
-  type        = string
-  default     = "0"
-}
-
-variable "logging_level" {
-  description = "Log level of rust apis"
-  type        = string
-  default     = "INFO"
 }
 
 # optional parameters
@@ -85,6 +55,13 @@ variable "max_count" {
   type        = number
   default     = 4
 }
+
+
+variable "auth_json" {
+  description = "The json that is neccessary to authenticate with the Google APIs"
+  type        = string
+}
+
 
 variable "tags" {
   description = "Custom tags to set on the underlining resources"

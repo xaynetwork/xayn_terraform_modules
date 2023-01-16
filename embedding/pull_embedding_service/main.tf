@@ -10,7 +10,7 @@ module "task_role" {
 module "security_group" {
   source = "git::https://github.com/terraform-aws-modules/terraform-aws-security-group?ref=v4.16.0"
 
-  name        = "${var.tenant}-documents-api-sg"
+  name        = "pull-embedding-service-sg"
   description = "Allow all egress traffic"
   vpc_id      = var.vpc_id
 
@@ -33,6 +33,9 @@ module "service" {
   name               = "pull-embedding-service"
   security_group_ids = [module.security_group.security_group_id]
 
+  # this only applies for services with a load balancer
+  health_check_grace_period_seconds = null
+
   cluster_id = var.cluster_id
   vpc_id     = var.vpc_id
   subnet_ids = var.subnet_ids
@@ -44,19 +47,9 @@ module "service" {
   desired_count           = var.desired_count
   task_execution_role_arn = module.task_role.arn
   environment = {
-    # XAYN_WEB_API__NET__BIND_TO                 = "0.0.0.0:${var.container_port}"
-    # XAYN_WEB_API__STORAGE__ELASTIC__URL        = var.elasticsearch_url
-    # XAYN_WEB_API__STORAGE__ELASTIC__INDEX_NAME = var.elasticsearch_index
-    # XAYN_WEB_API__STORAGE__ELASTIC__USER       = var.elasticsearch_username
-    # XAYN_WEB_API__STORAGE__POSTGRES__BASE_URL  = "${var.postgres_url}/${var.tenant}"
-    # XAYN_WEB_API__STORAGE__POSTGRES__USER      = var.postgres_username
-    # XAYN_WEB_API__NET__KEEP_ALIVE              = var.keep_alive
-    # XAYN_WEB_API__NET__CLIENT_REQUEST_TIMEOUT  = var.request_timeout
-    # XAYN_WEB_API__LOGGING__LEVEL               = var.logging_level
+    AUTH_JSON = var.auth_json
   }
   secrets = {
-    # XAYN_WEB_API__STORAGE__ELASTIC__PASSWORD  = var.elasticsearch_password_ssm_parameter_arn
-    # XAYN_WEB_API__STORAGE__POSTGRES__PASSWORD = var.postgres_password_ssm_parameter_arn
   }
 
   tags = var.tags

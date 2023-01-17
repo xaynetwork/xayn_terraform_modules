@@ -14,8 +14,6 @@ module "security_group" {
   description = "Allow all egress traffic"
   vpc_id      = var.vpc_id
 
-  ingress_with_source_security_group_id = [
-  ]
   egress_with_cidr_blocks = [
     {
       description = "Allow all egress traffic"
@@ -25,6 +23,26 @@ module "security_group" {
       cidr_blocks = "0.0.0.0/0"
   }]
   tags = var.tags
+}
+
+resource "aws_ssm_parameter" "auth_json" {
+  description = "The secure auth json"
+  name        = "/pull_embedding/auth_json"
+  type        = "SecureString"
+  value       = var.auth_json
+  tags        = var.tags
+}
+
+
+module "secret_policy" {
+  source = "../../generic/service/secret_policy"
+
+  role_name          = module.task_role.name
+  ssm_parameter_arns = [aws_ssm_parameter.auth_json.arn]
+  description        = "Allow documents api service access to parameter store"
+  path               = "/pull_embedding/"
+  prefix             = "PullEmbedding"
+  tags               = var.tags
 }
 
 module "service" {
@@ -46,10 +64,10 @@ module "service" {
   container_port          = var.container_port
   desired_count           = var.desired_count
   task_execution_role_arn = module.task_role.arn
-  environment = {
-    AUTH_JSON = var.auth_json
-  }
+
+  environment = {}
   secrets = {
+    AUTH_JSON = aws_ssm_parameter.auth_json.arn
   }
 
   tags = var.tags

@@ -71,7 +71,7 @@ async function createElasticSearchIndex(event) {
             type: "dense_vector",
             dims: 128,
             index: true,
-            similarity: "cosine",
+            similarity: "dot_product",
           },
         },
       },

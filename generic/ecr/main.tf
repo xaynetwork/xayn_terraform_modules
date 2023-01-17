@@ -1,16 +1,12 @@
 data "aws_region" "current" {}
 
-locals {
-  tags = var.tags
-}
-
-data "aws_caller_identity" "current" {}
-data "aws_partition" "current" {}
-
 ################################################################################
 # ECR Repository
 # From https://github.com/terraform-aws-modules/terraform-aws-ecr/tree/master/examples/complete
 ################################################################################
+
+
+
 
 module "ecr" {
   source  = "terraform-aws-modules/ecr/aws"
@@ -18,7 +14,7 @@ module "ecr" {
 
   repository_name = var.name
 
-  repository_read_write_access_arns = [data.aws_caller_identity.current.arn]
+  repository_read_write_access_arns = []
   create_lifecycle_policy           = true
   repository_lifecycle_policy = jsonencode({
     rules = [
@@ -40,5 +36,5 @@ module "ecr" {
 
   repository_force_delete = true
 
-  tags = local.tags
+  tags = var.tags
 }

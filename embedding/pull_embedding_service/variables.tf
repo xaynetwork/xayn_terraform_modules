@@ -58,8 +58,9 @@ variable "max_count" {
 
 
 variable "auth_json" {
-  description = "The json that is neccessary to authenticate with the Google APIs"
+  description = "The base64 encoded json that is necessary to authenticate with the Google APIs"
   type        = string
+  sensitive   = true
 }
 
 

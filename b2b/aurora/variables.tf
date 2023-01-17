@@ -75,6 +75,30 @@ variable "monitoring_interval" {
   default     = 15
 }
 
+variable "create_alarms" {
+  description = "Whether to create Aurora alarms"
+  type        = bool
+  default     = false
+}
+
+variable "sns_topic_arn" {
+  description = "ARN of the SNS topic"
+  type        = string
+  default     = null
+}
+
+variable "read_latency_threshold" {
+  description = "Threshold of the average Aurora read latency in milliseconds"
+  type        = number
+  default     = 10
+}
+
+variable "write_latency_threshold" {
+  description = "Threshold of the average Aurora write latency in milliseconds"
+  type        = number
+  default     = 10
+}
+
 variable "tags" {
   description = "Map of tags for the deployment"
   type        = map(string)

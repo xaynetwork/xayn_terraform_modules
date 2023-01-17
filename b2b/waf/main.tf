@@ -1,3 +1,5 @@
+data "aws_region" "current" {}
+
 resource "aws_wafv2_ip_set" "blacklist" {
   name               = "b2b-api-gateway-blacklist"
   description        = "B2b API Gateway blacklist of IP addresses"
@@ -223,6 +225,94 @@ resource "aws_wafv2_web_acl" "api_gateway" {
     metric_name                = "all"
     sampled_requests_enabled   = true
   }
+
+  tags = var.tags
+}
+
+# cloudwatch alarms
+module "all_requests_alarm" {
+  count   = var.create_alarms ? 1 : 0
+  source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
+  version = "4.2.1"
+
+  alarm_name          = "waf_all_requests"
+  alarm_description   = "High traffic load on WAF. Number of WAF ALL requests > ${var.all_requests_threshold}."
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 2
+  threshold           = var.all_requests_threshold
+  period              = 60
+  treat_missing_data  = "notBreaching"
+
+  namespace   = "AWS/WAFV2"
+  metric_name = "CountedRequests"
+  statistic   = "Sum"
+
+  dimensions = {
+    WebACL = aws_wafv2_web_acl.api_gateway.name
+    Region = data.aws_region.current.name
+    Rule   = "ALL"
+  }
+
+  alarm_actions = [var.sns_topic_arn]
+  ok_actions    = [var.sns_topic_arn]
+
+  tags = var.tags
+}
+
+module "all_requests_blocked_alarm" {
+  count   = var.create_alarms ? 1 : 0
+  source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
+  version = "4.2.1"
+
+  alarm_name          = "waf_all_blocked_requests"
+  alarm_description   = "Number of WAF ALL blocked requests > ${var.all_blocked_requests_threshold}. It may indicate a DDoS attack or a proxy."
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  threshold           = var.all_blocked_requests_threshold
+  period              = 60
+  treat_missing_data  = "notBreaching"
+
+  namespace   = "AWS/WAFV2"
+  metric_name = "BlockedRequests"
+  statistic   = "Sum"
+
+  dimensions = {
+    WebACL = aws_wafv2_web_acl.api_gateway.name
+    Region = data.aws_region.current.name
+    Rule   = "ALL"
+  }
+
+  alarm_actions = [var.sns_topic_arn]
+  ok_actions    = [var.sns_topic_arn]
+
+  tags = var.tags
+}
+
+module "ip_rate_limit_alarm" {
+  count   = var.create_alarms ? 1 : 0
+  source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
+  version = "4.2.1"
+
+  alarm_name          = "waf_ip_rate_limit"
+  alarm_description   = "An IP hit the WAF IP rate limit. It may indicate a DDoS attack or a proxy."
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  threshold           = var.ip_rate_limit_threshold
+  period              = 60
+  treat_missing_data  = "notBreaching"
+
+  namespace   = "AWS/WAFV2"
+  metric_name = "BlockedRequests"
+  statistic   = "Sum"
+
+  dimensions = {
+    WebACL = aws_wafv2_web_acl.api_gateway.name
+    Region = data.aws_region.current.name
+    Rule   = "block-ip-hit-rate-limit"
+  }
+
+  alarm_actions = [var.sns_topic_arn]
+  ok_actions    = [var.sns_topic_arn]
 
   tags = var.tags
 }

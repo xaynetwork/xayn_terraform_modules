@@ -137,6 +137,36 @@ variable "max_count" {
   default     = 4
 }
 
+variable "create_alarms" {
+  description = "Whether to create ECS Service alarms"
+  type        = bool
+  default     = false
+}
+
+variable "sns_topic_arn" {
+  description = "ARN of the SNS topic"
+  type        = string
+  default     = null
+}
+
+variable "service_cpu_threshold" {
+  description = "Threshold of the CPU usage in percentage"
+  type        = number
+  default     = 90
+}
+
+variable "log_pattern" {
+  description = "A valid CloudWatch Logs filter pattern for extracting metric data out of ingested log events"
+  type        = string
+  default     = "ERROR"
+}
+
+variable "log_error_threshold" {
+  description = "Threshold of the documents log errors"
+  type        = number
+  default     = 0
+}
+
 variable "tags" {
   description = "Custom tags to set on the underlining resources"
   type        = map(string)

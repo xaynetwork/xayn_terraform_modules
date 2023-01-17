@@ -123,3 +123,78 @@ resource "aws_ssm_parameter" "postgres_password" {
   value       = var.db_admin_password
   tags        = var.tags
 }
+
+# cloudwatch alarms
+module "read_latency_alarm" {
+  count   = var.create_alarms ? 1 : 0
+  source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
+  version = "4.2.1"
+
+  alarm_name          = "aurora_read_latency"
+  alarm_description   = "High Aurora read latency > ${var.read_latency_threshold}ms. It may indicate slow queries."
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  threshold           = var.read_latency_threshold
+
+  metric_query = [{
+    id          = "e1"
+    expression  = "m1 * 1000"
+    label       = "latency_into_milliseconds"
+    return_data = "true"
+    }, {
+    id = "m1"
+
+    metric = [{
+      namespace   = "AWS/RDS"
+      metric_name = "ReadLatency"
+      period      = 60
+      stat        = "Average"
+
+      dimensions = {
+        DBClusterIdentifier = var.name
+      }
+    }]
+  }]
+
+  alarm_actions = [var.sns_topic_arn]
+  ok_actions    = [var.sns_topic_arn]
+
+  tags = var.tags
+}
+
+module "write_latency_alarm" {
+  count   = var.create_alarms ? 1 : 0
+  source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
+  version = "4.2.1"
+
+  alarm_name          = "aurora_write_latency"
+  alarm_description   = "High Aurora write latency > ${var.write_latency_threshold}ms. It may indicate slow queries."
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  threshold           = var.write_latency_threshold
+
+  metric_query = [{
+    id          = "e1"
+    expression  = "m1 * 1000"
+    label       = "latency_into_milliseconds"
+    return_data = "true"
+    }, {
+    id = "m1"
+
+    metric = [{
+      namespace   = "AWS/RDS"
+      metric_name = "WriteLatency"
+      period      = 60
+      stat        = "Average"
+
+      dimensions = {
+        DBClusterIdentifier = var.name
+      }
+    }]
+  }]
+
+  alarm_actions = [var.sns_topic_arn]
+  ok_actions    = [var.sns_topic_arn]
+
+  tags = var.tags
+}

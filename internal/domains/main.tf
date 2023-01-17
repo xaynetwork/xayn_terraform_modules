@@ -20,7 +20,7 @@ module "records" {
   source  = "terraform-aws-modules/route53/aws//modules/records"
   version = "2.0"
 
-  zone_name = module.zones.route53_zone_zone_id
+  zone_name = keys(module.zones.route53_zone_zone_id)[0]
 
   dynamic "records" {
     for_each = var.records

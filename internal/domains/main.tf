@@ -4,7 +4,7 @@ module "zones" {
 
   zones = {
     (var.hosted_zone_name) = {
-      comment = "Zone hosted in ${var.hosted_zone_name} "
+      comment = "Zone hosted in ${var.hosted_zone_name}"
     }
   }
 

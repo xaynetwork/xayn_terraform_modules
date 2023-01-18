@@ -3,7 +3,7 @@ module "zones" {
   version = "2.0"
 
   zones = {
-    var.hosted_zone_name = {
+    (var.hosted_zone_name) = {
       comment = "Zone hosted in ${var.hosted_zone_name} "
     }
   }
@@ -22,15 +22,7 @@ module "records" {
 
   zone_name = keys(module.zones.route53_zone_zone_id)[0]
 
-  dynamic "records" {
-    for_each = var.records
-    content {
-      record_name    = records.value.record_name
-      record_type    = records.value.record_type
-      record_ttl     = records.value.record_ttl
-      record_records = records.value.record_records
-    }
-  }
+  records = var.records
 
   depends_on = [module.zones]
 }

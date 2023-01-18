@@ -5,12 +5,12 @@ variable "hosted_zone_name" {
 
 variable "records" {
   description = "The name of the hosted zone for Route53"
-  type = object({
-    record_name    = string
-    record_type    = string
-    record_ttl     = string
-    record_records = list(string)
-  })
+  type = list(object({
+    name    = string
+    type    = string
+    ttl     = number
+    records = list(string)
+  }))
 }
 
 variable "tags" {

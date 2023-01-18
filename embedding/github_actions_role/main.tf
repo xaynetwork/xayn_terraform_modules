@@ -43,9 +43,9 @@ module "iam" {
   subjects = var.repositories
   policies = {
     ECRAccess = aws_iam_policy.iam_policy.arn
-
   }
   tags = var.tags
+
   depends_on = [
     module.iam_github_oidc_provider
   ]

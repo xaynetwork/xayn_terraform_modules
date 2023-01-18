@@ -5,6 +5,7 @@ variable "repositories" {
 
 variable "ecr_arn" {
   description = "The ARN of the ECR repository that the GH Role can access"
+  type        = string
 }
 
 variable "tags" {

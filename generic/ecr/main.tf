@@ -1,12 +1,7 @@
-data "aws_region" "current" {}
-
 ################################################################################
 # ECR Repository
 # From https://github.com/terraform-aws-modules/terraform-aws-ecr/tree/master/examples/complete
 ################################################################################
-
-
-
 
 module "ecr" {
   source  = "terraform-aws-modules/ecr/aws"
@@ -14,8 +9,7 @@ module "ecr" {
 
   repository_name = var.name
 
-  repository_read_write_access_arns = []
-  create_lifecycle_policy           = true
+  create_lifecycle_policy = true
   repository_lifecycle_policy = jsonencode({
     rules = [
       {

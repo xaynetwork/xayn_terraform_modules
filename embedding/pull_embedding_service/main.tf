@@ -65,7 +65,6 @@ module "service" {
   desired_count           = var.desired_count
   task_execution_role_arn = module.task_role.arn
 
-  environment = {}
   secrets = {
     AUTH_JSON = aws_ssm_parameter.auth_json.arn
   }

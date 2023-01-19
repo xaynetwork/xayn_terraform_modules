@@ -28,7 +28,8 @@ module "ecr" {
     ]
   })
 
-  repository_force_delete = true
+  repository_read_access_arns = [for item in var.read_access_account_ids : "arn:aws:iam::${item}:root"]
+  repository_force_delete     = true
 
   tags = var.tags
 }

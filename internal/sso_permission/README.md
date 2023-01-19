@@ -8,10 +8,9 @@ Terraform module which creates a SSO permission set with a customer created poli
 module "sso" {
   source = "../../modules/sso_permission"
 
-  permission_name  = "permission_x"
-  sso_instance_arn = "arn::::"
-  duration         = "10h"
-  policy_name      = "policy_x"
+  permission_name = "permission_x"
+  actions         = ["s3:...",..]
+  resources       = ["arn:aws:s3:::*",.. ]
 
   # Optional
   tags = {

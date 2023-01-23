@@ -9,11 +9,6 @@ variable "duration" {
   default     = "PT10H"
 }
 
-variable "policy_name" {
-  description = "The name of the policy to assign"
-  type        = string
-}
-
 variable "actions" {
   description = "Actions applied to the policy"
   type        = list(string)

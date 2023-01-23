@@ -6,7 +6,7 @@ variable "permission_name" {
 variable "duration" {
   description = "The duration of the session for the SSO instance"
   type        = string
-  default = "PT10H"
+  default     = "PT10H"
 }
 
 variable "policy_name" {

@@ -16,7 +16,7 @@ resource "aws_ssoadmin_customer_managed_policy_attachment" "this" {
 
 data "aws_iam_policy_document" "policy_document" {
   statement {
-    actions = var.actions
+    actions   = var.actions
     resources = var.resources
   }
 }

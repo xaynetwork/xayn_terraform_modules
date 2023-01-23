@@ -20,12 +20,12 @@ variable "policy_name" {
 
 variable "actions" {
   description = "Actions applied to the policy"
-  type = list(string)
+  type        = list(string)
 }
 
 variable "resources" {
   description = "Resources to which applied to the policy"
-  type = list(string)
+  type        = list(string)
 }
 
 variable "tags" {

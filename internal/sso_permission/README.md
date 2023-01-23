@@ -13,6 +13,9 @@ module "sso" {
   duration         = "10h"
   policy_name      = "policy_x"
 
+  actions   = ["s3:...",..]
+  resources = ["arn:aws:s3:::*",.. ]
+
   # Optional
   tags = {
     Environment = "Test"

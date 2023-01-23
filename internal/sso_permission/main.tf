@@ -13,3 +13,17 @@ resource "aws_ssoadmin_customer_managed_policy_attachment" "this" {
     name = var.policy_name
   }
 }
+
+data "aws_iam_policy_document" "policy_document" {
+  statement {
+    actions = var.actions
+    resources = var.resources
+  }
+}
+
+resource "aws_iam_policy" "this" {
+  name   = "${var.permission_name}-policy"
+  path   = "/"
+  policy = data.aws_iam_policy_document.policy_document.json
+  tags   = var.tags
+}

@@ -9,8 +9,6 @@ module "sso" {
   source = "../../modules/sso_permission"
 
   permission_name  = "permission_x"
-  sso_instance_arn = "arn::::"
-  duration         = "10h"
   policy_name      = "policy_x"
 
   actions   = ["s3:...",..]

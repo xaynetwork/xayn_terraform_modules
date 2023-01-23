@@ -65,6 +65,11 @@ module "service" {
   desired_count           = var.desired_count
   task_execution_role_arn = module.task_role.arn
 
+  environment = {
+    "INGESTION_INPUT_QUEUE"  = "v2-xayn-consume-articles"
+    "INGESTION_OUTPUT_QUEUE" = "v2-xayn-publish-articles"
+    "INGESTION_MODEL_PATH"   = "./model"
+  }
   secrets = {
     AUTH_JSON = aws_ssm_parameter.auth_json.arn
   }

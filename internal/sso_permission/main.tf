@@ -16,7 +16,7 @@ resource "aws_ssoadmin_customer_managed_policy_attachment" "this" {
   instance_arn       = local.sso_instance_arn
   permission_set_arn = aws_ssoadmin_permission_set.this.arn
   customer_managed_policy_reference {
-    name = var.permission_name
+    name = "${var.permission_name}-policy"
   }
 }
 
@@ -30,7 +30,7 @@ data "aws_iam_policy_document" "policy_document" {
 
 resource "aws_iam_policy" "this" {
   name   = "${var.permission_name}-policy"
-  path   = "/Organization/"
+  path   = "/"
   policy = data.aws_iam_policy_document.policy_document.json
   tags   = var.tags
 }

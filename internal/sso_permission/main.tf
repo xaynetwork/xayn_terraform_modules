@@ -30,7 +30,7 @@ data "aws_iam_policy_document" "policy_document" {
 
 resource "aws_iam_policy" "this" {
   name   = "${var.permission_name}-policy"
-  path   = "/"
+  path   = "/Organization/"
   policy = data.aws_iam_policy_document.policy_document.json
   tags   = var.tags
 }

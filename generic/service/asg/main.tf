@@ -23,3 +23,16 @@ resource "aws_appautoscaling_policy" "cpu" {
     scale_out_cooldown = var.scale_out_cooldown
   }
 }
+
+# resource "aws_appautoscaling_scheduled_action" "schedule" {
+#   name               = "${var.service_name}-scheduled-autoscaling"
+#   resource_id        = aws_appautoscaling_target.service.resource_id
+#   scalable_dimension = aws_appautoscaling_target.service.scalable_dimension
+#   service_namespace  = aws_appautoscaling_target.service.service_namespace
+#   schedule           = "cron()"
+
+#   scalable_target_action {
+#     min_capacity = 1
+#     max_capacity = 200
+#   }
+# }

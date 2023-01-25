@@ -75,9 +75,8 @@ module "service" {
   task_execution_role_arn = module.task_role.arn
   environment = {
     XAYN_WEB_API__NET__BIND_TO                      = "0.0.0.0:${var.container_port}"
-    XAYN_WEB_API__STORAGE__ELASTIC__URL             = var.elasticsearch_url
-    XAYN_WEB_API__STORAGE__ELASTIC__INDEX_NAME      = var.elasticsearch_index
-    XAYN_WEB_API__STORAGE__ELASTIC__USER            = var.elasticsearch_username
+    XAYN_WEB_API__STORAGE__QDRANT__URL              = var.elasticsearch_url
+    XAYN_WEB_API__STORAGE__QDRANT__COLLECTION_NAME  = var.elasticsearch_index
     XAYN_WEB_API__STORAGE__POSTGRES__BASE_URL       = "${var.postgres_url}/${var.tenant}"
     XAYN_WEB_API__STORAGE__POSTGRES__USER           = var.postgres_username
     XAYN_WEB_API__PERSONALIZATION__MAX_COIS_FOR_KNN = var.max_cois
@@ -86,7 +85,7 @@ module "service" {
     XAYN_WEB_API__LOGGING__LEVEL                    = var.logging_level
   }
   secrets = {
-    XAYN_WEB_API__STORAGE__ELASTIC__PASSWORD  = var.elasticsearch_password_ssm_parameter_arn
+    XAYN_WEB_API__STORAGE__QDRANT__API_KEY    = var.elasticsearch_password_ssm_parameter_arn
     XAYN_WEB_API__STORAGE__POSTGRES__PASSWORD = var.postgres_password_ssm_parameter_arn
   }
 

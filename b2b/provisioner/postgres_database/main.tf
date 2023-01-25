@@ -1,5 +1,5 @@
 module "postgres_database" {
-  source = "../../lambda/invoke"
+  source = "../../../generic/lambda/invoke"
 
   create_payload = {
     "command" : "CreateDatabase"

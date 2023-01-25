@@ -109,6 +109,17 @@ variable "desired_count" {
   default     = 2
 }
 
+variable "capacity_provider_strategy" {
+  description = "Describes a spot instance configuration. Weights are between 0..100 and base defines the always running instances. Only one base can be 0."
+  type = object({
+    fargate_weight      = int
+    fargate_base        = int
+    fargate_spot_weight = int
+    fargate_spot_base   = int
+  })
+  default = null
+}
+
 variable "deployment_maximum_percent" {
   description = "Upper limit (as a percentage of the service's desiredCount) of the number of running tasks that can be running in a service during a deployment"
   type        = number

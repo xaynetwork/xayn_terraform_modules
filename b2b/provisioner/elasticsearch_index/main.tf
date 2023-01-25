@@ -1,5 +1,5 @@
 module "elasticsearch_index" {
-  source = "../../lambda/invoke"
+  source = "../../../generic/lambda/invoke"
 
   create_payload = {
     "command" : "CreateIndex"

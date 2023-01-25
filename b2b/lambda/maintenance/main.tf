@@ -11,7 +11,7 @@ data "external" "build" {
 
 #Cloudwatch Role
 module "role" {
-  source = "../role"
+  source = "../../../generic/lambda/role"
   path   = "/${local.function_name}/"
   prefix = title(local.function_name)
   tags   = var.tags
@@ -65,7 +65,7 @@ data "archive_file" "source_code" {
 }
 
 module "function" {
-  source                 = "../function"
+  source                 = "../../../generic/lambda/function"
   function_name          = local.function_name
   handler                = "index.handler"
   runtime                = "nodejs16.x"

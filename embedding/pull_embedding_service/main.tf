@@ -58,12 +58,13 @@ module "service" {
   vpc_id     = var.vpc_id
   subnet_ids = var.subnet_ids
 
-  container_cpu           = var.container_cpu
-  container_memory        = var.container_memory
-  container_image         = var.container_image
-  container_port          = var.container_port
-  desired_count           = var.desired_count
-  task_execution_role_arn = module.task_role.arn
+  container_cpu              = var.container_cpu
+  container_memory           = var.container_memory
+  container_image            = var.container_image
+  container_port             = var.container_port
+  desired_count              = var.desired_count
+  task_execution_role_arn    = module.task_role.arn
+  capacity_provider_strategy = var.capacity_provider_strategy
 
   environment = {
     "INGESTION_INPUT_QUEUE"  = "v2-xayn-consume-articles"

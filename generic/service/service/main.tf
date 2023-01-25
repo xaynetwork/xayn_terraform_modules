@@ -58,7 +58,7 @@ resource "aws_ecs_service" "this" {
   name             = "${var.name}-svc"
   cluster          = var.cluster_id
   task_definition  = aws_ecs_task_definition.this.arn
-  launch_type      = "FARGATE"
+  launch_type      = var.capacity_provider_strategy != null ? null : "FARGATE"
   platform_version = var.platform_version
 
   desired_count = var.desired_count

@@ -112,10 +112,10 @@ variable "desired_count" {
 variable "capacity_provider_strategy" {
   description = "Describes a spot instance configuration. Weights are between 0..100 and base defines the always running instances. Only one base can be 0."
   type = object({
-    fargate_weight      = int
-    fargate_base        = int
-    fargate_spot_weight = int
-    fargate_spot_base   = int
+    fargate_weight      = number
+    fargate_base        = number
+    fargate_spot_weight = number
+    fargate_spot_base   = number
   })
   default = null
 }

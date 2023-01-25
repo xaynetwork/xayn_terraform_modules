@@ -56,13 +56,28 @@ variable "max_count" {
   default     = 4
 }
 
-
 variable "auth_json" {
   description = "The base64 encoded json that is necessary to authenticate with the Google APIs"
   type        = string
   sensitive   = true
 }
 
+variable "capacity_provider_strategy" {
+  description = "Describes a spot instance configuration. Weights are between 0..100 and base defines the always running instances. Only one base can be 0."
+  type = object({
+    fargate_weight      = number
+    fargate_base        = number
+    fargate_spot_weight = number
+    fargate_spot_base   = number
+  })
+
+  default = {
+    fargate_base        = 1
+    fargate_spot_base   = 0
+    fargate_spot_weight = 100
+    fargate_weight      = 0
+  }
+}
 
 variable "tags" {
   description = "Custom tags to set on the underlining resources"

@@ -88,6 +88,26 @@ resource "aws_ecs_service" "this" {
     }
   }
 
+  # FARGATE
+  dynamic "capacity_provider_strategy" {
+    for_each = var.capacity_provider_strategy == null ? [] : [1]
+    content {
+      base              = var.capacity_provider_strategy.fargate_base
+      weight            = var.capacity_provider_strategy.fargate_weight
+      capacity_provider = "FARGATE"
+    }
+  }
+
+  # FARGATE_SPOT
+  dynamic "capacity_provider_strategy" {
+    for_each = var.capacity_provider_strategy == null ? [] : [1]
+    content {
+      base              = var.capacity_provider_strategy.fargate_spot_base
+      weight            = var.capacity_provider_strategy.fargate_spot_weight
+      capacity_provider = "FARGATE_SPOT"
+    }
+  }
+
   # ignore desired_count as it will be dynamic through the autoscaling group
   lifecycle {
     ignore_changes = [desired_count]

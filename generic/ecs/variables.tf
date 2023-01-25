@@ -3,6 +3,17 @@ variable "name" {
   type        = string
 }
 
+variable "capacity_provider_strategy" {
+  description = "Describes a spot instance configuration. Weights are between 0..100 and base defines the always running instances. Only one base can be 0."
+  type = object({
+    fargate_weight      = int
+    fargate_base        = int
+    fargate_spot_weight = int
+    fargate_spot_base   = int
+  })
+  default = null
+}
+
 variable "tags" {
   description = "Map of tags for the deployment"
   type        = map(string)

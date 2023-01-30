@@ -10,23 +10,9 @@ resource "aws_api_gateway_api_key" "tenant" {
   description = "The internal api key of ${var.tenant}, do not share."
 }
 
-resource "aws_api_gateway_api_key" "ext_users" {
-  name        = "${var.tenant}_ext_users"
-  tags        = var.tags
-  description = "The external api key for /users."
-}
-
-resource "aws_api_gateway_api_key" "ext_documents" {
-  name        = "${var.tenant}_ext_documents"
-  tags        = var.tags
-  description = "The external api key for /documents."
-}
-
 resource "local_sensitive_file" "authentication_code" {
   content = templatefile("${path.module}/index.js.tpl", {
     api_key : aws_api_gateway_api_key.tenant.value,
-    api_key_users : aws_api_gateway_api_key.ext_users.value,
-    api_key_documents : aws_api_gateway_api_key.ext_documents.value
   })
   filename = local.filename
 }

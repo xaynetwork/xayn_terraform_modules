@@ -1,14 +1,20 @@
-output "repository_arn" {
+output "repository_arns" {
   description = "Full ARN of the repository"
-  value       = module.ecr.repository_arn
+  value = toset([
+    for i in module.ecr : i.repository_arn
+  ])
 }
 
-output "repository_registry_id" {
-  description = "The registry ID where the repository was created"
-  value       = module.ecr.repository_registry_id
+output "repository_registry_ids" {
+  description = "The registry IDs where the repository was created"
+  value = toset([
+    for i in module.ecr : i.repository_registry_id
+  ])
 }
 
-output "repository_url" {
-  description = "The URL of the repository (in the form `aws_account_id.dkr.ecr.region.amazonaws.com/repositoryName`)"
-  value       = module.ecr.repository_url
+output "repository_urls" {
+  description = "The URLs of the repository (in the form `aws_account_id.dkr.ecr.region.amazonaws.com/repositoryName`)"
+  value = toset([
+    for i in module.ecr : i.repository_url
+  ])
 }

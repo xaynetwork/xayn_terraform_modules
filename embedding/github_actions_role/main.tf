@@ -17,10 +17,8 @@ data "aws_iam_policy_document" "role_access_policy" {
       "ecr:PutImage"
     ]
 
-    effect = "Allow"
-    resources = [
-      var.ecr_arn
-    ]
+    effect    = "Allow"
+    resources = var.ecr_arns
   }
 
   statement {
@@ -39,7 +37,7 @@ resource "aws_iam_policy" "iam_policy" {
 module "iam" {
   source = "github.com/terraform-aws-modules/terraform-aws-iam//modules/iam-github-oidc-role?ref=v5.8.0"
 
-  name     = "ecr-github-actions-role"
+  name     = var.role_name
   subjects = var.repositories
   policies = {
     ECRAccess = aws_iam_policy.iam_policy.arn

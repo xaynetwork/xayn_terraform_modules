@@ -52,7 +52,7 @@ module "function" {
   function_name         = local.function_name
   handler               = "index-${var.tenant}.handler"
   runtime               = "nodejs16.x"
-  source_code_hash      = "${base64sha256(file(local.filename))}"
+  source_code_hash      = data.archive_file.source_code.output_base64sha256
   output_path           = local.output_path
   lambda_role_arn       = module.role.arn
   log_retention_in_days = var.log_retention_in_days

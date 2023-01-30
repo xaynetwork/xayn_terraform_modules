@@ -4,10 +4,11 @@
 ################################################################################
 
 module "ecr" {
+  for_each = toset(var.repo_names)
   source  = "terraform-aws-modules/ecr/aws"
   version = "1.5.1"
 
-  repository_name = var.name
+  repository_name = each.key
 
   create_lifecycle_policy = true
   repository_lifecycle_policy = jsonencode({

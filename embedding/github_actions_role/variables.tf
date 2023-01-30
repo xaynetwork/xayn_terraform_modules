@@ -3,9 +3,15 @@ variable "repositories" {
   type        = list(string)
 }
 
-variable "ecr_arn" {
-  description = "The ARN of the ECR repository that the GH Role can access"
+variable "ecr_arns" {
+  description = "A List of ARNs of the ECRs repository that the GH Role can access"
+  type        = list(string)
+}
+
+variable "role_name" {
+  description = "The name of the role"
   type        = string
+  default     = "ecr-github-actions-role"
 }
 
 variable "tags" {

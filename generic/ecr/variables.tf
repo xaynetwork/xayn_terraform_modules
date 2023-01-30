@@ -1,6 +1,6 @@
-variable "name" {
-  description = "The name of the ECR repository"
-  type        = string
+variable "repo_names" {
+  description = "A list of ECR repositoryies to be created"
+  type        = list(string)
 }
 
 variable "read_access_account_ids" {

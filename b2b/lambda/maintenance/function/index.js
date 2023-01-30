@@ -73,6 +73,13 @@ async function createElasticSearchIndex(event) {
             index: true,
             similarity: "dot_product",
           },
+          properties: {
+            properties: {
+              publication_date: {
+                type: "date",
+              },
+            },
+          },
         },
       },
     };

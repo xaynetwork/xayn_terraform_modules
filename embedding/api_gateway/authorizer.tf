@@ -27,7 +27,6 @@ resource "aws_iam_role" "authorizer_invocation" {
   tags               = var.tags
 }
 
-
 resource "aws_iam_role_policy" "authorizer_invocation" {
   name   = "authorizer_invocation_${var.tenant}"
   role   = aws_iam_role.authorizer_invocation.id

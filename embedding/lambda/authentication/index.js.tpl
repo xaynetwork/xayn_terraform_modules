@@ -5,7 +5,7 @@ exports.handler = async (event) => {
   const internalApiKey = "${api_key}";
   const methodArn = event.methodArn;
 
-  if ( apiToken === internalApiKey) {
+  if (apiToken === internalApiKey) {
     return build_policy(internalApiKey, [methodArn], "Allow");
   }
   return build_policy(internalApiKey, methodArn, "Deny");

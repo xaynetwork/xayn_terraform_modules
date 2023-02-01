@@ -109,7 +109,7 @@ module "service_cpu_alarm" {
   source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
   version = "4.2.1"
 
-  alarm_name          = "users_service_cpu"
+  alarm_name          = "users_service_cpu_${var.tenant}"
   alarm_description   = "High CPU usage for ${module.service.name} service. It may indicate that the auto scaling reach its maximum."
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 3
@@ -166,7 +166,7 @@ module "log_error_filter" {
 
   log_group_name = module.service.log_group_name
 
-  name    = "users_error_metric"
+  name    = "users_error_metric_${var.tenant}"
   pattern = var.log_pattern
 
   metric_transformation_namespace = "${var.cluster_name}/${module.service.name}"
@@ -178,8 +178,8 @@ module "log_error_alarm" {
   source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
   version = "4.2.1"
 
-  alarm_name          = "users_log_errors"
-  alarm_description   = "Number of errors in ${module.service.name} service > ${var.log_error_threshold}."
+  alarm_name          = "users_log_errors_${var.tenant}"
+  alarm_description   = "Number of errors in ${module.service.name} service > ${var.log_error_threshold} for tenant ${var.tenant}."
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 1
   threshold           = var.log_error_threshold

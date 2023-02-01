@@ -45,7 +45,6 @@ module "service" {
   # this only applies for services with a load balancer
   health_check_grace_period_seconds = null
 
-
   alb = {
     listener_arn         = var.alb_listener_arn
     listener_port        = var.alb_listener_port
@@ -91,7 +90,7 @@ module "service_cpu_alarm" {
   source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
   version = "4.2.1"
 
-  alarm_name          = "documents_service_cpu"
+  alarm_name          = "semantic_search_service_cpu"
   alarm_description   = "High CPU usage for ${module.service.name} service. It may indicate that the auto scaling reach its maximum."
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 3
@@ -145,7 +144,7 @@ module "log_error_filter" {
 
   log_group_name = module.service.log_group_name
 
-  name    = "documents_error_metric"
+  name    = "semantic_search_error_metric"
   pattern = var.log_pattern
 
   metric_transformation_namespace = "${var.cluster_name}/${module.service.name}"
@@ -157,7 +156,7 @@ module "log_error_alarm" {
   source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
   version = "4.2.1"
 
-  alarm_name          = "documents_log_errors"
+  alarm_name          = "semantic_search_log_errors"
   alarm_description   = "Number of errors in ${module.service.name} service > ${var.log_error_threshold}."
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 1

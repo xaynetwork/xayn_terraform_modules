@@ -46,6 +46,27 @@ variable "ip_rate_limit_threshold" {
   default     = 0
 }
 
+#  i.e.: [
+#       { 
+#         name        = "user-path"
+#         url_segment = "/default/users"
+#         priority    = 50
+#       },
+#       {
+#         name        = "document-path"
+#         url_segment = "/default/documents"
+#         priority    = 60
+#     } ]
+variable "path_rules" {
+  type = list(object({
+    name        = string
+    url_segment = string
+    priority    = number
+  }))
+  description = "A list of path entry objects"
+  default     = []
+}
+
 variable "tags" {
   description = "Map of tags for the deployment"
   type        = map(string)

@@ -101,8 +101,8 @@ module "services_http_5xx_error_alarm" {
     LoadBalancer = aws_lb.this.arn_suffix
   }
 
-  alarm_actions = [var.sns_topic_arn]
-  ok_actions    = [var.sns_topic_arn]
+  alarm_actions = var.sns_topic_arn != null ? [var.sns_topic_arn] : []
+  ok_actions    = var.sns_topic_arn != null ? [var.sns_topic_arn] : []
 
   tags = var.tags
 }
@@ -128,8 +128,8 @@ module "http_5xx_error_alarm" {
     LoadBalancer = aws_lb.this.arn_suffix
   }
 
-  alarm_actions = [var.sns_topic_arn]
-  ok_actions    = [var.sns_topic_arn]
+  alarm_actions = var.sns_topic_arn != null ? [var.sns_topic_arn] : []
+  ok_actions    = var.sns_topic_arn != null ? [var.sns_topic_arn] : []
 
   tags = var.tags
 }
@@ -155,8 +155,8 @@ module "http_4xx_error_alarm" {
     LoadBalancer = aws_lb.this.arn_suffix
   }
 
-  alarm_actions = [var.sns_topic_arn]
-  ok_actions    = [var.sns_topic_arn]
+  alarm_actions = var.sns_topic_arn != null ? [var.sns_topic_arn] : []
+  ok_actions    = var.sns_topic_arn != null ? [var.sns_topic_arn] : []
 
   tags = var.tags
 }

@@ -125,6 +125,12 @@ variable "latency_threshold" {
   default     = 300
 }
 
+variable "enable_cors" {
+  description = "Enables the OPTIONS request to make cors checks."
+  type        = bool
+  default     = false
+}
+
 variable "tags" {
   description = "Map of tags for the deployment"
   type        = map(string)

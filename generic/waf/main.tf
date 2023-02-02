@@ -160,63 +160,37 @@ resource "aws_wafv2_web_acl" "api_gateway" {
     }
   }
 
-  rule {
-    name     = "users-path"
-    priority = 50
 
-    action {
-      allow {}
-    }
+  dynamic "rule" {
+    for_each = var.path_rules
+    content {
+      name     = rule.value.name
+      priority = rule.value.priority
 
-    statement {
-      byte_match_statement {
-        field_to_match {
-          uri_path {}
-        }
+      action {
+        allow {}
+      }
 
-        search_string         = "/default/users"
-        positional_constraint = "STARTS_WITH"
-        text_transformation {
-          type     = "URL_DECODE"
-          priority = 1
+      statement {
+        byte_match_statement {
+          field_to_match {
+            uri_path {}
+          }
+
+          search_string         = rule.value.url_segment
+          positional_constraint = "STARTS_WITH"
+          text_transformation {
+            type     = "URL_DECODE"
+            priority = 1
+          }
         }
       }
-    }
 
-    visibility_config {
-      cloudwatch_metrics_enabled = true
-      metric_name                = "users-path"
-      sampled_requests_enabled   = true
-    }
-  }
-
-  rule {
-    name     = "documents-path"
-    priority = 60
-
-    action {
-      allow {}
-    }
-
-    statement {
-      byte_match_statement {
-        field_to_match {
-          uri_path {}
-        }
-
-        search_string         = "/default/documents"
-        positional_constraint = "STARTS_WITH"
-        text_transformation {
-          type     = "URL_DECODE"
-          priority = 1
-        }
+      visibility_config {
+        cloudwatch_metrics_enabled = true
+        metric_name                = rule.value.name
+        sampled_requests_enabled   = true
       }
-    }
-
-    visibility_config {
-      cloudwatch_metrics_enabled = true
-      metric_name                = "documents-path"
-      sampled_requests_enabled   = true
     }
   }
 

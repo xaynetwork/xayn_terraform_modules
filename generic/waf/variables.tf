@@ -63,8 +63,7 @@ variable "path_rules" {
     url_segment = string
     priority    = number
   }))
-  description = "A list of path entry objects"
-  default     = []
+  description = "A list of path entry objects, that describe whixch paths are allowed by the firewal, an empty array would block all requests."
 }
 
 variable "tags" {

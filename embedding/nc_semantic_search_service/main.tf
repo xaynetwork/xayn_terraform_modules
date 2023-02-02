@@ -131,8 +131,8 @@ module "service_cpu_alarm" {
     }]
   }]
 
-  alarm_actions = [var.sns_topic_arn]
-  ok_actions    = [var.sns_topic_arn]
+  alarm_actions = var.sns_topic_arn != null ? [var.sns_topic_arn] : []
+  ok_actions    = var.sns_topic_arn != null ? [var.sns_topic_arn] : []
 
   tags = var.tags
 }
@@ -168,8 +168,8 @@ module "log_error_alarm" {
   metric_name = "ErrorCount"
   statistic   = "Sum"
 
-  alarm_actions = [var.sns_topic_arn]
-  ok_actions    = [var.sns_topic_arn]
+  alarm_actions = var.sns_topic_arn != null ? [var.sns_topic_arn] : []
+  ok_actions    = var.sns_topic_arn != null ? [var.sns_topic_arn] : []
 
   tags = var.tags
 }

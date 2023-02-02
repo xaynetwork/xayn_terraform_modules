@@ -42,8 +42,7 @@ module "service" {
   name               = "nc-semantic-search"
   security_group_ids = [module.security_group.security_group_id]
 
-  # this only applies for services with a load balancer
-  health_check_grace_period_seconds = null
+  health_check_grace_period_seconds = 30
 
   alb = {
     listener_arn         = var.alb_listener_arn

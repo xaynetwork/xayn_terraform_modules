@@ -200,8 +200,8 @@ module "http_5xx_error_alarm" {
     Stage   = "default"
   }
 
-  alarm_actions = [var.sns_topic_arn]
-  ok_actions    = [var.sns_topic_arn]
+  alarm_actions = var.sns_topic_arn != null ? [var.sns_topic_arn] : []
+  ok_actions    = var.sns_topic_arn != null ? [var.sns_topic_arn] : []
 
   tags = var.tags
 }
@@ -228,8 +228,8 @@ module "integration_latency_alarm" {
     Stage   = "default"
   }
 
-  alarm_actions = [var.sns_topic_arn]
-  ok_actions    = [var.sns_topic_arn]
+  alarm_actions = var.sns_topic_arn != null ? [var.sns_topic_arn] : []
+  ok_actions    = var.sns_topic_arn != null ? [var.sns_topic_arn] : []
 
   tags = var.tags
 }
@@ -256,8 +256,8 @@ module "latency_alarm" {
     Stage   = "default"
   }
 
-  alarm_actions = [var.sns_topic_arn]
-  ok_actions    = [var.sns_topic_arn]
+  alarm_actions = var.sns_topic_arn != null ? [var.sns_topic_arn] : []
+  ok_actions    = var.sns_topic_arn != null ? [var.sns_topic_arn] : []
 
   tags = var.tags
 }

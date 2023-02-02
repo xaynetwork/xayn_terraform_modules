@@ -218,8 +218,8 @@ module "http_5xx_error_alarm" {
   source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
   version = "4.2.1"
 
-  alarm_name          = "api_gateway_5xx_error"
-  alarm_description   = "Number of API Gateway HTTP-5XX errors > ${var.http_5xx_error_threshold}. It may indicate an issue within the NLB integration or with the lambda authorizer."
+  alarm_name          = "api_gateway_5xx_error_${var.tenant}"
+  alarm_description   = "Number of API Gateway HTTP-5XX errors > ${var.http_5xx_error_threshold} for tenant ${var.tenant}. It may indicate an issue within the NLB integration or with the lambda authorizer."
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 1
   threshold           = var.http_5xx_error_threshold
@@ -246,8 +246,8 @@ module "integration_latency_alarm" {
   source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
   version = "4.2.1"
 
-  alarm_name          = "api_gateway_integration_latency"
-  alarm_description   = "High API Gateway integration latency. Average integration latency > ${var.integration_latency_threshold}ms"
+  alarm_name          = "api_gateway_integration_latency_${var.tenant}"
+  alarm_description   = "High API Gateway integration latency for tenant ${var.tenant}. Average integration latency > ${var.integration_latency_threshold}ms"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 2
   threshold           = var.integration_latency_threshold
@@ -274,8 +274,8 @@ module "latency_alarm" {
   source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
   version = "4.2.1"
 
-  alarm_name          = "api_gateway_latency"
-  alarm_description   = "High API Gateway latency. Average latency > ${var.latency_threshold}ms"
+  alarm_name          = "api_gateway_latency_${var.tenant}"
+  alarm_description   = "High API Gateway latency for tenant ${var.tenant}. Average latency > ${var.latency_threshold}ms"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 2
   threshold           = var.latency_threshold

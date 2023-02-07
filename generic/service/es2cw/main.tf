@@ -42,6 +42,7 @@ resource "aws_ecs_service" "this" {
   name             = "${var.name}-svc"
   cluster          = var.cluster_id
   desired_count    = var.desired_count
+  task_definition  = aws_ecs_task_definition.this.arn
 
   network_configuration {
     subnets         = var.subnet_ids

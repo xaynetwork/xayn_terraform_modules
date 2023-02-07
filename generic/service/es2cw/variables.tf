@@ -18,11 +18,6 @@ variable "container_image" {
   type        = string
 }
 
-variable "container_cmd" {
-  description = "List of commands to run with the container"
-  type        = list(string)
-}
-
 variable "environment" {
   description = "The environment variables to pass to a container"
   type        = map(string)

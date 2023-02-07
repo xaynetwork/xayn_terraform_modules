@@ -31,7 +31,6 @@ resource "aws_ecs_task_definition" "this" {
       memory         = var.container_memory
       name           = var.name,
       container_port = var.container_port,
-      container_cmd  = var.container_cmd
       environment    = jsonencode(local.remap_env_vars),
     }
   )

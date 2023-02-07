@@ -6,7 +6,6 @@
     "name": "${name}",
     "networkMode": "awsvpc",
     "environment": ${environment},
-    "command": ${container_cmd},
     "portMappings": [
       {
         "containerPort": ${container_port},

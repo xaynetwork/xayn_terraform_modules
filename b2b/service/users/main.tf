@@ -59,7 +59,7 @@ module "service" {
     listener_arn         = var.alb_listener_arn
     listener_port        = var.alb_listener_port
     health_path          = "/health"
-    routing_path_pattern = ["/users", "/users/*"]
+    routing_path_pattern = ["/users", "/users/*", "/semantic_search", "/semantic_search/*"]
   }
 
   alb_routing_header_condition = {

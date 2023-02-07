@@ -22,7 +22,7 @@ resource "aws_ecs_task_definition" "this" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = var.container_cpu
   memory                   = var.container_memory
-  execution_role_arn       = var.task_execution_role_arn
+  execution_role_arn       = module.task_role.arn
 
   container_definitions = templatefile("${path.module}/definition.json.tpl",
     {

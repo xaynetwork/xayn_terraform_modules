@@ -39,6 +39,8 @@ resource "ec_deployment" "es_cluster" {
       autoscaling {
         max_size = "${var.hot_tier_memory_max}g"
       }
+
+      zone_count = var.zone_count
     }
     topology {
       id = "ml"

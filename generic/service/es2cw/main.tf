@@ -1,3 +1,5 @@
+data "aws_region" "current" {}
+
 locals {
   remap_env_vars = [
     for k, v in var.environment : {
@@ -38,6 +40,7 @@ resource "aws_ecs_task_definition" "this" {
       cpu            = var.container_cpu,
       memory         = var.container_memory,
       log_group      = aws_cloudwatch_log_group.container_logs.id,
+      aws_region     = data.aws_region.current.name,
       name           = var.name,
       container_port = var.container_port,
       environment    = jsonencode(local.remap_env_vars),

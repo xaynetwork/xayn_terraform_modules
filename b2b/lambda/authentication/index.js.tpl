@@ -23,8 +23,8 @@ exports.handler = async (event) => {
 
   if (
     ("/documents" === resource && apiToken === "${api_key_documents}") ||
-    ("/users" === resource && apiToken == "${api_key_users}") ||
-    ("/semantic_search" === resource && apiToken == "${api_key_users}")) {
+    ("/users" === resource && apiToken === "${api_key_users}") ||
+    ("/semantic_search" === resource && apiToken === "${api_key_users}")) {
     const restId = apiGatewayArnTmp[0];
     const stage = apiGatewayArnTmp[1];
     const method = '*'; //apiGatewayArnTmp[2];

@@ -38,6 +38,14 @@ data "aws_iam_policy_document" "user_port_forward_remote" {
   }
 
   statement {
+    sid = "DescribeRdsClusters"
+    actions = [
+      "rds:DescribeDBClusters"
+    ]
+    resources = ["arn:aws:rds:*:*:cluster:*"]
+  }
+
+  statement {
     sid = "TerminateSession"
     actions = [
       "ssm:TerminateSession",

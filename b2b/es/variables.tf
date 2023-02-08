@@ -21,6 +21,17 @@ variable "hot_tier_memory_max" {
   default     = 15
 }
 
+variable "zone_count" {
+  description = "Specifies the number of zones for this deployment. (Valid 1, 2, 3)"
+  type        = number
+  default     = 2
+
+  validation {
+    condition     = var.zone_count > 0 && var.zone_count < 4
+    error_message = "Valid values are 1, 2, 3"
+  }
+}
+
 variable "hot_tier_memory" {
   description = "Specifies the initial memory size (GB) of the elastic deployment"
   type        = number

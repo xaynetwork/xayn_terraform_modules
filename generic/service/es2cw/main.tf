@@ -5,6 +5,8 @@ locals {
       value = v
     }
   ]
+
+  log_group_name = "/ecs/service/${var.name}"
 }
 
 module "task_role" {
@@ -14,6 +16,12 @@ module "task_role" {
   path        = "/monitoring/"
   prefix      = "Monitoring"
   tags        = var.tags
+}
+
+resource "aws_cloudwatch_log_group" "container_logs" {
+  name              = local.log_group_name
+  retention_in_days = var.log_retention_in_days
+  tags              = var.tags
 }
 
 resource "aws_ecs_task_definition" "this" {
@@ -28,7 +36,8 @@ resource "aws_ecs_task_definition" "this" {
     {
       image          = var.container_image,
       cpu            = var.container_cpu,
-      memory         = var.container_memory
+      memory         = var.container_memory,
+      log_group      = aws_cloudwatch_log_group.container_logs.id,
       name           = var.name,
       container_port = var.container_port,
       environment    = jsonencode(local.remap_env_vars),
@@ -43,6 +52,7 @@ resource "aws_ecs_service" "this" {
   cluster          = var.cluster_id
   desired_count    = var.desired_count
   task_definition  = aws_ecs_task_definition.this.arn
+  launch_type      = "FARGATE"
 
   network_configuration {
     subnets         = var.subnet_ids

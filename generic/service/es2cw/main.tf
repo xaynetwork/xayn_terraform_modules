@@ -16,7 +16,7 @@ module "task_role" {
 
   description = "Task execution role for Monitoring ES"
   path        = "/monitoring/"
-  prefix      = "Monitoring"
+  prefix      = var.name
   tags        = var.tags
 }
 

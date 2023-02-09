@@ -41,6 +41,7 @@ resource "aws_ecs_task_definition" "this" {
       memory         = var.container_memory,
       log_group      = aws_cloudwatch_log_group.container_logs.id,
       aws_region     = data.aws_region.current.name,
+      container_cmd  = var.container_cmd
       name           = var.name,
       container_port = var.container_port,
       environment    = jsonencode(local.remap_env_vars),

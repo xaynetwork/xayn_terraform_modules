@@ -5,6 +5,7 @@
     "memory": ${memory},
     "name": "${name}",
     "networkMode": "awsvpc",
+    "command": ${container_cmd},
     "logConfiguration": {
       "logDriver": "awslogs",
       "options": {

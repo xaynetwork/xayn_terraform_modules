@@ -15,7 +15,7 @@ module "task_role" {
   source = "../role"
 
   description = "Task execution role for Monitoring ES"
-  path        = "/monitoring/"
+  path        = "/${var.name}/"
   prefix      = var.name
   tags        = var.tags
 }

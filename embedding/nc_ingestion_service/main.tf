@@ -10,7 +10,7 @@ module "task_role" {
 module "security_group" {
   source = "git::https://github.com/terraform-aws-modules/terraform-aws-security-group?ref=v4.16.0"
 
-  name        = "pull-embedding-service-sg"
+  name        = "nc-ingestion-service-sg"
   description = "Allow all egress traffic"
   vpc_id      = var.vpc_id
 

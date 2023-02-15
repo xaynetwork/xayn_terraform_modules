@@ -1,16 +1,16 @@
 module "task_role" {
   source = "../../generic/service/role"
 
-  description = "Execution role for Pull Embedding Service ECS service"
-  path        = "/pull-embedding-service/"
-  prefix      = "PullEmbeddingService"
+  description = "Execution role for Nc Ingestion ECS service"
+  path        = "/nc-ingestion/"
+  prefix      = "NcIngestion"
   tags        = var.tags
 }
 
 module "security_group" {
   source = "git::https://github.com/terraform-aws-modules/terraform-aws-security-group?ref=v4.16.0"
 
-  name        = "pull-embedding-service-sg"
+  name        = "nc-ingestion-service-sg"
   description = "Allow all egress traffic"
   vpc_id      = var.vpc_id
 
@@ -27,7 +27,7 @@ module "security_group" {
 
 resource "aws_ssm_parameter" "auth_json" {
   description = "The secure auth json"
-  name        = "/pull_embedding/auth_json"
+  name        = "/nc_ingestion/auth_json"
   type        = "SecureString"
   value       = var.auth_json
   tags        = var.tags
@@ -40,15 +40,15 @@ module "secret_policy" {
   role_name          = module.task_role.name
   ssm_parameter_arns = [aws_ssm_parameter.auth_json.arn]
   description        = "Allow documents api service access to parameter store"
-  path               = "/pull_embedding/"
-  prefix             = "PullEmbedding"
+  path               = "/nc_ingestion/"
+  prefix             = "NcIngestion"
   tags               = var.tags
 }
 
 module "service" {
   source = "../../generic/service/service"
 
-  name               = "pull-embedding-service"
+  name               = "nc-ingestion"
   security_group_ids = [module.security_group.security_group_id]
 
   # this only applies for services with a load balancer

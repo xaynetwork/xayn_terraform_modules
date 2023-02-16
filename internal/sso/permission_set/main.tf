@@ -20,7 +20,7 @@ resource "aws_ssoadmin_managed_policy_attachment" "this" {
 }
 
 resource "aws_ssoadmin_customer_managed_policy_attachment" "this" {
-  count              = var.policy_conf != null ? 1 : 0
+  count              = var.policy_name != null ? 1 : 0
   instance_arn       = local.sso_instance_arn
   permission_set_arn = aws_ssoadmin_permission_set.this.arn
   customer_managed_policy_reference {
@@ -28,6 +28,7 @@ resource "aws_ssoadmin_customer_managed_policy_attachment" "this" {
   }
 }
 
+#Creating Policy
 data "aws_iam_policy_document" "policy_document" {
   count = var.policy_conf != null ? 1 : 0
   dynamic "statement" {
@@ -47,4 +48,3 @@ resource "aws_iam_policy" "this" {
   policy = data.aws_iam_policy_document.policy_document[count.index].json
   tags   = var.tags
 }
-

@@ -17,7 +17,7 @@ variable "duration" {
 variable "policy_name" {
   description = "Name of the newly created policies"
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "managed_policies_arns" {

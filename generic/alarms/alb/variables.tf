@@ -30,7 +30,7 @@ variable "http_4xx_error_threshold" {
 
 variable "lb_arn_suffix" {
   description = "The Load Balancer ARN suffix for use with CloudWatch Metrics."
-  type = string
+  type        = string
 }
 
 variable "tags" {

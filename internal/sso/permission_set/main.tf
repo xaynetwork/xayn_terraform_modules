@@ -41,7 +41,7 @@ data "aws_iam_policy_document" "policy_document" {
 }
 
 resource "aws_iam_policy" "this" {
-  count  = length(var.policy_conf) != null ? 1 : 0
+  count  = var.policy_conf != null ? 1 : 0
   path   = "/"
   name   = var.policy_name
   policy = data.aws_iam_policy_document.policy_document[count.index].json

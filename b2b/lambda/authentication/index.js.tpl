@@ -18,21 +18,26 @@ exports.handler = async (event) => {
   const apiGatewayArnTmp = tmp[5].split('/');
   var resource = '/'; // root resource
   if (apiGatewayArnTmp[3]) {
-      resource += apiGatewayArnTmp[3];
+    resource += apiGatewayArnTmp[3];
   }
 
-  if (
-    ("/documents" === resource && apiToken === "${api_key_documents}") ||
-    ("/users" === resource && apiToken === "${api_key_users}") ||
-    ("/semantic_search" === resource && apiToken === "${api_key_users}")) {
+  const allowMap = {
+    "${api_key_documents}": ["/documents"],
+    "${api_key_users}": ["/users", "/semantic_search"],
+  }
+
+
+  if (apiToken in allowMap && allowMap[apiToken].includes(resource)) {
     const restId = apiGatewayArnTmp[0];
     const stage = apiGatewayArnTmp[1];
     const method = '*'; //apiGatewayArnTmp[2];
-    const methodArnBase = tmp[0] + ":" + tmp[1] + ":" + tmp[2] + ":" + tmp[3] + ":" +tmp[4]+ ":" + restId + "/" + stage + "/" + method + resource;
-    const methodArnWildcard = methodArnBase + "/*";
-    // This allows access to i.e. /documents and /documents/*
-    return build_policy(internalApiKey, [methodArnBase, methodArnWildcard], "Allow");
+    const methodArnBase = tmp[0] + ":" + tmp[1] + ":" + tmp[2] + ":" + tmp[3] + ":" + tmp[4] + ":" + restId + "/" + stage + "/" + method;
+    const allowedResources = allowMap[apiToken]
+      .map((res) => [methodArnBase + res, methodArnBase + res + "/*"])
+      .flat();
+    return build_policy(internalApiKey, allowedResources, "Allow");
   }
+
   return build_policy(internalApiKey, methodArn, "Deny");
 };
 

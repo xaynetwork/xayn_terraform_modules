@@ -56,15 +56,32 @@ module "service" {
   subnet_ids = var.subnet_ids
 
   alb = {
-    listener_arn         = var.alb_listener_arn
-    listener_port        = var.alb_listener_port
-    health_path          = "/health"
-    routing_path_pattern = ["/users", "/users/*", "/semantic_search", "/semantic_search/*"]
-  }
-
-  alb_routing_header_condition = {
-    name  = "X-Tenant-Id"
-    value = var.tenant
+    listener_arn  = var.alb_listener_arn
+    listener_port = var.alb_listener_port
+    health_path   = "/health"
+    rules = [
+      {
+        routing_path_pattern = ["/users", "/users/*"]
+        routing_header_condition = {
+          name  = "X-Tenant-Id"
+          value = var.tenant
+        }
+      },
+      {
+        routing_path_pattern = ["/semantic_search", "/semantic_search/*"]
+        routing_header_condition = {
+          name  = "X-Tenant-Id"
+          value = var.tenant
+        }
+      },
+      {
+        routing_path_pattern = ["/personalized_documents", "/personalized_documents/*"]
+        routing_header_condition = {
+          name  = "X-Tenant-Id"
+          value = var.tenant
+        }
+      }
+    ]
   }
 
   container_cpu           = var.container_cpu

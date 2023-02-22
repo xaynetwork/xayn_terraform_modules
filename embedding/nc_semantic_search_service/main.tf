@@ -45,10 +45,13 @@ module "service" {
   health_check_grace_period_seconds = 30
 
   alb = {
-    listener_arn         = var.alb_listener_arn
-    listener_port        = var.alb_listener_port
-    health_path          = "/health"
-    routing_path_pattern = ["/embeddings"]
+    listener_arn  = var.alb_listener_arn
+    listener_port = var.alb_listener_port
+    health_path   = "/health"
+    rules = [{
+      routing_header_condition = null
+      routing_path_pattern     = ["/embeddings"]
+    }]
   }
 
   cluster_id = var.cluster_id

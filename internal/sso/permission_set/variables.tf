@@ -4,35 +4,38 @@ variable "permission_name" {
 }
 
 variable "permission_description" {
-  description = "Description for the permission"
+  description = "Description of the Permission Set"
   type        = string
 }
 
 variable "duration" {
-  description = "The duration of the session for the SSO instance"
+  description = "The duration of the SSO session"
   type        = string
   default     = "PT10H"
 }
 
-variable "policy_name" {
-  description = "Name of the newly created policies"
-  type        = string
-  default     = null
-}
-
 variable "managed_policies_arns" {
-  description = "Policy to add to permission set"
+  description = "The ARN of the AWS managed policy"
   type        = list(string)
   default     = []
 }
 
-variable "policy_conf" {
-  description = "Policy to add to permission set"
+variable "customer_managed_policy_references" {
+  description = "Customer managed policy references"
+  type = list(object({
+    name = string
+    path = string
+  }))
+  default = []
+}
+
+variable "inline_policy_statements" {
+  description = "Inline policy statements"
   type = list(object({
     actions   = list(string)
     resources = list(string)
   }))
-  default = null
+  default = []
 }
 
 variable "tags" {

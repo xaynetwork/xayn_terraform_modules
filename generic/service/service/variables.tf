@@ -37,14 +37,22 @@ variable "container_port" {
 
 ## alb
 variable "alb" {
+  description = "Defines multiple routing path rules. Careful only 5 conditions can be defined in a rule."
+
   type = object({
-    listener_arn         = string
-    listener_port        = number
-    health_path          = string
-    routing_path_pattern = list(string)
-  })
+    listener_arn  = string
+    listener_port = number
+    health_path   = string
+    rules = list(object({
+      routing_path_pattern = list(string)
+      routing_header_condition = object({
+        name  = string
+        value = string
+      })
+  })) })
   default = null
 }
+
 
 # optional parameters
 ## task
@@ -151,15 +159,6 @@ variable "health_check_grace_period_seconds" {
 }
 
 ## other
-variable "alb_routing_header_condition" {
-  description = "If set, the path patterns and the header[key] == value must match in order to route request to this service"
-  type = object({
-    name  = string
-    value = string
-  })
-  default = null
-}
-
 variable "tags" {
   description = "Custom tags to set on the underlining resources"
   type        = map(string)

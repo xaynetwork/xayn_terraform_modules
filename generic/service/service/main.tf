@@ -137,7 +137,7 @@ resource "aws_lb_target_group" "service" {
 }
 
 resource "aws_lb_listener_rule" "service" {
-  count        = var.alb == null || var.alb.rules == null ? 0 : length(var.alb.rules)
+  count        = try(length(var.alb.rules), 0)
   listener_arn = var.alb.listener_arn
 
   action {

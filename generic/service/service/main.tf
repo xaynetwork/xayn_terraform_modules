@@ -137,7 +137,7 @@ resource "aws_lb_target_group" "service" {
 }
 
 resource "aws_lb_listener_rule" "service" {
-  count        = var.alb == null ? 0 : 1
+  count        = var.alb == null || var.alb.rules == null ? 0 : length(var.alb.rules)
   listener_arn = var.alb.listener_arn
 
   action {
@@ -147,16 +147,16 @@ resource "aws_lb_listener_rule" "service" {
 
   condition {
     path_pattern {
-      values = var.alb.routing_path_pattern
+      values = var.alb.rules[count.index].routing_path_pattern
     }
   }
 
   dynamic "condition" {
-    for_each = var.alb_routing_header_condition != null ? [1] : []
+    for_each = var.alb.rules[count.index].routing_header_condition != null ? [1] : []
     content {
       http_header {
-        http_header_name = var.alb_routing_header_condition.name
-        values           = [var.alb_routing_header_condition.value]
+        http_header_name = var.alb.rules[count.index].routing_header_condition.name
+        values           = [var.alb.rules[count.index].routing_header_condition.value]
       }
     }
   }

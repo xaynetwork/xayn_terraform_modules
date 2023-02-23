@@ -1,4 +1,9 @@
+data "aws_caller_identity" "current" {}
+
 module "services_http_5xx_error_alarm" {
+  providers = {
+    aws = aws.monitoring_role
+  }
   source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
   version = "4.2.1"
 
@@ -12,7 +17,7 @@ module "services_http_5xx_error_alarm" {
 
   metric_query = [{
     id          = "m1"
-    account_id  = var.account_id
+    account_id  = data.aws_caller_identity.current.account_id
     return_data = true
 
     metric = [{
@@ -21,7 +26,7 @@ module "services_http_5xx_error_alarm" {
       period      = 60
       stat        = "Sum"
       dimensions = {
-        LoadBalancer = var.arn_suffix
+        LoadBalancer = aws_lb.this.arn_suffix
       }
     }]
     }
@@ -35,6 +40,9 @@ module "services_http_5xx_error_alarm" {
 }
 
 module "http_5xx_error_alarm" {
+  providers = {
+    aws = aws.monitoring_role
+  }
   source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
   version = "4.2.1"
 
@@ -48,7 +56,7 @@ module "http_5xx_error_alarm" {
 
   metric_query = [{
     id          = "m1"
-    account_id  = var.account_id
+    account_id  = data.aws_caller_identity.current.account_id
     return_data = true
 
     metric = [{
@@ -57,7 +65,7 @@ module "http_5xx_error_alarm" {
       period      = 60
       stat        = "Sum"
       dimensions = {
-        LoadBalancer = var.arn_suffix
+        LoadBalancer = aws_lb.this.arn_suffix
       }
     }]
     }
@@ -71,6 +79,9 @@ module "http_5xx_error_alarm" {
 }
 
 module "http_4xx_error_alarm" {
+  providers = {
+    aws = aws.monitoring_role
+  }
   source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
   version = "4.2.1"
 
@@ -84,7 +95,7 @@ module "http_4xx_error_alarm" {
 
   metric_query = [{
     id          = "m1"
-    account_id  = var.account_id
+    account_id  = data.aws_caller_identity.current.account_id
     return_data = true
 
     metric = [{
@@ -93,12 +104,11 @@ module "http_4xx_error_alarm" {
       period      = 60
       stat        = "Sum"
       dimensions = {
-        LoadBalancer = var.arn_suffix
+        LoadBalancer = aws_lb.this.arn_suffix
       }
     }]
     }
   ]
-
   actions_enabled = var.actions_enabled
   alarm_actions   = [var.sns_topic_arn]
   ok_actions      = [var.sns_topic_arn]

@@ -1,6 +1,10 @@
 data "aws_region" "current" {}
+data "aws_caller_identity" "current" {}
 
 module "all_requests_alarm" {
+  providers = {
+    aws = aws.monitoring_role
+  }
   source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
   version = "4.2.1"
 
@@ -14,7 +18,7 @@ module "all_requests_alarm" {
 
   metric_query = [{
     id          = "m1"
-    account_id  = var.account_id
+    account_id  = data.aws_caller_identity.current.account_id
     return_data = true
 
     metric = [{
@@ -39,6 +43,9 @@ module "all_requests_alarm" {
 }
 
 module "all_requests_blocked_alarm" {
+  providers = {
+    aws = aws.monitoring_role
+  }
   source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
   version = "4.2.1"
 
@@ -52,7 +59,7 @@ module "all_requests_blocked_alarm" {
 
   metric_query = [{
     id          = "m1"
-    account_id  = var.account_id
+    account_id  = data.aws_caller_identity.current.account_id
     return_data = true
 
     metric = [{
@@ -77,6 +84,9 @@ module "all_requests_blocked_alarm" {
 }
 
 module "ip_rate_limit_alarm" {
+  providers = {
+    aws = aws.monitoring_role
+  }
   source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
   version = "4.2.1"
 
@@ -90,7 +100,7 @@ module "ip_rate_limit_alarm" {
 
   metric_query = [{
     id          = "m1"
-    account_id  = var.account_id
+    account_id  = data.aws_caller_identity.current.account_id
     return_data = true
 
     metric = [{

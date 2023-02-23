@@ -1,3 +1,13 @@
+variable "arn_suffix" {
+  description = "The Load Balancer ARN suffix for use with CloudWatch metrics"
+  type        = string
+}
+
+variable "account_id" {
+  description = "The account id of the metric"
+  type        = string
+}
+
 variable "create_alarms" {
   description = "Whether to create ALB alarms"
   type        = bool
@@ -26,11 +36,6 @@ variable "http_4xx_error_threshold" {
   description = "Threshold of the ALB HTTP-4XX errors"
   type        = number
   default     = 0
-}
-
-variable "lb_arn_suffix" {
-  description = "The Load Balancer ARN suffix for use with CloudWatch Metrics."
-  type        = string
 }
 
 variable "tags" {

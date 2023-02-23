@@ -47,7 +47,7 @@ variable "ip_rate_limit_threshold" {
 }
 
 #  i.e.: [
-#       { 
+#       {
 #         name        = "user-path"
 #         url_segment = "/default/users"
 #         priority    = 50
@@ -63,7 +63,7 @@ variable "path_rules" {
     url_segment = string
     priority    = number
   }))
-  description = "A list of path entry objects, that describe whixch paths are allowed by the firewal, an empty array would block all requests."
+  description = "A list of path entry objects, that describe which paths are allowed by the firewall, an empty array would block all requests."
 }
 
 variable "tags" {

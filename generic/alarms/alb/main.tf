@@ -8,16 +8,24 @@ module "services_http_5xx_error_alarm" {
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 1
   threshold           = var.services_http_5xx_error_threshold
-  period              = 60
   treat_missing_data  = "notBreaching"
 
-  namespace   = "AWS/ApplicationELB"
-  metric_name = "HTTPCode_Target_5XX_Count"
-  statistic   = "Sum"
+  metric_query = [{
+    id          = "m1"
+    account_id  = var.account_id
+    return_data = true
 
-  dimensions = {
-    LoadBalancer = var.lb_arn_suffix
-  }
+    metric = [{
+      namespace   = "AWS/ApplicationELB"
+      metric_name = "HTTPCode_Target_5XX_Count"
+      period      = 60
+      stat        = "Sum"
+      dimensions = {
+        LoadBalancer = var.arn_suffix
+      }
+    }]
+    }
+  ]
 
   alarm_actions = [var.sns_topic_arn]
   ok_actions    = [var.sns_topic_arn]
@@ -35,16 +43,24 @@ module "http_5xx_error_alarm" {
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 1
   threshold           = var.http_5xx_error_threshold
-  period              = 60
   treat_missing_data  = "notBreaching"
 
-  namespace   = "AWS/ApplicationELB"
-  metric_name = "HTTPCode_ELB_5XX_Count"
-  statistic   = "Sum"
+  metric_query = [{
+    id          = "m1"
+    account_id  = var.account_id
+    return_data = true
 
-  dimensions = {
-    LoadBalancer = var.lb_arn_suffix
-  }
+    metric = [{
+      namespace   = "AWS/ApplicationELB"
+      metric_name = "HTTPCode_ELB_5XX_Count"
+      period      = 60
+      stat        = "Sum"
+      dimensions = {
+        LoadBalancer = var.arn_suffix
+      }
+    }]
+    }
+  ]
 
   alarm_actions = [var.sns_topic_arn]
   ok_actions    = [var.sns_topic_arn]
@@ -62,16 +78,24 @@ module "http_4xx_error_alarm" {
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 1
   threshold           = var.http_4xx_error_threshold
-  period              = 60
   treat_missing_data  = "notBreaching"
 
-  namespace   = "AWS/ApplicationELB"
-  metric_name = "HTTPCode_ELB_4XX_Count"
-  statistic   = "Sum"
+  metric_query = [{
+    id          = "m1"
+    account_id  = var.account_id
+    return_data = true
 
-  dimensions = {
-    LoadBalancer = var.lb_arn_suffix
-  }
+    metric = [{
+      namespace   = "AWS/ApplicationELB"
+      metric_name = "HTTPCode_ELB_4XX_Count"
+      period      = 60
+      stat        = "Sum"
+      dimensions = {
+        LoadBalancer = var.arn_suffix
+      }
+    }]
+    }
+  ]
 
   alarm_actions = [var.sns_topic_arn]
   ok_actions    = [var.sns_topic_arn]

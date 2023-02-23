@@ -46,7 +46,13 @@ variable "health_check_path" {
 variable "create_alarms" {
   description = "Whether to create ALB alarms"
   type        = bool
-  default     = false
+  default     = true
+}
+
+variable "actions_enabled" {
+  description = "Indicates whether or not actions should be executed during any changes to the alarm's state. Defaults to true."
+  type        = bool
+  default     = true
 }
 
 variable "sns_topic_arn" {

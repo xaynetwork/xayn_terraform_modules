@@ -21,6 +21,7 @@ variable "private_subnets" {
 variable "enable_dns" {
   description = "Enable the DNS hostnames in the VPC"
   type        = bool
+  default     = false
 }
 
 variable "tags" {

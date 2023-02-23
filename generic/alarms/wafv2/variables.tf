@@ -1,5 +1,5 @@
-variable "arn_suffix" {
-  description = "The Load Balancer ARN suffix for use with CloudWatch metrics"
+variable "web_acl_name" {
+  description = "Name of the WebACL"
   type        = string
 }
 
@@ -26,20 +26,20 @@ variable "sns_topic_arn" {
   default     = null
 }
 
-variable "services_http_5xx_error_threshold" {
-  description = "Threshold of the ALB services HTTP-5XX errors"
+variable "all_requests_threshold" {
+  description = "Threshold of all WAF requests"
   type        = number
-  default     = 0
+  default     = 40000
 }
 
-variable "http_5xx_error_threshold" {
-  description = "Threshold of the ALB HTTP-5XX errors"
+variable "all_blocked_requests_threshold" {
+  description = "Threshold of all blocked WAF requests"
   type        = number
-  default     = 0
+  default     = 5000
 }
 
-variable "http_4xx_error_threshold" {
-  description = "Threshold of the ALB HTTP-4XX errors"
+variable "ip_rate_limit_threshold" {
+  description = "Threshold of the WAF ip rate limit"
   type        = number
   default     = 0
 }

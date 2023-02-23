@@ -1,13 +1,15 @@
-module "services_http_5xx_error_alarm" {
+data "aws_region" "current" {}
+
+module "all_requests_alarm" {
   source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
   version = "4.2.1"
 
   create_metric_alarm = var.create_alarms
-  alarm_name          = "alb_services_5xx_error"
-  alarm_description   = "Number of ALB services HTTP-5XX errors > ${var.services_http_5xx_error_threshold}. It may indicate an issue within the ECS services."
+  alarm_name          = "waf_all_requests"
+  alarm_description   = "High traffic load on WAF. Number of WAF ALL requests > ${var.all_requests_threshold}."
   comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 1
-  threshold           = var.services_http_5xx_error_threshold
+  evaluation_periods  = 2
+  threshold           = var.all_requests_threshold
   treat_missing_data  = "notBreaching"
 
   metric_query = [{
@@ -16,12 +18,14 @@ module "services_http_5xx_error_alarm" {
     return_data = true
 
     metric = [{
-      namespace   = "AWS/ApplicationELB"
-      metric_name = "HTTPCode_Target_5XX_Count"
+      namespace   = "AWS/WAFV2"
+      metric_name = "CountedRequests"
       period      = 60
       stat        = "Sum"
       dimensions = {
-        LoadBalancer = var.arn_suffix
+        WebACL = var.web_acl_name
+        Region = data.aws_region.current.name
+        Rule   = "ALL"
       }
     }]
     }
@@ -34,16 +38,16 @@ module "services_http_5xx_error_alarm" {
   tags = var.tags
 }
 
-module "http_5xx_error_alarm" {
+module "all_requests_blocked_alarm" {
   source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
   version = "4.2.1"
 
   create_metric_alarm = var.create_alarms
-  alarm_name          = "alb_5xx_error"
-  alarm_description   = "Number of ALB HTTP-5XX errors > ${var.http_5xx_error_threshold}. It may indicate an integration issue with the ECS services."
+  alarm_name          = "waf_all_blocked_requests"
+  alarm_description   = "Number of WAF ALL blocked requests > ${var.all_blocked_requests_threshold}. It may indicate a DDoS attack or a proxy."
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 1
-  threshold           = var.http_5xx_error_threshold
+  threshold           = var.all_blocked_requests_threshold
   treat_missing_data  = "notBreaching"
 
   metric_query = [{
@@ -52,12 +56,14 @@ module "http_5xx_error_alarm" {
     return_data = true
 
     metric = [{
-      namespace   = "AWS/ApplicationELB"
-      metric_name = "HTTPCode_ELB_5XX_Count"
+      namespace   = "AWS/WAFV2"
+      metric_name = "BlockedRequests"
       period      = 60
       stat        = "Sum"
       dimensions = {
-        LoadBalancer = var.arn_suffix
+        WebACL = var.web_acl_name
+        Region = data.aws_region.current.name
+        Rule   = "ALL"
       }
     }]
     }
@@ -70,16 +76,16 @@ module "http_5xx_error_alarm" {
   tags = var.tags
 }
 
-module "http_4xx_error_alarm" {
+module "ip_rate_limit_alarm" {
   source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
   version = "4.2.1"
 
   create_metric_alarm = var.create_alarms
-  alarm_name          = "alb_4xx_error"
-  alarm_description   = "Number of ALB HTTP-4XX errors > ${var.http_4xx_error_threshold}. It may indicate an integration issue with the NLB or with the ECS services."
+  alarm_name          = "waf_ip_rate_limit"
+  alarm_description   = "An IP hit the WAF IP rate limit. It may indicate a DDoS attack or a proxy."
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 1
-  threshold           = var.http_4xx_error_threshold
+  threshold           = var.ip_rate_limit_threshold
   treat_missing_data  = "notBreaching"
 
   metric_query = [{
@@ -88,12 +94,14 @@ module "http_4xx_error_alarm" {
     return_data = true
 
     metric = [{
-      namespace   = "AWS/ApplicationELB"
-      metric_name = "HTTPCode_ELB_4XX_Count"
+      namespace   = "AWS/WAFV2"
+      metric_name = "BlockedRequests"
       period      = 60
       stat        = "Sum"
       dimensions = {
-        LoadBalancer = var.arn_suffix
+        WebACL = var.web_acl_name
+        Region = data.aws_region.current.name
+        Rule   = "block-ip-hit-rate-limit"
       }
     }]
     }

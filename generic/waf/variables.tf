@@ -46,6 +46,24 @@ variable "ip_rate_limit_threshold" {
   default     = 0
 }
 
+variable "body_size" {
+  description = "Size limit of the body from the load"
+  type        = number
+  default     = 200
+}
+
+variable "query_size" {
+  description = "Size limit of the query from the load"
+  type        = number
+  default     = 200
+}
+
+variable "headers_size" {
+  description = "Size limit of the headers from the load"
+  type        = number
+  default     = 200
+}
+
 #  i.e.: [
 #       { 
 #         name        = "user-path"

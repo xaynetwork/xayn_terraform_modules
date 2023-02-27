@@ -160,6 +160,52 @@ resource "aws_wafv2_web_acl" "api_gateway" {
     }
   }
 
+  rule {
+    name     = "block-overload"
+    priority = 50
+
+    action {
+      block {}
+    }
+
+    statement {
+      or_statement {
+        statement {
+          size_constraint_statement {
+            comparison_operator = "GT"
+            size                = var.body_size
+
+            field_to_match {
+              body {}
+            }
+          }
+        }
+
+        statement {
+          size_constraint_statement {
+            comparison_operator = "GT"
+            size                = var.headers_size
+
+            field_to_match {
+              headers {}
+            }
+          }
+        }
+
+        statement {
+          size_constraint_statement {
+            comparison_operator = "GT"
+            size                = var.query_size
+
+            field_to_match {
+              all_query_arguments {}
+            }
+          }
+        }
+      }
+    }
+  }
+
 
   dynamic "rule" {
     for_each = var.path_rules

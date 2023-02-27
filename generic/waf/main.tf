@@ -200,3 +200,26 @@ resource "aws_wafv2_web_acl" "api_gateway" {
 
   tags = var.tags
 }
+
+# CloudWatch alarms
+data "aws_region" "current" {}
+data "aws_caller_identity" "current" {}
+
+module "alarms" {
+  providers = {
+    aws = aws.monitoring-account
+  }
+  source = "../alarms/waf"
+
+  account_id = data.aws_caller_identity.current.account_id
+  prefix     = "${data.aws_caller_identity.current.account_id}_"
+
+  web_acl_name   = aws_wafv2_web_acl.api_gateway.name
+  web_acl_region = data.aws_region.current.name
+
+  all_requests         = var.all_requests
+  all_blocked_requests = var.all_blocked_requests
+  ip_rate_limit        = var.ip_rate_limit
+
+  tags = var.tags
+}

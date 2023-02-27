@@ -43,44 +43,26 @@ variable "health_check_path" {
   default     = "/health"
 }
 
-variable "create_alarms" {
-  description = "Whether to create ALB alarms"
-  type        = bool
-  default     = true
+variable "services_http_5xx_error" {
+  description = "Alarm for ALB services HTTP-5XX errors."
+  type        = map(any)
+  default     = {}
 }
 
-variable "actions_enabled" {
-  description = "Indicates whether or not actions should be executed during any changes to the alarm's state. Defaults to true."
-  type        = bool
-  default     = true
+variable "http_5xx_error" {
+  description = "Alarm for ALB HTTP-5XX errors."
+  type        = map(any)
+  default     = {}
 }
 
-variable "sns_topic_arn" {
-  description = "ARN of the SNS topic"
-  type        = string
-  default     = null
-}
-
-variable "services_http_5xx_error_threshold" {
-  description = "Threshold of the ALB services HTTP-5XX errors"
-  type        = number
-  default     = 0
-}
-
-variable "http_5xx_error_threshold" {
-  description = "Threshold of the ALB HTTP-5XX errors"
-  type        = number
-  default     = 0
-}
-
-variable "http_4xx_error_threshold" {
-  description = "Threshold of the ALB HTTP-4XX errors"
-  type        = number
-  default     = 0
+variable "http_4xx_error" {
+  description = "Alarm for ALB HTTP-4XX errors."
+  type        = map(any)
+  default     = {}
 }
 
 variable "tags" {
-  description = "Map of tags for the deployment"
+  description = "A map of labels to apply to contained resources."
   type        = map(string)
   default     = {}
 }

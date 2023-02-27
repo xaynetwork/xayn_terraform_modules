@@ -125,76 +125,21 @@ resource "aws_ssm_parameter" "postgres_password" {
 }
 
 # cloudwatch alarms
-module "read_latency_alarm" {
-  count   = var.create_alarms ? 1 : 0
-  source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
-  version = "4.2.1"
+data "aws_caller_identity" "current" {}
 
-  alarm_name          = "aurora_read_latency"
-  alarm_description   = "High Aurora read latency > ${var.read_latency_threshold}ms. It may indicate slow queries."
-  comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 1
-  threshold           = var.read_latency_threshold
+module "alarms" {
+  providers = {
+    aws = aws.monitoring-account
+  }
+  source = "../../generic/alarms/aurora"
 
-  metric_query = [{
-    id          = "e1"
-    expression  = "m1 * 1000"
-    label       = "latency_into_milliseconds"
-    return_data = "true"
-    }, {
-    id = "m1"
+  account_id = data.aws_caller_identity.current.account_id
+  prefix     = "${data.aws_caller_identity.current.account_id}_"
 
-    metric = [{
-      namespace   = "AWS/RDS"
-      metric_name = "ReadLatency"
-      period      = 60
-      stat        = "Average"
+  db_cluster_identifier = var.name
 
-      dimensions = {
-        DBClusterIdentifier = var.name
-      }
-    }]
-  }]
-
-  alarm_actions = [var.sns_topic_arn]
-  ok_actions    = [var.sns_topic_arn]
-
-  tags = var.tags
-}
-
-module "write_latency_alarm" {
-  count   = var.create_alarms ? 1 : 0
-  source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
-  version = "4.2.1"
-
-  alarm_name          = "aurora_write_latency"
-  alarm_description   = "High Aurora write latency > ${var.write_latency_threshold}ms. It may indicate slow queries."
-  comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 1
-  threshold           = var.write_latency_threshold
-
-  metric_query = [{
-    id          = "e1"
-    expression  = "m1 * 1000"
-    label       = "latency_into_milliseconds"
-    return_data = "true"
-    }, {
-    id = "m1"
-
-    metric = [{
-      namespace   = "AWS/RDS"
-      metric_name = "WriteLatency"
-      period      = 60
-      stat        = "Average"
-
-      dimensions = {
-        DBClusterIdentifier = var.name
-      }
-    }]
-  }]
-
-  alarm_actions = [var.sns_topic_arn]
-  ok_actions    = [var.sns_topic_arn]
+  read_latency  = var.read_latency
+  write_latency = var.write_latency
 
   tags = var.tags
 }

@@ -212,87 +212,22 @@ resource "aws_wafv2_web_acl_association" "api_gateway" {
   web_acl_arn  = var.web_acl_arn
 }
 
-# cloudwatch alarms
-module "http_5xx_error_alarm" {
-  count   = var.create_alarms ? 1 : 0
-  source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
-  version = "4.2.1"
-
-  alarm_name          = "api_gateway_5xx_error_${var.tenant}"
-  alarm_description   = "Number of API Gateway HTTP-5XX errors > ${var.http_5xx_error_threshold} for tenant ${var.tenant}. It may indicate an issue within the NLB integration or with the lambda authorizer."
-  comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 1
-  threshold           = var.http_5xx_error_threshold
-  period              = 60
-  treat_missing_data  = "notBreaching"
-
-  namespace   = "AWS/ApiGateway"
-  metric_name = "5XXError"
-  statistic   = "Sum"
-
-  dimensions = {
-    ApiName = local.api_name
-    Stage   = "default"
+# CloudWatch alarms
+data "aws_caller_identity" "current" {}
+module "alarms" {
+  providers = {
+    aws = aws.monitoring-account
   }
+  source = "../../../generic/alarms/api_gateway"
 
-  alarm_actions = [var.sns_topic_arn]
-  ok_actions    = [var.sns_topic_arn]
+  account_id = data.aws_caller_identity.current.account_id
+  prefix     = "${data.aws_caller_identity.current.account_id}_"
 
-  tags = var.tags
-}
+  api_name = local.api_name
 
-module "integration_latency_alarm" {
-  count   = var.create_alarms ? 1 : 0
-  source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
-  version = "4.2.1"
-
-  alarm_name          = "api_gateway_integration_latency_${var.tenant}"
-  alarm_description   = "High API Gateway integration latency for tenant ${var.tenant}. Average integration latency > ${var.integration_latency_threshold}ms"
-  comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 2
-  threshold           = var.integration_latency_threshold
-  period              = 60
-  treat_missing_data  = "notBreaching"
-
-  namespace   = "AWS/ApiGateway"
-  metric_name = "IntegrationLatency"
-  statistic   = "Average"
-
-  dimensions = {
-    ApiName = local.api_name
-    Stage   = "default"
-  }
-
-  alarm_actions = [var.sns_topic_arn]
-  ok_actions    = [var.sns_topic_arn]
-
-  tags = var.tags
-}
-
-module "latency_alarm" {
-  count   = var.create_alarms ? 1 : 0
-  source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
-  version = "4.2.1"
-
-  alarm_name          = "api_gateway_latency_${var.tenant}"
-  alarm_description   = "High API Gateway latency for tenant ${var.tenant}. Average latency > ${var.latency_threshold}ms"
-  comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 2
-  threshold           = var.latency_threshold
-  period              = 60
-  treat_missing_data  = "notBreaching"
-
-  namespace   = "AWS/ApiGateway"
-  metric_name = "Latency"
-  statistic   = "Average"
-
-  dimensions = {
-    ApiName = local.api_name
-    Stage   = "default"
-  }
-
-  alarm_actions = [var.sns_topic_arn]
-  ok_actions    = [var.sns_topic_arn]
+  http_5xx_error      = var.http_5xx_error
+  integration_latency = var.integration_latency
+  latency             = var.latency
 
   tags = var.tags
 }

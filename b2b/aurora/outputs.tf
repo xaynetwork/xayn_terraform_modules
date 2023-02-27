@@ -29,3 +29,8 @@ output "postgres_url_ssm_parameter_name" {
   description = "Name of the aurora URL SSM parameter"
   value       = aws_ssm_parameter.postgres_url.name
 }
+
+output "alarm_ids" {
+  description = "IDs of the CloudWatch alarms."
+  value       = module.alarms.ids
+}

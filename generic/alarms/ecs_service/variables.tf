@@ -1,6 +1,12 @@
-variable "db_cluster_identifier" {
-  description = "The DB Cluster Identifier for use with CloudWatch Metrics."
+variable "cluster_name" {
+  description = "The name of the ECS cluster for use with CloudWatch Metrics."
   type        = string
+}
+
+variable "service_name" {
+  description = "The name of the ECS service for use with CloudWatch Metrics."
+  type        = string
+  default     = "default"
 }
 
 variable "account_id" {
@@ -14,14 +20,14 @@ variable "prefix" {
   default     = ""
 }
 
-variable "read_latency" {
-  description = "Alarm for API Gateway average Aurora read latency. Threshold is in milliseconds."
+variable "cpu_usage" {
+  description = "Alarm for Service average CPU usage. Threshold is in percentage."
   type        = map(any)
   default     = {}
 }
 
-variable "write_latency" {
-  description = "Alarm for API Gateway average Aurora write latency Threshold is in milliseconds."
+variable "log_error" {
+  description = "Alarm for Service error log count."
   type        = map(any)
   default     = {}
 }

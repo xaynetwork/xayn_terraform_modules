@@ -35,8 +35,8 @@ module "http_5xx_error" {
   ]
 
   actions_enabled = lookup(var.http_5xx_error, "actions_enabled", true)
-  alarm_actions   = lookup(var.http_5xx_error, "alarm_actions", null)
-  ok_actions      = lookup(var.http_5xx_error, "ok_actions", null)
+  alarm_actions   = lookup(var.http_5xx_error, "alarm_actions", [])
+  ok_actions      = lookup(var.http_5xx_error, "ok_actions", [])
 
   tags = var.tags
 }
@@ -72,8 +72,8 @@ module "integration_latency" {
   ]
 
   actions_enabled = lookup(var.integration_latency, "actions_enabled", true)
-  alarm_actions   = lookup(var.integration_latency, "alarm_actions", null)
-  ok_actions      = lookup(var.integration_latency, "ok_actions", null)
+  alarm_actions   = lookup(var.integration_latency, "alarm_actions", [])
+  ok_actions      = lookup(var.integration_latency, "ok_actions", [])
 
   tags = var.tags
 }
@@ -109,8 +109,8 @@ module "latency" {
   ]
 
   actions_enabled = lookup(var.latency, "actions_enabled", true)
-  alarm_actions   = lookup(var.latency, "alarm_actions", null)
-  ok_actions      = lookup(var.latency, "ok_actions", null)
+  alarm_actions   = lookup(var.latency, "alarm_actions", [])
+  ok_actions      = lookup(var.latency, "ok_actions", [])
 
   tags = var.tags
 }

@@ -36,8 +36,8 @@ module "all_requests" {
   ]
 
   actions_enabled = lookup(var.all_requests, "actions_enabled", true)
-  alarm_actions   = lookup(var.all_requests, "alarm_actions", null)
-  ok_actions      = lookup(var.all_requests, "ok_actions", null)
+  alarm_actions   = lookup(var.all_requests, "alarm_actions", [])
+  ok_actions      = lookup(var.all_requests, "ok_actions", [])
 
   tags = var.tags
 }
@@ -74,8 +74,8 @@ module "all_requests_blocked" {
   ]
 
   actions_enabled = lookup(var.all_blocked_requests, "actions_enabled", true)
-  alarm_actions   = lookup(var.all_blocked_requests, "alarm_actions", null)
-  ok_actions      = lookup(var.all_blocked_requests, "ok_actions", null)
+  alarm_actions   = lookup(var.all_blocked_requests, "alarm_actions", [])
+  ok_actions      = lookup(var.all_blocked_requests, "ok_actions", [])
 
   tags = var.tags
 }
@@ -112,8 +112,8 @@ module "ip_rate_limit" {
   ]
 
   actions_enabled = lookup(var.ip_rate_limit, "actions_enabled", true)
-  alarm_actions   = lookup(var.ip_rate_limit, "alarm_actions", null)
-  ok_actions      = lookup(var.ip_rate_limit, "ok_actions", null)
+  alarm_actions   = lookup(var.ip_rate_limit, "alarm_actions", [])
+  ok_actions      = lookup(var.ip_rate_limit, "ok_actions", [])
 
   tags = var.tags
 }

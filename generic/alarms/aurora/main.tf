@@ -36,8 +36,8 @@ module "read_latency" {
   }]
 
   actions_enabled = lookup(var.read_latency, "actions_enabled", true)
-  alarm_actions   = lookup(var.read_latency, "alarm_actions", null)
-  ok_actions      = lookup(var.read_latency, "ok_actions", null)
+  alarm_actions   = lookup(var.read_latency, "alarm_actions", [])
+  ok_actions      = lookup(var.read_latency, "ok_actions", [])
 
   tags = var.tags
 }
@@ -75,8 +75,8 @@ module "write_latency" {
   }]
 
   actions_enabled = lookup(var.write_latency, "actions_enabled", true)
-  alarm_actions   = lookup(var.write_latency, "alarm_actions", null)
-  ok_actions      = lookup(var.write_latency, "ok_actions", null)
+  alarm_actions   = lookup(var.write_latency, "alarm_actions", [])
+  ok_actions      = lookup(var.write_latency, "ok_actions", [])
 
   tags = var.tags
 }

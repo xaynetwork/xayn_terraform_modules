@@ -13,8 +13,8 @@ module "alarm" {
     create_alarm    = true    # default: true
     threshold       = 0       # default: depends on the metric
     actions_enabled = true    # default: true
-    alarm_actions   = ["arn"] # default: null
-    ok_actions      = ["arn"] # default: null
+    alarm_actions   = ["arn"] # default: []
+    ok_actions      = ["arn"] # default: []
   }
 
   tags = {

@@ -30,7 +30,7 @@ output "postgres_url_ssm_parameter_name" {
   value       = aws_ssm_parameter.postgres_url.name
 }
 
-output "alarm_ids" {
-  description = "IDs of the CloudWatch alarms."
-  value       = module.alarms.ids
+output "alarm_arns" {
+  description = "ARNs of the CloudWatch alarms."
+  value       = module.alarms.arns
 }

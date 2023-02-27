@@ -21,19 +21,19 @@ variable "prefix" {
 
 variable "all_requests" {
   description = "Alarm for WAF ALL requests."
-  type        = map(any)
+  type        = any
   default     = {}
 }
 
 variable "all_blocked_requests" {
   description = "Alarm for WAF ALL blocked requests."
-  type        = map(any)
+  type        = any
   default     = {}
 }
 
 variable "ip_rate_limit" {
   description = "Alarm for WAF ip rate limit."
-  type        = map(any)
+  type        = any
   default     = {}
 }
 

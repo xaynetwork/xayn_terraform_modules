@@ -52,8 +52,8 @@ module "cpu_usage" {
   }]
 
   actions_enabled = lookup(var.cpu_usage, "actions_enabled", true)
-  alarm_actions   = lookup(var.cpu_usage, "alarm_actions", null)
-  ok_actions      = lookup(var.cpu_usage, "ok_actions", null)
+  alarm_actions   = lookup(var.cpu_usage, "alarm_actions", [])
+  ok_actions      = lookup(var.cpu_usage, "ok_actions", [])
 
   tags = var.tags
 }
@@ -99,8 +99,8 @@ module "log_error" {
   ]
 
   actions_enabled = lookup(var.log_error, "actions_enabled", true)
-  alarm_actions   = lookup(var.log_error, "alarm_actions", null)
-  ok_actions      = lookup(var.log_error, "ok_actions", null)
+  alarm_actions   = lookup(var.log_error, "alarm_actions", [])
+  ok_actions      = lookup(var.log_error, "ok_actions", [])
 
   tags = var.tags
 }

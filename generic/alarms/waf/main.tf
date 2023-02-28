@@ -1,19 +1,26 @@
 locals {
-  all_requests_threshold         = lookup(var.all_requests, "threshold", 40000)
-  all_blocked_requests_threshold = lookup(var.all_blocked_requests, "threshold", 5000)
-  ip_rate_limit_threshold        = lookup(var.ip_rate_limit, "threshold", 0)
+  defaults = {
+    create_alarm    = true
+    actions_enabled = true
+    ok_actions      = []
+    alarm_actions   = []
+  }
+
+  all_requests_conf         = merge(local.defaults, { threshold = 40000 }, var.all_requests)
+  all_blocked_requests_conf = merge(local.defaults, { threshold = 5000 }, var.all_blocked_requests)
+  ip_rate_limit_conf        = merge(local.defaults, { threshold = 0 }, var.ip_rate_limit)
 }
 
 module "all_requests" {
   source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
   version = "4.2.1"
 
-  create_metric_alarm = lookup(var.all_requests, "create_alarm", true)
+  create_metric_alarm = local.all_requests_conf.create_alarm
   alarm_name          = "${var.prefix}waf_all_requests"
-  alarm_description   = "High traffic load on WAF. Number of WAF ALL requests > ${local.all_requests_threshold}."
+  alarm_description   = "High traffic load on ${var.web_acl_region} ${var.web_acl_name}. Number of WAF ALL requests > ${local.all_requests_conf.threshold}."
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 2
-  threshold           = local.all_requests_threshold
+  threshold           = local.all_requests_conf.threshold
   treat_missing_data  = "notBreaching"
 
   metric_query = [{
@@ -35,9 +42,9 @@ module "all_requests" {
     }
   ]
 
-  actions_enabled = lookup(var.all_requests, "actions_enabled", true)
-  alarm_actions   = lookup(var.all_requests, "alarm_actions", [])
-  ok_actions      = lookup(var.all_requests, "ok_actions", [])
+  actions_enabled = local.all_requests_conf.actions_enabled
+  alarm_actions   = local.all_requests_conf.alarm_actions
+  ok_actions      = local.all_requests_conf.ok_actions
 
   tags = var.tags
 }
@@ -46,12 +53,12 @@ module "all_requests_blocked" {
   source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
   version = "4.2.1"
 
-  create_metric_alarm = lookup(var.all_blocked_requests, "create_alarm", true)
+  create_metric_alarm = local.all_blocked_requests_conf.create_alarm
   alarm_name          = "${var.prefix}waf_all_blocked_requests"
-  alarm_description   = "Number of WAF ALL blocked requests > ${local.all_blocked_requests_threshold}. It may indicate a DDoS attack or a proxy."
+  alarm_description   = "Number of ${var.web_acl_region} ${var.web_acl_name} ALL blocked requests > ${local.all_blocked_requests_conf.threshold}. It may indicate a DDoS attack or a proxy."
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 1
-  threshold           = local.all_blocked_requests_threshold
+  threshold           = local.all_blocked_requests_conf.threshold
   treat_missing_data  = "notBreaching"
 
   metric_query = [{
@@ -73,9 +80,9 @@ module "all_requests_blocked" {
     }
   ]
 
-  actions_enabled = lookup(var.all_blocked_requests, "actions_enabled", true)
-  alarm_actions   = lookup(var.all_blocked_requests, "alarm_actions", [])
-  ok_actions      = lookup(var.all_blocked_requests, "ok_actions", [])
+  actions_enabled = local.all_blocked_requests_conf.actions_enabled
+  alarm_actions   = local.all_blocked_requests_conf.alarm_actions
+  ok_actions      = local.all_blocked_requests_conf.ok_actions
 
   tags = var.tags
 }
@@ -84,12 +91,12 @@ module "ip_rate_limit" {
   source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
   version = "4.2.1"
 
-  create_metric_alarm = lookup(var.ip_rate_limit, "create_alarm", true)
+  create_metric_alarm = local.ip_rate_limit_conf.create_alarm
   alarm_name          = "${var.prefix}waf_ip_rate_limit"
-  alarm_description   = "An IP hit the WAF IP rate limit. It may indicate a DDoS attack or a proxy."
+  alarm_description   = "An IP hit the ${var.web_acl_region} ${var.web_acl_name} IP rate limit. It may indicate a DDoS attack or a proxy."
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 1
-  threshold           = local.ip_rate_limit_threshold
+  threshold           = local.ip_rate_limit_conf.threshold
   treat_missing_data  = "notBreaching"
 
   metric_query = [{
@@ -111,9 +118,9 @@ module "ip_rate_limit" {
     }
   ]
 
-  actions_enabled = lookup(var.ip_rate_limit, "actions_enabled", true)
-  alarm_actions   = lookup(var.ip_rate_limit, "alarm_actions", [])
-  ok_actions      = lookup(var.ip_rate_limit, "ok_actions", [])
+  actions_enabled = local.ip_rate_limit_conf.actions_enabled
+  alarm_actions   = local.ip_rate_limit_conf.alarm_actions
+  ok_actions      = local.ip_rate_limit_conf.ok_actions
 
   tags = var.tags
 }

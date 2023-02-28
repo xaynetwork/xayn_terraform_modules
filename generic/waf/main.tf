@@ -189,7 +189,6 @@ resource "aws_wafv2_web_acl" "api_gateway" {
             field_to_match {
               uri_path {}
             }
-
             search_string         = "/default/users"
             positional_constraint = "STARTS_WITH"
             text_transformation {
@@ -237,7 +236,13 @@ resource "aws_wafv2_web_acl" "api_gateway" {
             comparison_operator = "GT"
             size                = var.headers_size
             field_to_match {
-              headers {}
+              headers {
+                match_pattern {
+                  all {}
+                }
+                match_scope = "Value"
+                oversize_handling = "MATCH"
+              }
             }
             text_transformation {
               priority = 1

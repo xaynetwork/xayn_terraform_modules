@@ -240,7 +240,7 @@ resource "aws_wafv2_web_acl" "api_gateway" {
                 match_pattern {
                   all {}
                 }
-                match_scope = "Value"
+                match_scope       = "VALUE"
                 oversize_handling = "MATCH"
               }
             }

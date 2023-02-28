@@ -174,9 +174,12 @@ resource "aws_wafv2_web_acl" "api_gateway" {
           size_constraint_statement {
             comparison_operator = "GT"
             size                = var.user_body_size
-
             field_to_match {
               body {}
+            }
+            text_transformation {
+              priority = 1
+              type     = "URL_DECODE"
             }
           }
         }
@@ -219,9 +222,12 @@ resource "aws_wafv2_web_acl" "api_gateway" {
           size_constraint_statement {
             comparison_operator = "GT"
             size                = var.doc_body_size
-
             field_to_match {
               body {}
+            }
+            text_transformation {
+              priority = 1
+              type     = "URL_DECODE"
             }
           }
         }
@@ -230,9 +236,12 @@ resource "aws_wafv2_web_acl" "api_gateway" {
           size_constraint_statement {
             comparison_operator = "GT"
             size                = var.headers_size
-
             field_to_match {
               headers {}
+            }
+            text_transformation {
+              priority = 1
+              type     = "URL_DECODE"
             }
           }
         }
@@ -241,9 +250,12 @@ resource "aws_wafv2_web_acl" "api_gateway" {
           size_constraint_statement {
             comparison_operator = "GT"
             size                = var.query_size
-
             field_to_match {
               all_query_arguments {}
+            }
+            text_transformation {
+              priority = 1
+              type     = "URL_DECODE"
             }
           }
         }

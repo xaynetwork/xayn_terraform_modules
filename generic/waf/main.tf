@@ -161,11 +161,56 @@ resource "aws_wafv2_web_acl" "api_gateway" {
   }
 
   rule {
-    name     = "block-overload"
-    priority = 50
+    name     = "block-overload-body"
+    priority = 45
 
     action {
-      block {}
+      count {}
+    }
+
+    statement {
+      and_statement {
+        statement {
+          size_constraint_statement {
+            comparison_operator = "GT"
+            size                = var.user_body_size
+
+            field_to_match {
+              body {}
+            }
+          }
+        }
+
+        statement {
+          byte_match_statement {
+          field_to_match {
+            uri_path {}
+          }
+
+          search_string         = "/default/users"
+          positional_constraint = "STARTS_WITH"
+          text_transformation {
+            type     = "URL_DECODE"
+            priority = 1
+            }
+          }
+        }
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "block-overload"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  rule {
+    name     = "block-overload"
+    priority = 55
+
+    action {
+      count {}
     }
 
     statement {
@@ -173,7 +218,7 @@ resource "aws_wafv2_web_acl" "api_gateway" {
         statement {
           size_constraint_statement {
             comparison_operator = "GT"
-            size                = var.body_size
+            size                = var.doc_body_size
 
             field_to_match {
               body {}
@@ -204,8 +249,13 @@ resource "aws_wafv2_web_acl" "api_gateway" {
         }
       }
     }
-  }
 
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "block-overload"
+      sampled_requests_enabled   = true
+    }
+  }
 
   dynamic "rule" {
     for_each = var.path_rules

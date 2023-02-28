@@ -15,13 +15,13 @@ variable "prefix" {
 }
 
 variable "read_latency" {
-  description = "Alarm for API Gateway average Aurora read latency. Threshold is in milliseconds."
+  description = "Alarm for Aurora average read latency. Threshold is in milliseconds."
   type        = any
   default     = {}
 }
 
 variable "write_latency" {
-  description = "Alarm for API Gateway average Aurora write latency Threshold is in milliseconds."
+  description = "Alarm for Aurora average write latency Threshold is in milliseconds."
   type        = any
   default     = {}
 }

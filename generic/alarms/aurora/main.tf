@@ -1,18 +1,25 @@
 locals {
-  read_latency_threshold  = lookup(var.read_latency, "threshold", 10)
-  write_latency_threshold = lookup(var.write_latency, "threshold", 10)
+  defaults = {
+    create_alarm    = true
+    actions_enabled = true
+    ok_actions      = []
+    alarm_actions   = []
+  }
+
+  read_latency_conf  = merge(local.defaults, { threshold = 10 }, var.read_latency)
+  write_latency_conf = merge(local.defaults, { threshold = 10 }, var.write_latency)
 }
 
 module "read_latency" {
   source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
   version = "4.2.1"
 
-  create_metric_alarm = lookup(var.read_latency, "create_alarm", true)
+  create_metric_alarm = local.read_latency_conf.create_alarm
   alarm_name          = "${var.prefix}aurora_read_latency"
-  alarm_description   = "High Aurora read latency > ${var.read_latency_threshold}ms. It may indicate slow queries."
+  alarm_description   = "High average Aurora read latency > ${local.read_latency_conf.threshold}ms. It may indicate slow queries."
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 1
-  threshold           = var.read_latency_threshold
+  threshold           = local.read_latency_conf.threshold
 
   metric_query = [{
     id          = "e1"
@@ -35,9 +42,9 @@ module "read_latency" {
     }]
   }]
 
-  actions_enabled = lookup(var.read_latency, "actions_enabled", true)
-  alarm_actions   = lookup(var.read_latency, "alarm_actions", [])
-  ok_actions      = lookup(var.read_latency, "ok_actions", [])
+  actions_enabled = local.read_latency_conf.actions_enabled
+  alarm_actions   = local.read_latency_conf.alarm_actions
+  ok_actions      = local.read_latency_conf.ok_actions
 
   tags = var.tags
 }
@@ -46,12 +53,12 @@ module "write_latency" {
   source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
   version = "4.2.1"
 
-  create_metric_alarm = lookup(var.write_latency, "create_alarm", true)
+  create_metric_alarm = local.write_latency_conf.create_alarm
   alarm_name          = "${var.prefix}aurora_write_latency"
-  alarm_description   = "High Aurora write latency > ${var.write_latency_threshold}ms. It may indicate slow queries."
+  alarm_description   = "High average Aurora write latency > ${local.write_latency_conf.threshold}ms. It may indicate slow queries."
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 1
-  threshold           = var.write_latency_threshold
+  threshold           = local.write_latency_conf.threshold
 
   metric_query = [{
     id          = "e1"
@@ -74,9 +81,9 @@ module "write_latency" {
     }]
   }]
 
-  actions_enabled = lookup(var.write_latency, "actions_enabled", true)
-  alarm_actions   = lookup(var.write_latency, "alarm_actions", [])
-  ok_actions      = lookup(var.write_latency, "ok_actions", [])
+  actions_enabled = local.write_latency_conf.actions_enabled
+  alarm_actions   = local.write_latency_conf.alarm_actions
+  ok_actions      = local.write_latency_conf.ok_actions
 
   tags = var.tags
 }

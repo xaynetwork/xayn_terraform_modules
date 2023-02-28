@@ -126,7 +126,6 @@ resource "aws_ssm_parameter" "postgres_password" {
 
 # cloudwatch alarms
 data "aws_caller_identity" "current" {}
-
 module "alarms" {
   providers = {
     aws = aws.monitoring-account

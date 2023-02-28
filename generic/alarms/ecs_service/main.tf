@@ -1,18 +1,25 @@
 locals {
-  cpu_usage_threshold = lookup(var.cpu_usage, "threshold", 90)
-  log_error_threshold = lookup(var.log_error, "threshold", 250)
+  defaults = {
+    create_alarm    = true
+    actions_enabled = true
+    ok_actions      = []
+    alarm_actions   = []
+  }
+
+  cpu_usage_conf = merge(local.defaults, { threshold = 90 }, var.cpu_usage)
+  log_error_conf = merge(local.defaults, { threshold = 250, log_pattern = "ERROR" }, var.log_error)
 }
 
 module "cpu_usage" {
   source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
   version = "4.2.1"
 
-  create_metric_alarm = lookup(var.cpu_usage, "create_alarm", true)
+  create_metric_alarm = local.cpu_usage_conf.create_alarm
   alarm_name          = "${var.prefix}${var.service_name}_cpu_usage"
   alarm_description   = "High CPU usage for ${var.service_name}. It may indicate that the auto scaling reach its maximum."
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 3
-  threshold           = var.cpu_usage_threshold
+  threshold           = local.cpu_usage_conf.threshold
 
   metric_query = [{
     id          = "e1"
@@ -51,9 +58,9 @@ module "cpu_usage" {
     }]
   }]
 
-  actions_enabled = lookup(var.cpu_usage, "actions_enabled", true)
-  alarm_actions   = lookup(var.cpu_usage, "alarm_actions", [])
-  ok_actions      = lookup(var.cpu_usage, "ok_actions", [])
+  actions_enabled = local.cpu_usage_conf.actions_enabled
+  alarm_actions   = local.cpu_usage_conf.alarm_actions
+  ok_actions      = local.cpu_usage_conf.ok_actions
 
   tags = var.tags
 }
@@ -62,11 +69,11 @@ module "log_error_filter" {
   source  = "terraform-aws-modules/cloudwatch/aws//modules/log-metric-filter"
   version = "4.2.1"
 
-  create_metric_alarm = lookup(var.log_error, "create_alarm", true)
-  log_group_name      = module.service.log_group_name
+  create_cloudwatch_log_metric_filter = local.log_error_conf.create_alarm
+  log_group_name                      = var.log_group_name
 
   name    = "${var.service_name}_error_metric"
-  pattern = lookup(var.log_error, "log_pattern", "ERROR")
+  pattern = local.log_error_conf.log_pattern
 
   metric_transformation_namespace = "${var.cluster_name}/${var.service_name}"
   metric_transformation_name      = "ErrorCount"
@@ -76,12 +83,12 @@ module "log_error" {
   source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
   version = "4.2.1"
 
-  create_metric_alarm = lookup(var.log_error, "create_alarm", true)
+  create_metric_alarm = local.log_error_conf.create_alarm
   alarm_name          = "${var.prefix}${var.service_name}_log_errors"
-  alarm_description   = "Number of errors in ${var.service_name} > ${var.log_error_threshold}."
+  alarm_description   = "Number of errors in ${var.service_name} > ${local.log_error_conf.threshold}."
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 1
-  threshold           = var.log_error_threshold
+  threshold           = local.log_error_conf.threshold
   treat_missing_data  = "notBreaching"
 
   metric_query = [{
@@ -98,9 +105,9 @@ module "log_error" {
     }
   ]
 
-  actions_enabled = lookup(var.log_error, "actions_enabled", true)
-  alarm_actions   = lookup(var.log_error, "alarm_actions", [])
-  ok_actions      = lookup(var.log_error, "ok_actions", [])
+  actions_enabled = local.log_error_conf.actions_enabled
+  alarm_actions   = local.log_error_conf.alarm_actions
+  ok_actions      = local.log_error_conf.ok_actions
 
   tags = var.tags
 }

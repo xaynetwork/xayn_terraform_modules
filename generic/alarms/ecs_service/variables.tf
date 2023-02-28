@@ -9,6 +9,12 @@ variable "service_name" {
   default     = "default"
 }
 
+variable "log_group_name" {
+  description = "The name of the ECS service log group for use with CloudWatch Metrics."
+  type        = string
+  default     = "default"
+}
+
 variable "account_id" {
   description = "Specifies the ID of the account where the metric is located."
   type        = string

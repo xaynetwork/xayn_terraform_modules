@@ -113,8 +113,9 @@ module "alarms" {
   account_id = data.aws_caller_identity.current.account_id
   prefix     = "${data.aws_caller_identity.current.account_id}_"
 
-  cluster_name = var.cluster_name
-  service_name = module.service.name
+  cluster_name   = var.cluster_name
+  service_name   = module.service.name
+  log_group_name = module.service.log_group_name
 
   cpu_usage = var.cpu_usage
   log_error = var.log_error

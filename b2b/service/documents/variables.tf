@@ -139,13 +139,13 @@ variable "max_count" {
 
 variable "cpu_usage" {
   description = "Alarm for Service average CPU usage. Threshold is in percentage."
-  type        = map(any)
+  type        = any
   default     = {}
 }
 
 variable "log_error" {
   description = "Alarm for Service error log count."
-  type        = map(any)
+  type        = any
   default     = {}
 }
 

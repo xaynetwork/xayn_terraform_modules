@@ -183,15 +183,15 @@ resource "aws_wafv2_web_acl" "api_gateway" {
 
         statement {
           byte_match_statement {
-          field_to_match {
-            uri_path {}
-          }
+            field_to_match {
+              uri_path {}
+            }
 
-          search_string         = "/default/users"
-          positional_constraint = "STARTS_WITH"
-          text_transformation {
-            type     = "URL_DECODE"
-            priority = 1
+            search_string         = "/default/users"
+            positional_constraint = "STARTS_WITH"
+            text_transformation {
+              type     = "URL_DECODE"
+              priority = 1
             }
           }
         }

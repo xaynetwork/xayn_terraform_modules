@@ -223,7 +223,8 @@ module "alarms" {
   account_id = data.aws_caller_identity.current.account_id
   prefix     = "${data.aws_caller_identity.current.account_id}_"
 
-  api_name = local.api_name
+  api_name  = local.api_name
+  api_stage = aws_api_gateway_stage.tenant.stage_name
 
   http_5xx_error      = var.http_5xx_error
   integration_latency = var.integration_latency

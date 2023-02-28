@@ -97,19 +97,19 @@ variable "default_method_throttle_settings" {
 
 variable "http_5xx_error" {
   description = "Alarm for API Gateway HTTP-5XX errors."
-  type        = map(any)
+  type        = any
   default     = {}
 }
 
 variable "integration_latency" {
   description = "Alarm for API Gateway average integration latency."
-  type        = map(any)
+  type        = any
   default     = {}
 }
 
 variable "latency" {
   description = "Alarm for API Gateway average latency."
-  type        = map(any)
+  type        = any
   default     = {}
 }
 

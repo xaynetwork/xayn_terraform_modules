@@ -52,11 +52,13 @@ variable "services_http_5xx_error" {
 variable "http_5xx_error" {
   description = "Alarm for ALB HTTP-5XX errors."
   type        = any
+  default     = {}
 }
 
 variable "http_4xx_error" {
   description = "Alarm for ALB HTTP-4XX errors."
   type        = any
+  default     = {}
 }
 
 variable "tags" {

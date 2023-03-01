@@ -177,7 +177,7 @@ resource "aws_wafv2_web_acl" "api_gateway" {
                 }
               }
               positional_constraint = "EXACTLY"
-              text_transformations {
+              text_transformation {
                 priority = 1
                 type     = "NONE"
               }
@@ -206,7 +206,7 @@ resource "aws_wafv2_web_acl" "api_gateway" {
               }
             }
             positional_constraint = "EXACTLY"
-            text_transformations {
+            text_transformation {
               priority = 1
               type     = "NONE"
             }

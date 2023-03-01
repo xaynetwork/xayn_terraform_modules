@@ -168,32 +168,34 @@ resource "aws_wafv2_web_acl" "api_gateway" {
 
     statement {
       or_statement {
-        and_statement {
-          statement {
-            byte_match_statement {
-              field_to_match {
-                single_header {
-                  name = "content-length"
+        statement {
+          and_statement {
+            statement {
+              byte_match_statement {
+                field_to_match {
+                  single_header {
+                    name = "content-length"
+                  }
                 }
+                positional_constraint = "EXACTLY"
+                text_transformation {
+                  priority = 1
+                  type     = "NONE"
+                }
+                search_string = var.user_body_size
               }
-              positional_constraint = "EXACTLY"
-              text_transformation {
-                priority = 1
-                type     = "NONE"
-              }
-              search_string = var.user_body_size
             }
-          }
-          statement {
-            byte_match_statement {
-              field_to_match {
-                uri_path {}
-              }
-              search_string         = "/default/users"
-              positional_constraint = "STARTS_WITH"
-              text_transformation {
-                priority = 1
-                type     = "NONE"
+            statement {
+              byte_match_statement {
+                field_to_match {
+                  uri_path {}
+                }
+                search_string         = "/default/users"
+                positional_constraint = "STARTS_WITH"
+                text_transformation {
+                  priority = 1
+                  type     = "NONE"
+                }
               }
             }
           }

@@ -143,13 +143,13 @@ variable "max_count" {
   default     = 4
 }
 
-variable "cpu_usage" {
+variable "alarm_cpu_usage" {
   description = "Alarm for Service average CPU usage. Threshold is in percentage."
   type        = any
   default     = {}
 }
 
-variable "log_error" {
+variable "alarm_log_error" {
   description = "Alarm for Service error log count."
   type        = any
   default     = {}

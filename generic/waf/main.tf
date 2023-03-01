@@ -217,9 +217,9 @@ module "alarms" {
   web_acl_name   = aws_wafv2_web_acl.api_gateway.name
   web_acl_region = data.aws_region.current.name
 
-  all_requests         = var.all_requests
-  all_blocked_requests = var.all_blocked_requests
-  ip_rate_limit        = var.ip_rate_limit
+  all_requests         = var.alarm_all_requests
+  all_blocked_requests = var.alarm_all_blocked_requests
+  ip_rate_limit        = var.alarm_ip_rate_limit
 
   tags = var.tags
 }

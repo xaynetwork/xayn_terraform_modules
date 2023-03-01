@@ -117,8 +117,8 @@ module "alarms" {
   service_name   = module.service.name
   log_group_name = module.service.log_group_name
 
-  cpu_usage = var.cpu_usage
-  log_error = var.log_error
+  cpu_usage = var.alarm_cpu_usage
+  log_error = var.alarm_log_error
 
   tags = var.tags
 }

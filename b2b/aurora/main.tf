@@ -137,8 +137,8 @@ module "alarms" {
 
   db_cluster_identifier = var.name
 
-  read_latency  = var.read_latency
-  write_latency = var.write_latency
+  read_latency  = var.alarm_read_latency
+  write_latency = var.alarm_write_latency
 
   tags = var.tags
 }

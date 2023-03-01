@@ -95,19 +95,19 @@ variable "default_method_throttle_settings" {
   default = null
 }
 
-variable "http_5xx_error" {
+variable "alarm_http_5xx_error" {
   description = "Alarm for API Gateway HTTP-5XX errors."
   type        = any
   default     = {}
 }
 
-variable "integration_latency" {
+variable "alarm_integration_latency" {
   description = "Alarm for API Gateway average integration latency."
   type        = any
   default     = {}
 }
 
-variable "latency" {
+variable "alarm_latency" {
   description = "Alarm for API Gateway average latency."
   type        = any
   default     = {}

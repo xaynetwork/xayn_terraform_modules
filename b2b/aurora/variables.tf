@@ -75,13 +75,13 @@ variable "monitoring_interval" {
   default     = 15
 }
 
-variable "read_latency" {
+variable "alarm_read_latency" {
   description = "Alarm for Aurora average read latency. Threshold is in milliseconds."
   type        = any
   default     = {}
 }
 
-variable "write_latency" {
+variable "alarm_write_latency" {
   description = "Alarm for Aurora average write latency Threshold is in milliseconds."
   type        = any
   default     = {}

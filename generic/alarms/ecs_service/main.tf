@@ -11,6 +11,10 @@ locals {
 }
 
 module "cpu_usage" {
+  providers = {
+    aws = aws.monitoring-account
+  }
+
   source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
   version = "4.2.1"
 
@@ -80,6 +84,10 @@ module "log_error_filter" {
 }
 
 module "log_error" {
+  providers = {
+    aws = aws.monitoring-account
+  }
+
   source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
   version = "4.2.1"
 

@@ -124,7 +124,7 @@ module "asg" {
 data "aws_caller_identity" "current" {}
 module "alarms" {
   providers = {
-    aws = aws.monitoring-account
+    aws.monitoring-account = aws.monitoring-account
   }
   source = "../../../generic/alarms/ecs_service"
 

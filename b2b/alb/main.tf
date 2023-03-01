@@ -81,7 +81,6 @@ resource "aws_lb_listener_rule" "health_check" {
 
 # CloudWatch alarms
 data "aws_caller_identity" "current" {}
-
 module "alarms" {
   providers = {
     aws = aws.monitoring-account

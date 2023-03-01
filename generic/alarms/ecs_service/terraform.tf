@@ -3,9 +3,9 @@ terraform {
 
   required_providers {
     aws = {
-      source  = "hashicorp/aws"
-      version = "4.50.0"
-      configuration_aliases = [ aws.monitoring-account ]
+      source                = "hashicorp/aws"
+      version               = "4.50.0"
+      configuration_aliases = [aws.monitoring-account]
     }
   }
 }

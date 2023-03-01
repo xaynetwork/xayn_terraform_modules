@@ -43,34 +43,22 @@ variable "health_check_path" {
   default     = "/health"
 }
 
-variable "create_alarms" {
-  description = "Whether to create ALB alarms"
-  type        = bool
-  default     = false
+variable "alarm_services_http_5xx_error" {
+  description = "Alarm for ALB services HTTP-5XX errors."
+  type        = any
+  default     = {}
 }
 
-variable "sns_topic_arn" {
-  description = "ARN of the SNS topic"
-  type        = string
-  default     = null
+variable "alarm_http_5xx_error" {
+  description = "Alarm for ALB HTTP-5XX errors."
+  type        = any
+  default     = {}
 }
 
-variable "services_http_5xx_error_threshold" {
-  description = "Threshold of the ALB services HTTP-5XX errors"
-  type        = number
-  default     = 0
-}
-
-variable "http_5xx_error_threshold" {
-  description = "Threshold of the ALB HTTP-5XX errors"
-  type        = number
-  default     = 0
-}
-
-variable "http_4xx_error_threshold" {
-  description = "Threshold of the ALB HTTP-4XX errors"
-  type        = number
-  default     = 0
+variable "alarm_http_4xx_error" {
+  description = "Alarm for ALB HTTP-4XX errors."
+  type        = any
+  default     = {}
 }
 
 variable "tags" {

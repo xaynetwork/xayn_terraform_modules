@@ -159,53 +159,6 @@ resource "aws_wafv2_web_acl" "api_gateway" {
   }
 
   rule {
-    name     = "block-overload-body"
-    priority = 45
-
-    action {
-      count {}
-    }
-
-    statement {
-      and_statement {
-        statement {
-          size_constraint_statement {
-            comparison_operator = "GT"
-            size                = var.user_body_size
-            field_to_match {
-              body {}
-            }
-            text_transformation {
-              priority = 1
-              type     = "URL_DECODE"
-            }
-          }
-        }
-
-        statement {
-          byte_match_statement {
-            field_to_match {
-              uri_path {}
-            }
-            search_string         = "/default/users"
-            positional_constraint = "STARTS_WITH"
-            text_transformation {
-              type     = "URL_DECODE"
-              priority = 1
-            }
-          }
-        }
-      }
-    }
-
-    visibility_config {
-      cloudwatch_metrics_enabled = true
-      metric_name                = "block-overload"
-      sampled_requests_enabled   = true
-    }
-  }
-
-  rule {
     name     = "block-overload"
     priority = 55
 
@@ -215,17 +168,49 @@ resource "aws_wafv2_web_acl" "api_gateway" {
 
     statement {
       or_statement {
+        and_statement {
+          statement {
+            byte_match_statement {
+              field_to_match {
+                single_header {
+                  name = "content-length"
+                }
+              }
+              positional_constraint = "EXACTLY"
+              text_transformations {
+                priority = 1
+                type     = "NONE"
+              }
+              search_string = var.user_body_size
+            }
+          }
+          statement {
+            byte_match_statement {
+              field_to_match {
+                uri_path {}
+              }
+              search_string         = "/default/users"
+              positional_constraint = "STARTS_WITH"
+              text_transformation {
+                priority = 1
+                type     = "NONE"
+              }
+            }
+          }
+        }
         statement {
-          size_constraint_statement {
-            comparison_operator = "GT"
-            size                = var.doc_body_size
+          byte_match_statement {
             field_to_match {
-              body {}
+              single_header {
+                name = "content-length"
+              }
             }
-            text_transformation {
+            positional_constraint = "EXACTLY"
+            text_transformations {
               priority = 1
-              type     = "URL_DECODE"
+              type     = "NONE"
             }
+            search_string = var.doc_body_size
           }
         }
 
@@ -244,7 +229,7 @@ resource "aws_wafv2_web_acl" "api_gateway" {
             }
             text_transformation {
               priority = 1
-              type     = "URL_DECODE"
+              type     = "NONE"
             }
           }
         }
@@ -258,7 +243,7 @@ resource "aws_wafv2_web_acl" "api_gateway" {
             }
             text_transformation {
               priority = 1
-              type     = "URL_DECODE"
+              type     = "NONE"
             }
           }
         }

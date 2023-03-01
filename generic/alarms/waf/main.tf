@@ -7,7 +7,7 @@ locals {
   }
 
   all_requests_conf         = merge(local.defaults, { threshold = 40000 }, var.all_requests)
-  all_blocked_requests_conf = merge(local.defaults, { threshold = 5000 }, var.all_blocked_requests)
+  all_requests_blocked_conf = merge(local.defaults, { threshold = 5000 }, var.all_requests_blocked)
   ip_rate_limit_conf        = merge(local.defaults, { threshold = 0 }, var.ip_rate_limit)
 }
 
@@ -53,12 +53,12 @@ module "all_requests_blocked" {
   source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
   version = "4.2.1"
 
-  create_metric_alarm = local.all_blocked_requests_conf.create_alarm
+  create_metric_alarm = local.all_requests_blocked_conf.create_alarm
   alarm_name          = "${var.prefix}waf_all_blocked_requests"
-  alarm_description   = "Number of ${var.web_acl_region} ${var.web_acl_name} ALL blocked requests > ${local.all_blocked_requests_conf.threshold}. It may indicate a DDoS attack or a proxy."
+  alarm_description   = "Number of ${var.web_acl_region} ${var.web_acl_name} ALL blocked requests > ${local.all_requests_blocked_conf.threshold}. It may indicate a DDoS attack or a proxy."
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 1
-  threshold           = local.all_blocked_requests_conf.threshold
+  threshold           = local.all_requests_blocked_conf.threshold
   treat_missing_data  = "notBreaching"
 
   metric_query = [{
@@ -80,9 +80,9 @@ module "all_requests_blocked" {
     }
   ]
 
-  actions_enabled = local.all_blocked_requests_conf.actions_enabled
-  alarm_actions   = local.all_blocked_requests_conf.alarm_actions
-  ok_actions      = local.all_blocked_requests_conf.ok_actions
+  actions_enabled = local.all_requests_blocked_conf.actions_enabled
+  alarm_actions   = local.all_requests_blocked_conf.alarm_actions
+  ok_actions      = local.all_requests_blocked_conf.ok_actions
 
   tags = var.tags
 }

@@ -218,7 +218,7 @@ module "alarms" {
   web_acl_region = data.aws_region.current.name
 
   all_requests         = var.alarm_all_requests
-  all_blocked_requests = var.alarm_all_blocked_requests
+  all_requests_blocked = var.alarm_all_requests_blocked
   ip_rate_limit        = var.alarm_ip_rate_limit
 
   tags = var.tags

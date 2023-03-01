@@ -25,7 +25,7 @@ variable "all_requests" {
   default     = {}
 }
 
-variable "all_blocked_requests" {
+variable "all_requests_blocked" {
   description = "Alarm for WAF ALL blocked requests."
   type        = any
   default     = {}

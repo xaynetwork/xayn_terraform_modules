@@ -6,6 +6,9 @@ Terraform module which creates a S3 bucket that will be used for redirection to 
 
 ```hcl
 module "redirection" {
+  providers = {
+    aws.us-east-1 = aws.us-east-1
+  }
   source = "../../modules/redirection"
 
   domain_name    = "example.xayn.com"

@@ -19,8 +19,8 @@ variable "architecture" {
   default     = "arm64"
 }
 
-variable "source_code_hash" {
-  description = "The hash of the lambda source code"
+variable "source_code_path" {
+  description = "The path of the source code, this is used to create the source code hash"
   type        = string
 }
 

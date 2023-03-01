@@ -4,11 +4,6 @@ locals {
   output_path   = "${path.module}/function.zip"
 }
 
-data "external" "build" {
-  program     = ["bash", "-c", "npm install > /dev/null && echo {}"]
-  working_dir = local.script_path
-}
-
 #Cloudwatch Role
 module "role" {
   source = "../../../generic/lambda/role"
@@ -56,6 +51,12 @@ module "security_group" {
   tags = var.tags
 }
 
+
+data "external" "build" {
+  program     = ["bash", "-c", "npm install > /dev/null && echo {}"]
+  working_dir = local.script_path
+}
+
 data "archive_file" "source_code" {
   type        = "zip"
   output_path = local.output_path
@@ -64,12 +65,20 @@ data "archive_file" "source_code" {
   depends_on = [data.external.build]
 }
 
+# data "external" "source_code_hash" {
+#   program = ["bash", "-c", "find .  -type f -print0 ! -name '*.zip'  | sort -z | xargs -0 shasum | shasum | head -c 40 | jq -R -c '{ hash: . }'"]
+#   working_dir = local.script_path
+#   depends_on = [
+#     data.archive_file.source_code
+#   ]
+# }
+
 module "function" {
   source                 = "../../../generic/lambda/function"
   function_name          = local.function_name
   handler                = "index.handler"
   runtime                = "nodejs16.x"
-  source_code_hash       = data.archive_file.source_code.output_base64sha256
+  source_code_path       = local.script_path
   lambda_role_arn        = module.role.arn
   output_path            = local.output_path
   log_retention_in_days  = var.log_retention_in_days
@@ -78,4 +87,8 @@ module "function" {
   timeout                = 15
 
   tags = var.tags
+
+  depends_on = [
+    data.archive_file.source_code
+  ]
 }

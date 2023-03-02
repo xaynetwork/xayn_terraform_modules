@@ -176,59 +176,58 @@ resource "aws_wafv2_web_acl" "api_gateway" {
                 size                = var.user_body_size
                 field_to_match {
                   body {}
-                  }
-                }
-                text_transformation {
-                  priority = 1
-                  type     = "NONE"
                 }
               }
+              text_transformation {
+                priority = 1
+                type     = "NONE"
+              }
             }
-            statement {
-              byte_match_statement {
-                field_to_match {
-                  uri_path {}
-                }
-                search_string         = "/default/users"
-                positional_constraint = "STARTS_WITH"
-                text_transformation {
-                  priority = 1
-                  type     = "NONE"
-                }
+          }
+          statement {
+            byte_match_statement {
+              field_to_match {
+                uri_path {}
+              }
+              search_string         = "/default/users"
+              positional_constraint = "STARTS_WITH"
+              text_transformation {
+                priority = 1
+                type     = "NONE"
               }
             }
           }
         }
-        statement {
-          size_constraint_statement {
-            comparison_operator = "GT"
-            size                = var.headers_size
-            field_to_match {
-              headers {
-                match_pattern {
-                  all {}
-                }
-                match_scope       = "VALUE"
-                oversize_handling = "MATCH"
+      }
+      statement {
+        size_constraint_statement {
+          comparison_operator = "GT"
+          size                = var.headers_size
+          field_to_match {
+            headers {
+              match_pattern {
+                all {}
               }
-            }
-            text_transformation {
-              priority = 1
-              type     = "NONE"
+              match_scope       = "VALUE"
+              oversize_handling = "MATCH"
             }
           }
+          text_transformation {
+            priority = 1
+            type     = "NONE"
+          }
         }
-        statement {
-          size_constraint_statement {
-            comparison_operator = "GT"
-            size                = var.query_size
-            field_to_match {
-              all_query_arguments {}
-            }
-            text_transformation {
-              priority = 1
-              type     = "NONE"
-            }
+      }
+      statement {
+        size_constraint_statement {
+          comparison_operator = "GT"
+          size                = var.query_size
+          field_to_match {
+            all_query_arguments {}
+          }
+          text_transformation {
+            priority = 1
+            type     = "NONE"
           }
         }
       }

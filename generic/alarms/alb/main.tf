@@ -4,11 +4,12 @@ locals {
     actions_enabled = true
     ok_actions      = []
     alarm_actions   = []
+    threshold       = 0
   }
 
-  services_http_5xx_error_conf = merge(local.defaults, { threshold = 0 }, var.services_http_5xx_error)
-  http_5xx_error_conf          = merge(local.defaults, { threshold = 0 }, var.http_5xx_error)
-  http_4xx_error_conf          = merge(local.defaults, { threshold = 0 }, var.http_4xx_error)
+  services_http_5xx_error_conf = merge(local.defaults, var.services_http_5xx_error)
+  http_5xx_error_conf          = merge(local.defaults, var.http_5xx_error)
+  http_4xx_error_conf          = merge(local.defaults, var.http_4xx_error)
 }
 
 module "services_http_5xx_error" {

@@ -4,10 +4,11 @@ locals {
     actions_enabled = true
     ok_actions      = []
     alarm_actions   = []
+    threshold       = 10
   }
 
-  read_latency_conf  = merge(local.defaults, { threshold = 10 }, var.read_latency)
-  write_latency_conf = merge(local.defaults, { threshold = 10 }, var.write_latency)
+  read_latency_conf  = merge(local.defaults, var.read_latency)
+  write_latency_conf = merge(local.defaults, var.write_latency)
 }
 
 module "read_latency" {

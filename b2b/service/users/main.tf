@@ -97,6 +97,7 @@ module "service" {
     XAYN_WEB_API__STORAGE__ELASTIC__USER                    = var.elasticsearch_username
     XAYN_WEB_API__STORAGE__POSTGRES__BASE_URL               = "${var.postgres_url}/${var.tenant}"
     XAYN_WEB_API__STORAGE__POSTGRES__USER                   = var.postgres_username
+    XAYN_WEB_API__STORAGE__POSTGRES__APPLICATION_NAME       = var.tenant
     XAYN_WEB_API__PERSONALIZATION__MAX_COIS_FOR_KNN         = var.max_cois
     XAYN_WEB_API__PERSONALIZATION__DEFAULT_NUMBER_DOCUMENTS = 10
     XAYN_WEB_API__NET__KEEP_ALIVE                           = var.keep_alive

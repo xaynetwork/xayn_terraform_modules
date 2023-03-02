@@ -24,12 +24,15 @@ module "role" {
   tags   = var.tags
 }
 
-data "archive_file" "source_code" {
-  type        = "zip"
-  source_file = local.filename
-  output_path = local.output_path
+### needs to have installed
+### https://github.com/timo-reymann/deterministic-zip
+### https://www.reddit.com/r/Terraform/comments/aupudn/building_deterministic_zips_to_minimize_lambda/
+data "external" "source_code" {
+  program = ["bash", "-c", "deterministic-zip -r ${local.output_path} ${local.filename} && echo '{ \"output\": \"${local.output_path}\" }'"]
 
-  depends_on = [local_sensitive_file.authentication_code]
+  depends_on = [
+    local_sensitive_file.authentication_code
+  ]
 }
 
 module "function" {
@@ -38,7 +41,7 @@ module "function" {
   function_name         = local.function_name
   handler               = "index-${var.tenant}.handler"
   runtime               = "nodejs16.x"
-  source_code_hash      = data.archive_file.source_code.output_base64sha256
+  source_code_hash      = filebase64sha256(data.external.source_code.result.output)
   output_path           = local.output_path
   lambda_role_arn       = module.role.arn
   log_retention_in_days = var.log_retention_in_days

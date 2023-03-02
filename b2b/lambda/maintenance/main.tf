@@ -56,12 +56,16 @@ module "security_group" {
   tags = var.tags
 }
 
-data "archive_file" "source_code" {
-  type        = "zip"
-  output_path = local.output_path
-  source_dir  = local.script_path
+### needs to have installed
+### https://github.com/timo-reymann/deterministic-zip
+### https://www.reddit.com/r/Terraform/comments/aupudn/building_deterministic_zips_to_minimize_lambda/
+data "external" "source_code" {
+  program     = ["bash", "-c", "deterministic-zip -r tmp.zip . && mv tmp.zip ../${local.output_path} && echo '{ \"output\": \"${local.output_path}\" }'"]
+  working_dir = local.script_path
 
-  depends_on = [data.external.build]
+  depends_on = [
+    data.external.build
+  ]
 }
 
 module "function" {
@@ -69,7 +73,7 @@ module "function" {
   function_name          = local.function_name
   handler                = "index.handler"
   runtime                = "nodejs16.x"
-  source_code_hash       = data.archive_file.source_code.output_base64sha256
+  source_code_hash       = filebase64sha256(data.external.source_code.result.output)
   lambda_role_arn        = module.role.arn
   output_path            = local.output_path
   log_retention_in_days  = var.log_retention_in_days

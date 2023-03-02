@@ -22,3 +22,8 @@ output "security_group_id" {
   description = "The ID of the security group"
   value       = module.security_group.security_group_id
 }
+
+output "alarm_arns" {
+  description = "ARNs of the CloudWatch alarms."
+  value       = module.alarms.arns
+}

@@ -1,7 +1,7 @@
 module "task_role" {
   source = "../../generic/service/role"
 
-  description = "Execution role for Pull Embedding Service ECS service"
+  description = "Execution role for Semantic Search Service ECS service"
   path        = "/nc-semantic-search/"
   prefix      = "NcSemanticSearch"
   tags        = var.tags
@@ -24,7 +24,7 @@ module "security_group" {
     }
   ]
   // we could reduce the access to https://ip-ranges.amazonaws.com/ip-ranges.json
-  // ECR is currectly available at: 3.122.9.124 which is not listed as a prefix in ^^
+  // ECR is currently available at: 3.122.9.124 which is not listed as a prefix in ^^
   egress_with_cidr_blocks = [
     {
       description = "Allow all egress traffic"
@@ -85,93 +85,23 @@ module "asg" {
   max_tasks    = var.max_count
 }
 
+# CloudWatch alarms
+data "aws_caller_identity" "current" {}
+module "alarms" {
+  providers = {
+    aws.monitoring-account = aws.monitoring-account
+  }
+  source = "../../generic/alarms/ecs_service"
 
-# cloudwatch alarms
-module "service_cpu_alarm" {
-  count   = var.create_alarms ? 1 : 0
-  source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
-  version = "4.2.1"
+  account_id = data.aws_caller_identity.current.account_id
+  prefix     = "${data.aws_caller_identity.current.account_id}_"
 
-  alarm_name          = "semantic_search_service_cpu"
-  alarm_description   = "High CPU usage for ${module.service.name} service. It may indicate that the auto scaling reach its maximum."
-  comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 3
-  threshold           = var.service_cpu_threshold
-
-  metric_query = [{
-    id          = "e1"
-    expression  = "m1 * 100 / m2"
-    label       = "cpu_into_percentage"
-    return_data = "true"
-    }, {
-    id = "m1"
-
-    metric = [{
-      namespace   = "ECS/ContainerInsights"
-      metric_name = "CpuUtilized"
-      period      = 60
-      stat        = "Sum"
-
-      dimensions = {
-        ClusterName = var.cluster_name
-        ServiceName = module.service.name
-      }
-    }]
-    }, {
-    id = "m2"
-
-    metric = [{
-      namespace   = "ECS/ContainerInsights"
-      metric_name = "CpuReserved"
-      period      = 60
-      stat        = "Sum"
-
-      dimensions = {
-        ClusterName = var.cluster_name
-        ServiceName = module.service.name
-      }
-    }]
-  }]
-
-  alarm_actions = var.sns_topic_arn != null ? [var.sns_topic_arn] : []
-  ok_actions    = var.sns_topic_arn != null ? [var.sns_topic_arn] : []
-
-  tags = var.tags
-}
-
-module "log_error_filter" {
-  count   = var.create_alarms ? 1 : 0
-  source  = "terraform-aws-modules/cloudwatch/aws//modules/log-metric-filter"
-  version = "4.2.1"
-
+  cluster_name   = var.cluster_name
+  service_name   = module.service.name
   log_group_name = module.service.log_group_name
 
-  name    = "semantic_search_error_metric"
-  pattern = var.log_pattern
-
-  metric_transformation_namespace = "${var.cluster_name}/${module.service.name}"
-  metric_transformation_name      = "ErrorCount"
-}
-
-module "log_error_alarm" {
-  count   = var.create_alarms ? 1 : 0
-  source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
-  version = "4.2.1"
-
-  alarm_name          = "semantic_search_log_errors"
-  alarm_description   = "Number of errors in ${module.service.name} service > ${var.log_error_threshold}."
-  comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 1
-  threshold           = var.log_error_threshold
-  period              = 60
-  treat_missing_data  = "notBreaching"
-
-  namespace   = "${var.cluster_name}/${module.service.name}"
-  metric_name = "ErrorCount"
-  statistic   = "Sum"
-
-  alarm_actions = var.sns_topic_arn != null ? [var.sns_topic_arn] : []
-  ok_actions    = var.sns_topic_arn != null ? [var.sns_topic_arn] : []
+  cpu_usage = var.alarm_cpu_usage
+  log_error = var.alarm_log_error
 
   tags = var.tags
 }

@@ -1,4 +1,4 @@
-# allow API Gateway to call the lambda authorizer
+# policy for allowing the API Gateway to push logs to CloudWatch
 data "aws_iam_policy_document" "assume_role_api_gateway" {
   statement {
     effect  = "Allow"

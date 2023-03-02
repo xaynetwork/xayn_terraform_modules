@@ -75,28 +75,16 @@ variable "monitoring_interval" {
   default     = 15
 }
 
-variable "create_alarms" {
-  description = "Whether to create Aurora alarms"
-  type        = bool
-  default     = false
+variable "alarm_read_latency" {
+  description = "Alarm for Aurora average read latency. Threshold is in milliseconds."
+  type        = any
+  default     = {}
 }
 
-variable "sns_topic_arn" {
-  description = "ARN of the SNS topic"
-  type        = string
-  default     = null
-}
-
-variable "read_latency_threshold" {
-  description = "Threshold of the average Aurora read latency in milliseconds"
-  type        = number
-  default     = 10
-}
-
-variable "write_latency_threshold" {
-  description = "Threshold of the average Aurora write latency in milliseconds"
-  type        = number
-  default     = 10
+variable "alarm_write_latency" {
+  description = "Alarm for Aurora average write latency Threshold is in milliseconds."
+  type        = any
+  default     = {}
 }
 
 variable "tags" {

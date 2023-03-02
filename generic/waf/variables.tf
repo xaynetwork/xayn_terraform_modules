@@ -16,38 +16,8 @@ variable "ip_rate_limit" {
   default     = 2000
 }
 
-variable "create_alarms" {
-  description = "Whether to create WAF alarms"
-  type        = bool
-  default     = false
-}
-
-variable "sns_topic_arn" {
-  description = "ARN of the SNS topic"
-  type        = string
-  default     = null
-}
-
-variable "all_requests_threshold" {
-  description = "Threshold of all WAF requests"
-  type        = number
-  default     = 40000
-}
-
-variable "all_blocked_requests_threshold" {
-  description = "Threshold of all blocked WAF requests"
-  type        = number
-  default     = 5000
-}
-
-variable "ip_rate_limit_threshold" {
-  description = "Threshold of the WAF ip rate limit"
-  type        = number
-  default     = 0
-}
-
 #  i.e.: [
-#       { 
+#       {
 #         name        = "user-path"
 #         url_segment = "/default/users"
 #         priority    = 50
@@ -63,11 +33,29 @@ variable "path_rules" {
     url_segment = string
     priority    = number
   }))
-  description = "A list of path entry objects, that describe whixch paths are allowed by the firewal, an empty array would block all requests."
+  description = "A list of path entry objects, that describe which paths are allowed by the firewall, an empty array would block all requests."
+}
+
+variable "alarm_all_requests" {
+  description = "Alarm for WAF ALL requests."
+  type        = any
+  default     = {}
+}
+
+variable "alarm_all_requests_blocked" {
+  description = "Alarm for WAF ALL blocked requests."
+  type        = any
+  default     = {}
+}
+
+variable "alarm_ip_rate_limit" {
+  description = "Alarm for WAF ip rate limit"
+  type        = any
+  default     = {}
 }
 
 variable "tags" {
-  description = "Map of tags for the deployment"
+  description = "A map of labels to apply to contained resources."
   type        = map(string)
   default     = {}
 }

@@ -175,12 +175,7 @@ resource "aws_wafv2_web_acl" "api_gateway" {
                 comparison_operator = "GT"
                 size                = var.user_body_size
                 field_to_match {
-                  headers {
-                    match_pattern {
-                      all {}
-                    }
-                    match_scope       = "VALUE"
-                    oversize_handling = "MATCH"
+                  body {}
                   }
                 }
                 text_transformation {
@@ -207,26 +202,6 @@ resource "aws_wafv2_web_acl" "api_gateway" {
         statement {
           size_constraint_statement {
             comparison_operator = "GT"
-            size                = var.doc_body_size
-            field_to_match {
-              headers {
-                match_pattern {
-                  all {}
-                }
-                match_scope       = "VALUE"
-                oversize_handling = "MATCH"
-              }
-            }
-            text_transformation {
-              priority = 1
-              type     = "NONE"
-            }
-          }
-        }
-
-        statement {
-          size_constraint_statement {
-            comparison_operator = "GT"
             size                = var.headers_size
             field_to_match {
               headers {
@@ -243,7 +218,6 @@ resource "aws_wafv2_web_acl" "api_gateway" {
             }
           }
         }
-
         statement {
           size_constraint_statement {
             comparison_operator = "GT"

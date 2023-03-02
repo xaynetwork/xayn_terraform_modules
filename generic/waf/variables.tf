@@ -48,16 +48,16 @@ variable "alarm_all_requests_blocked" {
   default     = {}
 }
 
+variable "alarm_ip_rate_limit" {
+  description = "Alarm for WAF ip rate limit"
+  type        = any
+  default     = {}
+}
+
 variable "user_body_size" {
   description = "Size limit of the user API body from the load"
   type        = number
   default     = 8000
-}
-
-variable "doc_body_size" {
-  description = "Size limit of the document API body from the load"
-  type        = number
-  default     = 4000000
 }
 
 variable "query_size" {
@@ -70,12 +70,6 @@ variable "headers_size" {
   description = "Size limit of the headers from the load"
   type        = number
   default     = 1000
-}
-
-variable "alarm_ip_rate_limit" {
-  description = "Alarm for WAF ip rate limit"
-  type        = any
-  default     = {}
 }
 
 variable "tags" {

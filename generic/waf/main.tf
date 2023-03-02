@@ -177,10 +177,10 @@ resource "aws_wafv2_web_acl" "api_gateway" {
                 field_to_match {
                   body {}
                 }
-              }
-              text_transformation {
-                priority = 1
-                type     = "NONE"
+                text_transformation {
+                  priority = 1
+                  type     = "NONE"
+                }
               }
             }
             statement {

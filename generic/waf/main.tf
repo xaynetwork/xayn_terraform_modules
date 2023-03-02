@@ -171,18 +171,22 @@ resource "aws_wafv2_web_acl" "api_gateway" {
         statement {
           and_statement {
             statement {
-              byte_match_statement {
+              size_constraint_statement {
+                comparison_operator = "GT"
+                size                = var.user_body_size
                 field_to_match {
-                  single_header {
-                    name = "content-length"
+                  headers {
+                    match_pattern {
+                      all {}
+                    }
+                    match_scope       = "VALUE"
+                    oversize_handling = "MATCH"
                   }
                 }
-                positional_constraint = "EXACTLY"
                 text_transformation {
                   priority = 1
                   type     = "NONE"
                 }
-                search_string = var.user_body_size
               }
             }
             statement {
@@ -201,18 +205,22 @@ resource "aws_wafv2_web_acl" "api_gateway" {
           }
         }
         statement {
-          byte_match_statement {
+          size_constraint_statement {
+            comparison_operator = "GT"
+            size                = var.doc_body_size
             field_to_match {
-              single_header {
-                name = "content-length"
+              headers {
+                match_pattern {
+                  all {}
+                }
+                match_scope       = "VALUE"
+                oversize_handling = "MATCH"
               }
             }
-            positional_constraint = "EXACTLY"
             text_transformation {
               priority = 1
               type     = "NONE"
             }
-            search_string = var.doc_body_size
           }
         }
 

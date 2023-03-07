@@ -7,7 +7,7 @@ locals {
   }
 
   cpu_usage_conf = merge(local.defaults, { threshold = 90 }, var.cpu_usage)
-  log_error_conf = merge(local.defaults, { threshold = 1, log_pattern = "ERROR" }, var.log_error)
+  log_error_conf = merge(local.defaults, { threshold = 0, log_pattern = "ERROR" }, var.log_error)
 }
 
 module "cpu_usage" {

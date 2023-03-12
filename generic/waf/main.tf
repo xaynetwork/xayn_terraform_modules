@@ -160,7 +160,7 @@ resource "aws_wafv2_web_acl" "api_gateway" {
 
   rule {
     name     = "block-overload"
-    priority = 55
+    priority = 5
 
     action {
       count {}

@@ -102,7 +102,13 @@ variable "alarm_http_5xx_error" {
 }
 
 variable "alarm_latency" {
-  description = "Alarm for API Gateway average latency."
+  description = "Alarm for API Gateway p90 latency."
+  type        = any
+  default     = {}
+}
+
+variable "alarm_error_rate" {
+  description = "Alarm for an increased error rate on the API Gateway."
   type        = any
   default     = {}
 }

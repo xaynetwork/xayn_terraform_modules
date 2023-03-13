@@ -19,7 +19,7 @@ module "read_latency" {
   alarm_name          = "${var.prefix}aurora_read_latency"
   alarm_description   = "High average Aurora read latency > ${local.read_latency_conf.threshold}ms. It may indicate slow queries."
   comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 1
+  evaluation_periods  = 5
   threshold           = local.read_latency_conf.threshold
 
   metric_query = [{
@@ -58,7 +58,7 @@ module "write_latency" {
   alarm_name          = "${var.prefix}aurora_write_latency"
   alarm_description   = "High average Aurora write latency > ${local.write_latency_conf.threshold}ms. It may indicate slow queries."
   comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 1
+  evaluation_periods  = 5
   threshold           = local.write_latency_conf.threshold
 
   metric_query = [{

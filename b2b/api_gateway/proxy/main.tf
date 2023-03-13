@@ -228,6 +228,7 @@ module "alarms" {
 
   http_5xx_error = var.alarm_http_5xx_error
   latency        = var.alarm_latency
+  error_rate     = var.alarm_error_rate
 
   tags = var.tags
 }

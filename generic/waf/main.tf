@@ -200,7 +200,7 @@ resource "aws_wafv2_web_acl" "api_gateway" {
       #   }
       # statement {
       size_constraint_statement {
-        comparison_operator = "GT"
+        comparison_operator = "LT"
         size                = var.headers_size
         field_to_match {
           headers {

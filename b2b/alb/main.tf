@@ -92,9 +92,8 @@ module "alarms" {
 
   arn_suffix = aws_lb.this.arn_suffix
 
-  services_http_5xx_error = var.alarm_services_http_5xx_error
-  http_5xx_error          = var.alarm_http_5xx_error
-  http_4xx_error          = var.alarm_http_4xx_error
+  http_5xx_error = var.alarm_http_5xx_error
+  http_4xx_error = var.alarm_http_4xx_error
 
   tags = var.tags
 }

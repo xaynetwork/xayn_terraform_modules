@@ -6,9 +6,8 @@ locals {
     alarm_actions   = []
   }
 
-  http_5xx_error_conf      = merge(local.defaults, { threshold = 0 }, var.http_5xx_error)
-  integration_latency_conf = merge(local.defaults, { threshold = 250 }, var.integration_latency)
-  latency_conf             = merge(local.defaults, { threshold = 300 }, var.latency)
+  http_5xx_error_conf = merge(local.defaults, { threshold = 0 }, var.http_5xx_error)
+  latency_conf        = merge(local.defaults, { threshold = 300 }, var.latency)
 }
 
 module "http_5xx_error" {
@@ -44,43 +43,6 @@ module "http_5xx_error" {
   actions_enabled = local.http_5xx_error_conf.actions_enabled
   alarm_actions   = local.http_5xx_error_conf.alarm_actions
   ok_actions      = local.http_5xx_error_conf.ok_actions
-
-  tags = var.tags
-}
-
-module "integration_latency" {
-  source  = "terraform-aws-modules/cloudwatch/aws//modules/metric-alarm"
-  version = "4.2.1"
-
-  create_metric_alarm = local.integration_latency_conf.create_alarm
-  alarm_name          = "${var.prefix}${var.api_name}_api_gateway_integration_latency"
-  alarm_description   = "High integration latency for ${var.api_name}. Average integration latency > ${local.integration_latency_conf.threshold}ms"
-  comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 2
-  threshold           = local.integration_latency_conf.threshold
-  treat_missing_data  = "notBreaching"
-
-  metric_query = [{
-    id          = "m1"
-    account_id  = var.account_id
-    return_data = true
-
-    metric = [{
-      namespace   = "AWS/ApiGateway"
-      metric_name = "IntegrationLatency"
-      period      = 60
-      stat        = "Average"
-      dimensions = {
-        ApiName = var.api_name
-        Stage   = var.api_stage
-      }
-    }]
-    }
-  ]
-
-  actions_enabled = local.integration_latency_conf.actions_enabled
-  alarm_actions   = local.integration_latency_conf.alarm_actions
-  ok_actions      = local.integration_latency_conf.ok_actions
 
   tags = var.tags
 }

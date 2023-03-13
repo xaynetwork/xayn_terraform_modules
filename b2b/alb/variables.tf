@@ -43,12 +43,6 @@ variable "health_check_path" {
   default     = "/health"
 }
 
-variable "alarm_services_http_5xx_error" {
-  description = "Alarm for ALB services HTTP-5XX errors."
-  type        = any
-  default     = {}
-}
-
 variable "alarm_http_5xx_error" {
   description = "Alarm for ALB HTTP-5XX errors."
   type        = any

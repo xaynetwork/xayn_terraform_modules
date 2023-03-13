@@ -26,12 +26,6 @@ variable "http_5xx_error" {
   default     = {}
 }
 
-variable "integration_latency" {
-  description = "Alarm for API Gateway average integration latency."
-  type        = any
-  default     = {}
-}
-
 variable "latency" {
   description = "Alarm for API Gateway average latency."
   type        = any

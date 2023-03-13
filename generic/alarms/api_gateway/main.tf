@@ -56,7 +56,7 @@ module "latency" {
   alarm_name          = "${var.prefix}${var.api_name}_api_gateway_latency"
   alarm_description   = "High latency for ${var.api_name}. P90 latency > ${local.latency_conf.threshold}ms"
   comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 5
+  evaluation_periods  = 10
   threshold           = local.latency_conf.threshold
   treat_missing_data  = "notBreaching"
 

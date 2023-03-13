@@ -54,12 +54,6 @@ variable "alarm_ip_rate_limit" {
   default     = {}
 }
 
-variable "user_body_size" {
-  description = "Size limit of the user API body from the load"
-  type        = number
-  default     = 8000
-}
-
 variable "query_size" {
   description = "Size limit of the query from the load"
   type        = number

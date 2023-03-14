@@ -3,6 +3,12 @@ variable "name" {
   type        = string
 }
 
+variable "container_insights" {
+  description = "Whether container insights should be enabled"
+  type        = string
+  default     = "enabled"
+}
+
 variable "capacity_provider_strategy" {
   description = "Describes a spot instance configuration. Weights are between 0..100 and base defines the always running instances. Only one base can be 0."
   type = object({

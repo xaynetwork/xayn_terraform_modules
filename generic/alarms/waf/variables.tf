@@ -19,12 +19,6 @@ variable "prefix" {
   default     = ""
 }
 
-variable "all_requests" {
-  description = "Alarm for WAF ALL requests."
-  type        = any
-  default     = {}
-}
-
 variable "all_requests_blocked" {
   description = "Alarm for WAF ALL blocked requests."
   type        = any

@@ -22,7 +22,7 @@ module "cpu_usage" {
   alarm_name          = "${var.prefix}${var.service_name}_cpu_usage"
   alarm_description   = "High CPU usage for ${var.service_name}. It may indicate that the auto scaling reach its maximum."
   comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 3
+  evaluation_periods  = 2
   threshold           = local.cpu_usage_conf.threshold
 
   metric_query = [{

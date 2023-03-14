@@ -36,12 +36,6 @@ variable "path_rules" {
   description = "A list of path entry objects, that describe which paths are allowed by the firewall, an empty array would block all requests."
 }
 
-variable "alarm_all_requests" {
-  description = "Alarm for WAF ALL requests."
-  type        = any
-  default     = {}
-}
-
 variable "alarm_all_requests_blocked" {
   description = "Alarm for WAF ALL blocked requests."
   type        = any

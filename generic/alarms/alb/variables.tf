@@ -14,12 +14,6 @@ variable "prefix" {
   default     = ""
 }
 
-variable "services_http_5xx_error" {
-  description = "Alarm for ALB services HTTP-5XX errors."
-  type        = any
-  default     = {}
-}
-
 variable "http_5xx_error" {
   description = "Alarm for ALB HTTP-5XX errors."
   type        = any

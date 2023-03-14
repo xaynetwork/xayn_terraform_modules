@@ -163,7 +163,7 @@ resource "aws_wafv2_web_acl" "api_gateway" {
     priority = 50
 
     action {
-      count {}
+      block {}
     }
 
     statement {

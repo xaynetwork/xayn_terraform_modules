@@ -158,6 +158,58 @@ resource "aws_wafv2_web_acl" "api_gateway" {
     }
   }
 
+  rule {
+    name     = "block-overload"
+    priority = 50
+
+    action {
+      block {}
+    }
+
+    statement {
+      or_statement {
+        statement {
+          size_constraint_statement {
+            comparison_operator = "GT"
+            size                = var.headers_size
+            field_to_match {
+              headers {
+                match_pattern {
+                  all {}
+                }
+                match_scope       = "VALUE"
+                oversize_handling = "MATCH"
+              }
+            }
+            text_transformation {
+              priority = 1
+              type     = "NONE"
+            }
+          }
+        }
+        statement {
+          size_constraint_statement {
+            comparison_operator = "GT"
+            size                = var.query_size
+            field_to_match {
+              all_query_arguments {}
+            }
+            text_transformation {
+              priority = 1
+              type     = "NONE"
+            }
+          }
+        }
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "block-overload"
+      sampled_requests_enabled   = true
+    }
+  }
+
 
   dynamic "rule" {
     for_each = var.path_rules

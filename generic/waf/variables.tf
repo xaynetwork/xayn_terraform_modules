@@ -48,6 +48,18 @@ variable "alarm_ip_rate_limit" {
   default     = {}
 }
 
+variable "query_size" {
+  description = "Size limit of the request query string in KB"
+  type        = number
+  default     = 1000
+}
+
+variable "headers_size" {
+  description = "Size limit of the request headers in KB"
+  type        = number
+  default     = 1000
+}
+
 variable "tags" {
   description = "A map of labels to apply to contained resources."
   type        = map(string)

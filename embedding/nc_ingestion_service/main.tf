@@ -86,3 +86,17 @@ module "asg" {
   min_tasks    = var.desired_count
   max_tasks    = var.max_count
 }
+
+module "ingestion_count_metric" {
+  source  = "terraform-aws-modules/cloudwatch/aws//modules/log-metric-filter"
+  version = "4.2.1"
+
+  create_cloudwatch_log_metric_filter = var.create_ingestion_count_metric
+  log_group_name                      = module.service.log_group_name
+
+  name    = "${module.service.name}_ingestions_count_metric"
+  pattern = "msg_status=\"done\""
+
+  metric_transformation_namespace = "${var.cluster_name}/${module.service.name}"
+  metric_transformation_name      = "IngestionCount"
+}

@@ -79,6 +79,12 @@ variable "capacity_provider_strategy" {
   }
 }
 
+variable "create_ingestion_count_metric" {
+  type        = bool
+  description = "Wheater we create the Ingestion Count Metric"
+  default     = true
+}
+
 variable "tags" {
   description = "Custom tags to set on the underlining resources"
   type        = map(string)

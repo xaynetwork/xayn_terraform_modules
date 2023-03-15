@@ -5,8 +5,8 @@ variable "name" {
 
 variable "container_insights" {
   description = "Whether container insights should be enabled"
-  type        = string
-  default     = "enabled"
+  type        = bool
+  default     = true
 }
 
 variable "capacity_provider_strategy" {

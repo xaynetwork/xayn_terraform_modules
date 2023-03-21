@@ -1,5 +1,5 @@
 variable "repo_names" {
-  description = "A list of ECR repositoryies to be created"
+  description = "A list of ECR repositories to be created"
   type        = list(string)
 }
 

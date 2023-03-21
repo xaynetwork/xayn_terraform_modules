@@ -95,7 +95,7 @@ module "log_error" {
   alarm_name          = "${var.prefix}${var.service_name}_log_errors"
   alarm_description   = "Number of errors in ${var.service_name} > ${local.log_error_conf.threshold}."
   comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 1
+  evaluation_periods  = 3
   threshold           = local.log_error_conf.threshold
   treat_missing_data  = "notBreaching"
 

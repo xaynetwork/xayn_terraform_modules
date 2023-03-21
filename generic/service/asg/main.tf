@@ -25,26 +25,26 @@ resource "aws_appautoscaling_policy" "cpu" {
 }
 
 resource "aws_appautoscaling_scheduled_action" "scheduled_out" {
-  count              = var.scheduled_scaling != null ? 1 : 0
-  name               = "${var.service_name}-scheduled-scaling-out"
+  count              = length(var.scheduled_scaling)
+  name               = "${var.service_name}-scheduled-scaling-out-${count.index}"
   service_namespace  = aws_appautoscaling_target.service.service_namespace
   resource_id        = aws_appautoscaling_target.service.resource_id
   scalable_dimension = aws_appautoscaling_target.service.scalable_dimension
-  schedule           = "cron(${var.scheduled_scaling.schedule_out})"
+  schedule           = "cron(${var.scheduled_scaling[count.index].schedule_out})"
 
   scalable_target_action {
-    min_capacity = var.scheduled_scaling.min_out
-    max_capacity = var.scheduled_scaling.max_out
+    min_capacity = var.scheduled_scaling[count.index].min_out
+    max_capacity = var.scheduled_scaling[count.index].max_out
   }
 }
 
 resource "aws_appautoscaling_scheduled_action" "scheduled_in" {
-  count              = var.scheduled_scaling != null ? 1 : 0
-  name               = "${var.service_name}-scheduled-scaling-in"
+  count              = length(var.scheduled_scaling)
+  name               = "${var.service_name}-scheduled-scaling-in-${count.index}"
   service_namespace  = aws_appautoscaling_target.service.service_namespace
   resource_id        = aws_appautoscaling_target.service.resource_id
   scalable_dimension = aws_appautoscaling_target.service.scalable_dimension
-  schedule           = "cron(${var.scheduled_scaling.schedule_in})"
+  schedule           = "cron(${var.scheduled_scaling[count.index].schedule_in})"
 
   scalable_target_action {
     min_capacity = var.min_tasks

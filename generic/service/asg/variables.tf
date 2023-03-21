@@ -45,12 +45,12 @@ variable "scale_out_cooldown" {
 }
 
 variable "scheduled_scaling" {
-  description = "A schedule configuration to scale the service out and in."
-  type = object({
+  description = "A list of schedule configurations in order to scale the service out and in."
+  type = list(object({
     schedule_out = string
     schedule_in  = string
     min_out      = number
     max_out      = number
-  })
-  default = null
+  }))
+  default = []
 }

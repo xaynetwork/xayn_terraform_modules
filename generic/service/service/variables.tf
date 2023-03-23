@@ -53,7 +53,7 @@ variable "alb" {
   default = null
   validation {
     condition     = alltrue([for r in try(var.alb.rules, []) : ((r.routing_header_condition == null ? 0 : 1) + length(r.routing_path_pattern)) <= 5])
-    error_message = "Can not exceed 5 conditions per rule. Each path and the hearder condition counts as condition!"
+    error_message = "Can not exceed 5 conditions per rule. Each path and the header condition counts as condition!"
   }
 }
 

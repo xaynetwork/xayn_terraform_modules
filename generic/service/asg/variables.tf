@@ -45,7 +45,7 @@ variable "scale_out_cooldown" {
 }
 
 variable "scheduled_scaling" {
-  description = "A list of schedule configurations in order to scale the service out and in."
+  description = "A list of schedule configurations in order to scale the service out and in. Timezone is UTC."
   type = list(object({
     schedule_out = string
     schedule_in  = string

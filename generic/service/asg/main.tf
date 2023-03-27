@@ -52,6 +52,7 @@ resource "aws_appautoscaling_scheduled_action" "scheduled_out" {
   resource_id        = aws_appautoscaling_target.service_with_scheduled[0].resource_id
   scalable_dimension = aws_appautoscaling_target.service_with_scheduled[0].scalable_dimension
   schedule           = "cron(${var.scheduled_scaling[count.index].schedule_out})"
+  timezone           = var.scheduled_scaling[count.index].timezone
 
   scalable_target_action {
     min_capacity = var.scheduled_scaling[count.index].min_out
@@ -69,6 +70,7 @@ resource "aws_appautoscaling_scheduled_action" "scheduled_in" {
   resource_id        = aws_appautoscaling_target.service_with_scheduled[0].resource_id
   scalable_dimension = aws_appautoscaling_target.service_with_scheduled[0].scalable_dimension
   schedule           = "cron(${var.scheduled_scaling[count.index].schedule_in})"
+  timezone           = var.scheduled_scaling[count.index].timezone
 
   scalable_target_action {
     min_capacity = var.min_tasks

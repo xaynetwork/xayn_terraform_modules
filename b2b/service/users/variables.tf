@@ -144,10 +144,11 @@ variable "max_count" {
 }
 
 variable "scheduled_scaling" {
-  description = "A list of schedule configurations in order to scale the service out and in. Timezone is UTC."
+  description = "A list of schedule configurations in order to scale the service out and in."
   type = list(object({
     schedule_out = string
     schedule_in  = string
+    timezone     = string
     min_out      = number
     max_out      = number
   }))

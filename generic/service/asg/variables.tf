@@ -43,3 +43,14 @@ variable "scale_out_cooldown" {
   type        = number
   default     = 60
 }
+
+variable "scheduled_scaling" {
+  description = "A list of schedule configurations in order to scale the service out and in. Timezone is UTC."
+  type = list(object({
+    schedule_out = string
+    schedule_in  = string
+    min_out      = number
+    max_out      = number
+  }))
+  default = []
+}

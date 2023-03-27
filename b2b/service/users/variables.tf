@@ -143,6 +143,17 @@ variable "max_count" {
   default     = 4
 }
 
+variable "scheduled_scaling" {
+  description = "A list of schedule configurations in order to scale the service out and in. Timezone is UTC."
+  type = list(object({
+    schedule_out = string
+    schedule_in  = string
+    min_out      = number
+    max_out      = number
+  }))
+  default = []
+}
+
 variable "alarm_cpu_usage" {
   description = "Alarm for Service average CPU usage. Threshold is in percentage."
   type        = any

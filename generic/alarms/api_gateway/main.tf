@@ -93,7 +93,7 @@ module "error_rate" {
   alarm_name          = "${var.prefix}${var.api_name}_api_gateway_error_rate"
   alarm_description   = "Error rate above ${local.error_rate_conf.threshold}% for ${var.api_name}."
   comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 1
+  evaluation_periods  = 3
   threshold           = local.error_rate_conf.threshold
   treat_missing_data  = "notBreaching"
 

@@ -82,6 +82,11 @@ variable "cpu_architecture" {
   description = "CPU architecture"
   type        = string
   default     = "X86_64"
+
+  validation {
+    condition     = contains(["X86_64", "ARM64"], var.cpu_architecture)
+    error_message = "Only X86_64 or ARM64 are allowed"
+  }
 }
 
 variable "environment" {

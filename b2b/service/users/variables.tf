@@ -131,6 +131,12 @@ variable "container_memory" {
   default     = 512
 }
 
+variable "cpu_architecture" {
+  description = "CPU architecture"
+  type        = string
+  default     = "X86_64"
+}
+
 variable "desired_count" {
   description = "Number of instances of the task definition to place and keep running"
   type        = number

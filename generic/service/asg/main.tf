@@ -46,7 +46,9 @@ resource "aws_appautoscaling_policy" "cpu" {
 }
 
 resource "aws_appautoscaling_scheduled_action" "scheduled_out" {
-  count              = length(var.scheduled_scaling)
+  count      = length(var.scheduled_scaling)
+  depends_on = [aws_appautoscaling_policy.cpu]
+
   name               = "${var.service_name}-scheduled-scaling-out-${count.index}"
   service_namespace  = aws_appautoscaling_target.service_with_scheduled[0].service_namespace
   resource_id        = aws_appautoscaling_target.service_with_scheduled[0].resource_id

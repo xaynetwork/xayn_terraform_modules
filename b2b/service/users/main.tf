@@ -84,6 +84,7 @@ module "service" {
     ]
   }
 
+  cpu_architecture        = var.cpu_architecture
   container_cpu           = var.container_cpu
   container_memory        = var.container_memory
   container_image         = var.container_image

@@ -13,7 +13,7 @@ data "aws_iam_policy_document" "assume_role_api_gateway" {
 
 # allow writing API Gateway logs to CloudWatch
 resource "aws_iam_role" "api_gateway_cloudwatch" {
-  name               = "api_gateway_cloudwatch_global"
+  name               = "api_gateway_cloudwatch_${var.role_postfix == null ? "global" : "${var.role_postfix}"}"
   assume_role_policy = data.aws_iam_policy_document.assume_role_api_gateway.json
   tags               = var.tags
 }

@@ -71,6 +71,7 @@ module "service" {
     XAYN_SEMANTIC_SEARCH__NET__KEEP_ALIVE             = var.keep_alive
     XAYN_SEMANTIC_SEARCH__NET__CLIENT_REQUEST_TIMEOUT = var.request_timeout
     XAYN_SEMANTIC_SEARCH__LOGGING__LEVEL              = var.logging_level
+    XAYN_SEMANTIC_SEARCH__EMBEDDING__TOKEN_SIZE       = var.token_size
   }
 
   tags = var.tags

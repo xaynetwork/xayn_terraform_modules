@@ -76,6 +76,12 @@ variable "logging_level" {
   default     = "INFO"
 }
 
+variable "token_size" {
+  description = "The size of the token for the embeddings"
+  type        = string
+  default     = "160"
+}
+
 ## alb
 variable "alb_listener_arn" {
   description = "ARN of the ALB listener"

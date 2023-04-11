@@ -64,7 +64,7 @@ module "service" {
         name  = "X-Tenant-Id"
         value = var.tenant
       }
-      routing_path_pattern = ["/documents", "/documents/*"]
+      routing_path_pattern = ["/documents", "/documents/*", "/candidates", "/candidates/*"]
     }]
   }
 

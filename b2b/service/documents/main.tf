@@ -59,13 +59,22 @@ module "service" {
     listener_arn  = var.alb_listener_arn
     listener_port = var.alb_listener_port
     health_path   = "/health"
-    rules = [{
-      routing_header_condition = {
-        name  = "X-Tenant-Id"
-        value = var.tenant
+    rules = [
+      {
+        routing_header_condition = {
+          name  = "X-Tenant-Id"
+          value = var.tenant
+        }
+        routing_path_pattern = ["/documents", "/documents/*"]
+      },
+      {
+        routing_header_condition = {
+          name  = "X-Tenant-Id"
+          value = var.tenant
+        }
+        routing_path_pattern = ["/candidates", "/candidates/*"]
       }
-      routing_path_pattern = ["/documents", "/documents/*"]
-    }]
+    ]
   }
 
   cpu_architecture        = var.cpu_architecture

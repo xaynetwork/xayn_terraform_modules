@@ -1,12 +1,12 @@
 from enum import Enum
 
-
 class PolicyEffect(Enum):
-    Deny = 0
-    Allow = 1
+    '''Effects for the AWS policy'''
+    DENY = 'Deny'
+    ALLOW = 'Allow'
 
 
-def build_policy(api_token: str, methodArn: str, effect: PolicyEffect):
+def build_policy(api_token: str, method_arn: str, effect: PolicyEffect):
     return {
         "principalId": "customer_id_" + api_token,
         # used by the usage plan
@@ -16,16 +16,14 @@ def build_policy(api_token: str, methodArn: str, effect: PolicyEffect):
             "Statement": [
                 {
                     "Action": "execute-api:Invoke",
-                    "Effect": effect.name,
-                    "Resource": methodArn,
+                    "Effect": effect.value,
+                    "Resource": method_arn,
                 },
             ],
         },
     }
 
-
-# import requests
-def lambda_handler(event, context):
+def lambda_handler(event, _):
     """Sample pure Lambda function
 
     Parameters
@@ -47,7 +45,7 @@ def lambda_handler(event, context):
         Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
     """
 
-    apiToken = event["authorizationToken"] if "authorizationToken" in event else ""
-    methodArn = event["methodArn"] if "methodArn" in event else ""
+    api_token = event["authorizationToken"] if "authorizationToken" in event else ""
+    method_arn = event["methodArn"] if "methodArn" in event else ""
 
-    return build_policy(api_token=apiToken, methodArn=methodArn, effect=PolicyEffect.Deny)
+    return build_policy(api_token, method_arn, effect=PolicyEffect.DENY)

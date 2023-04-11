@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class PolicyEffect(Enum):
     Deny = 0
     Allow = 1
@@ -46,7 +47,7 @@ def lambda_handler(event, context):
         Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
     """
 
-    apiToken = event["authorizationToken"]
-    methodArn = event["methodArn"]
+    apiToken = event["authorizationToken"] if "authorizationToken" in event else ""
+    methodArn = event["methodArn"] if "methodArn" in event else ""
 
-    return build_policy(api_token=apiToken, effect=PolicyEffect.Deny)
+    return build_policy(api_token=apiToken, methodArn=methodArn, effect=PolicyEffect.Deny)

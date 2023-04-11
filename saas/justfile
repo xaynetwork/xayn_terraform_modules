@@ -10,3 +10,6 @@ py-lint:
 
 py-test:
   python3 -m pytest ./control_app/src/tests/unit
+
+py-install:
+  pip3 install -r ./control_app/src/requirements.txt

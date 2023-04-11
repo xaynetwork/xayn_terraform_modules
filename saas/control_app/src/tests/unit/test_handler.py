@@ -1,8 +1,7 @@
-import json
+#pylint: disable=redefined-outer-name
 
 import pytest
-
-from authenticator import app
+from src.authenticator import app
 
 
 @pytest.fixture()
@@ -66,7 +65,7 @@ def test_lambda_should_return_deny(apigw_event):
 
     data = app.lambda_handler(apigw_event, "")
 
-    assert "policyDocument" in data 
+    assert "policyDocument" in data
     assert "Statement" in data["policyDocument"]
     assert "Effect" in data["policyDocument"]["Statement"][0]
     assert data["policyDocument"]["Statement"][0]["Effect"] == "Deny"

@@ -55,7 +55,7 @@ variable "default_method_throttle_settings" {
   })
   default = {
     burst_limit = 5
-    rate_limit = 10
+    rate_limit  = 10
   }
 }
 

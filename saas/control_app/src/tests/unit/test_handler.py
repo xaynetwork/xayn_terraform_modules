@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from hello_world import app
+from authenticator import app
 
 
 @pytest.fixture()
@@ -62,11 +62,11 @@ def apigw_event():
     }
 
 
-def test_lambda_handler(apigw_event):
+def test_lambda_should_return_deny(apigw_event):
 
-    ret = app.lambda_handler(apigw_event, "")
-    data = json.loads(ret["body"])
+    data = app.lambda_handler(apigw_event, "")
 
-    assert ret["statusCode"] == 200
-    assert "message" in ret["body"]
-    assert data["message"] == "hello world"
+    assert "policyDocument" in data 
+    assert "Statement" in data["policyDocument"]
+    assert "Effect" in data["policyDocument"]["Statement"][0]
+    assert data["policyDocument"]["Statement"][0]["Effect"] == "Deny"

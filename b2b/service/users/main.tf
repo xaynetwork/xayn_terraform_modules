@@ -93,6 +93,7 @@ module "service" {
   task_execution_role_arn = module.task_role.arn
   environment = {
     XAYN_WEB_API__NET__BIND_TO                              = "0.0.0.0:${var.container_port}"
+    XAYN_WEB_API__NET__MAX_BODY_SIZE                        = var.max_body_size
     XAYN_WEB_API__STORAGE__ELASTIC__URL                     = var.elasticsearch_url
     XAYN_WEB_API__STORAGE__ELASTIC__INDEX_NAME              = var.elasticsearch_index
     XAYN_WEB_API__STORAGE__ELASTIC__USER                    = var.elasticsearch_username

@@ -161,6 +161,12 @@ variable "scheduled_scaling" {
   default = []
 }
 
+variable "max_body_size" {
+  description = "The max size for bodies"
+  type        = number
+  default     = 4194304
+}
+
 variable "alarm_cpu_usage" {
   description = "Alarm for Service average CPU usage. Threshold is in percentage."
   type        = any

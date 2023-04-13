@@ -62,6 +62,10 @@ resource "aws_api_gateway_integration" "proxy" {
   timeout_milliseconds = 8000
 }
 
+#########
+## Exceptions mainly for timeouts
+######### 
+
 resource "aws_api_gateway_resource" "documents" {
   rest_api_id = aws_api_gateway_rest_api.tenant.id
   parent_id   = aws_api_gateway_rest_api.tenant.root_resource_id
@@ -71,7 +75,7 @@ resource "aws_api_gateway_resource" "documents" {
 resource "aws_api_gateway_method" "documents" {
   rest_api_id      = aws_api_gateway_rest_api.tenant.id
   resource_id      = aws_api_gateway_resource.documents.id
-  http_method      = "POST"
+  http_method      = "ANY"
   authorization    = "CUSTOM"
   authorizer_id    = aws_api_gateway_authorizer.lambda_authorizer.id
   api_key_required = true
@@ -82,7 +86,7 @@ resource "aws_api_gateway_integration" "documents" {
   resource_id             = aws_api_gateway_resource.documents.id
   http_method             = aws_api_gateway_method.documents.http_method
   type                    = "HTTP_PROXY"
-  integration_http_method = "POST"
+  integration_http_method = "ANY"
   uri                     = "http://${var.nlb_dns_name}/documents"
   passthrough_behavior    = "WHEN_NO_MATCH"
   connection_type         = "VPC_LINK"
@@ -93,8 +97,41 @@ resource "aws_api_gateway_integration" "documents" {
   timeout_milliseconds = 29000
 }
 
+resource "aws_api_gateway_resource" "candidates" {
+  rest_api_id = aws_api_gateway_rest_api.tenant.id
+  parent_id   = aws_api_gateway_rest_api.tenant.root_resource_id
+  path_part   = "candidates"
+}
+
+resource "aws_api_gateway_method" "candidates" {
+  rest_api_id      = aws_api_gateway_rest_api.tenant.id
+  resource_id      = aws_api_gateway_resource.candidates.id
+  http_method      = "PUT"
+  authorization    = "CUSTOM"
+  authorizer_id    = aws_api_gateway_authorizer.lambda_authorizer.id
+  api_key_required = true
+}
+
+resource "aws_api_gateway_integration" "candidates" {
+  rest_api_id             = aws_api_gateway_rest_api.tenant.id
+  resource_id             = aws_api_gateway_resource.candidates.id
+  http_method             = aws_api_gateway_method.candidates.http_method
+  type                    = "HTTP_PROXY"
+  integration_http_method = "PUT"
+  uri                     = "http://${var.nlb_dns_name}/candidates"
+  passthrough_behavior    = "WHEN_NO_MATCH"
+  connection_type         = "VPC_LINK"
+  connection_id           = var.nlb_vpc_link_id
+  request_parameters = {
+    "integration.request.header.X-Tenant-Id" = "'${var.tenant}'"
+  }
+  timeout_milliseconds = 29000
+}
+
+#########
+
 resource "aws_api_gateway_deployment" "tenant" {
-  depends_on  = [aws_api_gateway_method.proxy]
+  depends_on  = [aws_api_gateway_method.proxy, aws_api_gateway_method.documents, aws_api_gateway_method.candidates, aws_api_gateway_method.options_cors]
   rest_api_id = aws_api_gateway_rest_api.tenant.id
 
   triggers = {
@@ -107,6 +144,10 @@ resource "aws_api_gateway_deployment" "tenant" {
       aws_api_gateway_method.documents.id,
       aws_api_gateway_integration.documents.id,
       aws_api_gateway_integration.documents.request_parameters,
+      aws_api_gateway_resource.candidates.id,
+      aws_api_gateway_method.candidates.id,
+      aws_api_gateway_integration.candidates.id,
+      aws_api_gateway_integration.candidates.request_parameters,
       var.enable_usage_plan,
       var.usage_plan_api_key_id,
       var.usage_plan_quota_settings,

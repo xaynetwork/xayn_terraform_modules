@@ -7,6 +7,8 @@ locals {
   output_path           = "${local.function_build_path}/${local.function_zip_filename}"
 }
 
+data "aws_region" "current" {}
+
 # ### needs to have installed
 # ### https://github.com/timo-reymann/deterministic-zip
 # ### https://www.reddit.com/r/Terraform/comments/aupudn/building_deterministic_zips_to_minimize_lambda/
@@ -21,15 +23,54 @@ module "role" {
   tags   = var.tags
 }
 
+resource "aws_iam_role_policy" "authenticator_dynamodb" {
+  name   = "authenticator-dynamodb-policy"
+  role   = module.role.id
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+        "Effect": "Allow"
+        "Action": [
+            "dynamodb:List*",
+            "dynamodb:DescribeReservedCapacity*",
+            "dynamodb:DescribeLimits",
+            "dynamodb:DescribeTimeToLive"
+        ],
+        "Resource": "*",
+    },
+    {
+        "Effect": "Allow",
+        "Action": [
+            "dynamodb:BatchGet*",
+            "dynamodb:DescribeStream",
+            "dynamodb:DescribeTable",
+            "dynamodb:Get*",
+            "dynamodb:Query",
+            "dynamodb:Scan"
+        ],
+        "Resource": "${var.dynamodb_table_arn}"
+    }
+  ]
+}
+EOF
+}
+
 module "authentication_function" {
   source = "../../generic/lambda/function"
 
   function_name         = local.function_name
-  handler               = "app.lambda_handler"
+  handler               = "functions.authenticator.lambda_handler"
   runtime               = "python3.9"
   source_code_hash      = filebase64sha256(data.external.build.result.output)
   output_path           = local.output_path
   lambda_role_arn       = module.role.arn
   log_retention_in_days = var.log_retention_in_days
   tags                  = var.tags
+
+  environment_variables = {
+      REGION = data.aws_region.current.name
+      DB_TABLE  = var.dynamodb_table_name 
+  }
 }

@@ -1,0 +1,5 @@
+{
+  "type": "TOKEN",
+  "methodArn": "arn:aws:execute-api:eu-west-3:917039226361:4qnmcgc1lg/ESTestInvoke-stage/GET/documents",
+  "authorizationToken": "dGVuYW50MTpzZGtqaGZzZGtmCg=="
+}

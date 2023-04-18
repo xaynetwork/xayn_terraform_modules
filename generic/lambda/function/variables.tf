@@ -59,6 +59,12 @@ variable "timeout" {
   default     = 3
 }
 
+variable "environment_variables" {
+  description = "A map of variables that will be passed as ENV to the function."
+  type        = map(string)
+  default     = {}
+}
+
 variable "tags" {
   description = "Custom tags to set on the underlining resources"
   type        = map(string)

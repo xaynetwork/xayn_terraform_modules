@@ -1,5 +1,4 @@
 module "dynamodb_table" {
-  # source = "terraform-aws-modules/dynamodb-table"
   source = "git::https://github.com/terraform-aws-modules/terraform-aws-dynamodb-table?ref=v3.1.2"
 
   name = "saas"

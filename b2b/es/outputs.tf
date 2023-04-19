@@ -29,3 +29,8 @@ output "url_ssm_parameter_name" {
   description = "Name of the Elasticsearch URL SSM parameter"
   value       = aws_ssm_parameter.elasticsearch_url.name
 }
+
+output "name" {
+  description = "Name of the Elasticsearch cluster"
+  value       = ec_deployment.es_cluster.name
+}

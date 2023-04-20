@@ -43,7 +43,6 @@ module "service" {
   security_group_ids = [module.security_group.security_group_id]
 
   cluster_id = var.cluster_id
-  vpc_id     = var.vpc_id
   subnet_ids = var.subnet_ids
 
   task_cpu_architecture = var.task_cpu_architecture
@@ -56,8 +55,8 @@ module "service" {
   es_exporter_container_image = var.es_exporter_container_image
   es_exporter_args = [
     "--es.uri=${var.elasticsearch_url}",
-    # "--es.all",
-    # "--es.indices",
+    "--es.all",
+    "--es.indices",
     "--es.clusterinfo.interval=${var.es_exporter_scrape_interval}"
   ]
   es_exporter_environment = {

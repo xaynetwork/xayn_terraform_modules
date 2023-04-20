@@ -20,17 +20,7 @@
         "containerPort": ${es_exporter_container_port},
         "hostPort": ${es_exporter_container_port}
       }
-    ],
-    "healthCheck": {
-      "command": [
-        "CMD",
-        "curl -f http://localhost:${es_exporter_container_port}/healthz || exit 0"
-      ],
-      "interval": 30,
-      "timeout": 5,
-      "retries": 3,
-      "startPeriod": 10
-    }
+    ]
   },
   {
     "image": "${pc_exporter_image}",
@@ -49,7 +39,7 @@
     "dependsOn": [
       {
         "containerName": "${es_exporter_name}",
-        "condition": "HEALTHY"
+        "condition": "START"
       }
     ]
   }

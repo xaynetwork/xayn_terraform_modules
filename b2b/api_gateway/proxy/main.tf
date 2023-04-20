@@ -305,9 +305,10 @@ module "alarms" {
   api_name  = local.api_name
   api_stage = aws_api_gateway_stage.tenant.stage_name
 
-  http_5xx_error = var.alarm_http_5xx_error
-  latency        = var.alarm_latency
-  error_rate     = var.alarm_error_rate
+  http_5xx_error    = var.alarm_http_5xx_error
+  latency           = var.alarm_latency
+  error_rate        = var.alarm_error_rate
+  latency_by_method = var.alarm_latency_by_method
 
   tags = var.tags
 }

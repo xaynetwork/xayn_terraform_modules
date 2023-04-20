@@ -9,6 +9,7 @@ variable "additional_subscriptions" {
     protocol = string
     endpoint = string
   }))
+  default = []
 }
 
 variable "tags" {

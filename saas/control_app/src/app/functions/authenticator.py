@@ -49,11 +49,11 @@ def handle(event, repo : DbRepository):
     
     tenant = repo.get_tenant(tenant_id=tenant_id)
     if tenant is None:
-        logging.error("No tenent found with id %s", tenant_id)
+        logging.error("No tenant found with id %s", tenant_id)
         return build_policy(api_token, [method_arn], effect=PolicyEffect.DENY)
     
     context = tenant.get_authorization_context(method_arn, auth_key)
-
+    
     if isinstance(context, AuthorizedContext):
         return build_policy(context.plan_key, context.method_arns, effect=PolicyEffect.ALLOW)
 

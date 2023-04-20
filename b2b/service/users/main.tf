@@ -111,6 +111,8 @@ module "service" {
     XAYN_WEB_API__STORAGE__POSTGRES__PASSWORD = var.postgres_password_ssm_parameter_arn
   }
 
+  log_retention_in_days = var.log_retention_in_days
+
   tags = var.tags
 }
 

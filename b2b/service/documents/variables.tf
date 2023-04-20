@@ -149,6 +149,12 @@ variable "max_body_size" {
   default     = 4194304
 }
 
+variable "log_retention_in_days" {
+  description = "Specifies the number of days you want to retain log events of the container"
+  type        = number
+  default     = 7
+}
+
 variable "alarm_cpu_usage" {
   description = "Alarm for Service average CPU usage. Threshold is in percentage."
   type        = any

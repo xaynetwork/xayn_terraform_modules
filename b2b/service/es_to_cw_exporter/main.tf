@@ -72,7 +72,7 @@ module "service" {
     CLOUDWATCH_NAMESPACE       = "ElasticSearch/${var.es_cluster_name}"
     CLOUDWATCH_REGION          = data.aws_region.current.name
     PROMETHEUS_SCRAPE_INTERVAL = var.pc_exporter_scrape_interval
-    INCLUDE_METRICS            = var.pc_exporter_include_metrics
+    INCLUDE_METRICS            = join(",", var.pc_exporter_include_metrics)
   }
 
   tags = var.tags

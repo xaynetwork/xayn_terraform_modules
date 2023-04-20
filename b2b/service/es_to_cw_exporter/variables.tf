@@ -73,7 +73,7 @@ variable "pc_exporter_scrape_interval" {
 
 variable "pc_exporter_include_metrics" {
   description = "Only publish the specified metrics (comma-separated list of glob patterns)"
-  type        = string
+  type        = list(string)
 }
 
 variable "es_cluster_name" {

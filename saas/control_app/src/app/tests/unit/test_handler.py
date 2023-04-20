@@ -2,7 +2,7 @@
 import pytest
 from app.functions.shared.auth_utils import encode_auth_key
 from app.functions import authenticator
-from app.tests.unit.fakes import fake_tenant
+from app.tests.unit.fakes import (fake_tenant, fake_no_tenant)
 
 
 @pytest.fixture()
@@ -16,7 +16,7 @@ def apigw_event():
     }
 
 
-def test_lambda_should_return_deny(apigw_event):
+def test_lambda_should_return_allow(apigw_event):
 
     data = authenticator.handle(apigw_event, fake_tenant())
 
@@ -24,3 +24,13 @@ def test_lambda_should_return_deny(apigw_event):
     assert "Statement" in data["policyDocument"]
     assert "Effect" in data["policyDocument"]["Statement"][0]
     assert data["policyDocument"]["Statement"][0]["Effect"] == "Allow"
+
+
+def test_lambda_should_return_deny_when_tenant_does_not_exist(apigw_event):
+
+    data = authenticator.handle(apigw_event, fake_no_tenant())
+
+    assert "policyDocument" in data
+    assert "Statement" in data["policyDocument"]
+    assert "Effect" in data["policyDocument"]["Statement"][0]
+    assert data["policyDocument"]["Statement"][0]["Effect"] == "Deny"

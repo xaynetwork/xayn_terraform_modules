@@ -26,3 +26,11 @@ module "notify_slack" {
   lambda_function_tags      = var.tags
   tags                      = var.tags
 }
+
+
+resource "aws_sns_topic_subscription" "additional_subscriptions" {
+  count     = length(var.additional_subscriptions)
+  topic_arn = module.notify_slack.slack_topic_arn
+  protocol  = var.additional_subscriptions[count.index].protocol
+  endpoint  = var.additional_subscriptions[count.index].endpoint
+}

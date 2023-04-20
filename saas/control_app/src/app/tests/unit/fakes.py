@@ -20,6 +20,8 @@ FAKE_TENANT_1 = {
 def fake_tenant():
     return FakeDbRepository("", "", lambda: Tenant(data=FAKE_TENANT_1))
 
+def fake_no_tenant():
+    return FakeDbRepository("", "", lambda: None)
 
 class FakeDbRepository(DbRepository):
     _get_tenant: Callable[[], Tenant]

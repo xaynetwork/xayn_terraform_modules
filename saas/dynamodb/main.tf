@@ -1,7 +1,11 @@
+locals {
+  db_name = "saas"
+}
+
 module "dynamodb_table" {
   source = "git::https://github.com/terraform-aws-modules/terraform-aws-dynamodb-table?ref=v3.1.2"
 
-  name = "saas"
+  name = local.db_name
 
   ######
   # DataType # DataId

@@ -1,7 +1,7 @@
 locals {
   function_name         = "authenticator"
   app_path              = "${path.module}/src"
-  function_path         = "${local.app_path}/${local.function_name}"
+  function_path         = "${local.app_path}/app"
   function_build_path   = "${local.function_path}/build"
   function_zip_filename = "${local.function_name}.zip"
   output_path           = "${local.function_build_path}/${local.function_zip_filename}"
@@ -31,14 +31,14 @@ resource "aws_iam_role_policy" "authenticator_dynamodb" {
   "Version": "2012-10-17",
   "Statement": [
     {
-        "Effect": "Allow"
+        "Effect": "Allow",
         "Action": [
             "dynamodb:List*",
             "dynamodb:DescribeReservedCapacity*",
             "dynamodb:DescribeLimits",
             "dynamodb:DescribeTimeToLive"
         ],
-        "Resource": "*",
+        "Resource": "*"
     },
     {
         "Effect": "Allow",
@@ -61,7 +61,7 @@ module "authentication_function" {
   source = "../../generic/lambda/function"
 
   function_name         = local.function_name
-  handler               = "functions.authenticator.lambda_handler"
+  handler               = "app.functions.authenticator.lambda_handler"
   runtime               = "python3.9"
   source_code_hash      = filebase64sha256(data.external.build.result.output)
   output_path           = local.output_path

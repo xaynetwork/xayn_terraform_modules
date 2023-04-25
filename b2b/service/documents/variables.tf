@@ -167,6 +167,12 @@ variable "alarm_log_error" {
   default     = {}
 }
 
+variable "token_size" {
+  description = "The size of the token for the embeddings"
+  type        = string
+  default     = "250"
+}
+
 variable "tags" {
   description = "Custom tags to set on the underlining resources"
   type        = map(string)

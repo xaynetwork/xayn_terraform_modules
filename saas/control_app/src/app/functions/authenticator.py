@@ -81,4 +81,4 @@ def lambda_handler(event, context):
         Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
     """
     db_repo = AwsDbRepository(endpoint_url=db_endpoint, table_name=db_table, region=region)
-    handle(event, db_repo)
+    return handle(event, db_repo)

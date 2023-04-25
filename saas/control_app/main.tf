@@ -2,8 +2,9 @@ locals {
   function_name         = "authenticator"
   app_path              = "${path.module}/src"
   function_path         = "${local.app_path}/app"
-  function_build_path   = "${local.function_path}/build"
+  function_build_path   = "${path.module}/build"
   function_zip_filename = "${local.function_name}.zip"
+  dest_dir_name         = "app"
   output_path           = "${local.function_build_path}/${local.function_zip_filename}"
 }
 
@@ -13,7 +14,7 @@ data "aws_region" "current" {}
 # ### https://github.com/timo-reymann/deterministic-zip
 # ### https://www.reddit.com/r/Terraform/comments/aupudn/building_deterministic_zips_to_minimize_lambda/
 data "external" "build" {
-  program = ["bash", "-c", "${local.app_path}/build.sh \"${local.function_path}\" \"${local.function_build_path}\" \"${local.function_zip_filename}\" Function &> /tmp/temp.log && echo '{ \"output\": \"${local.output_path}\" }'"]
+  program = ["bash", "-c", "${local.app_path}/build.sh \"${local.function_path}\" \"${local.function_build_path}\" \"${local.dest_dir_name}\" \"${local.function_zip_filename}\" Function &> /tmp/temp.log && echo '{ \"output\": \"${local.output_path}\" }'"]
 }
 
 module "role" {

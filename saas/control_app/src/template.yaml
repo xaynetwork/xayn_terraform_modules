@@ -30,6 +30,19 @@ Resources:
           Properties:
             Path: /hello
             Method: get
+  Provisioning:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: app.functions.provisioning.lambda_handler
+      Runtime: python3.9
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          REGION: ddblocal
+          DB_TABLE: saas
+          DB_ENDPOINT: http://dynamodb:8000
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function

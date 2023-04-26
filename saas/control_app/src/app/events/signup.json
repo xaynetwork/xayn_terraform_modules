@@ -1,0 +1,61 @@
+{
+  "body": "{\n    \"email\": \"simon.joecks@xayn.com\"\n}",
+  "headers": {
+    "Accept": "*/*",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Connection": "keep-alive",
+    "Content-Length": "40",
+    "Content-Type": "application/json",
+    "Host": "localhost:3000",
+    "User-Agent": "PostmanRuntime/7.31.1",
+    "X-Forwarded-Port": "3000",
+    "X-Forwarded-Proto": "http"
+  },
+  "httpMethod": "POST",
+  "isBase64Encoded": false,
+  "multiValueHeaders": {
+    "Accept": ["*/*"],
+    "Accept-Encoding": ["gzip, deflate, br"],
+    "Connection": ["keep-alive"],
+    "Content-Length": ["40"],
+    "Content-Type": ["application/json"],
+    "Host": ["localhost:3000"],
+    "User-Agent": ["PostmanRuntime/7.31.1"],
+    "X-Forwarded-Port": ["3000"],
+    "X-Forwarded-Proto": ["http"]
+  },
+  "multiValueQueryStringParameters": null,
+  "path": "/signup",
+  "pathParameters": null,
+  "queryStringParameters": null,
+  "requestContext": {
+    "accountId": "123456789012",
+    "apiId": "1234567890",
+    "domainName": "localhost:3000",
+    "extendedRequestId": null,
+    "httpMethod": "POST",
+    "identity": {
+      "accountId": null,
+      "apiKey": null,
+      "caller": null,
+      "cognitoAuthenticationProvider": null,
+      "cognitoAuthenticationType": null,
+      "cognitoIdentityPoolId": null,
+      "sourceIp": "127.0.0.1",
+      "user": null,
+      "userAgent": "Custom User Agent String",
+      "userArn": null
+    },
+    "path": "/signup",
+    "protocol": "HTTP/1.1",
+    "requestId": "df65b949-8ff9-482c-be9e-cbaf72a36998",
+    "requestTime": "26/Apr/2023:09:49:15 +0000",
+    "requestTimeEpoch": 1682502555,
+    "resourceId": "123456",
+    "resourcePath": "/signup",
+    "stage": "Prod"
+  },
+  "resource": "/signup",
+  "stageVariables": null,
+  "version": "1.0"
+}

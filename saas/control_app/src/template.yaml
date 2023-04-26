@@ -38,6 +38,12 @@ Resources:
       Runtime: python3.9
       Architectures:
         - x86_64
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /signup
+            Method: post
       Environment:
         Variables:
           REGION: ddblocal

@@ -18,6 +18,7 @@ py-install:
   pip3 install -r ./app/requirements.txt
 
 dynamodb-create-table:
+  # TODO use JSON schema
    AWS_ACCESS_KEY_ID=X AWS_SECRET_ACCESS_KEY=X aws dynamodb create-table --endpoint-url http://localhost:8000 \
       --table-name saas \
       --attribute-definitions AttributeName=dataType,AttributeType=S AttributeName=dataId,AttributeType=S \
@@ -39,3 +40,9 @@ sam-start-dynamodb:
 
 sam-local-invoke-authentication:
   sam local invoke Authentication -e app/events/auth_documents.json --docker-network lambda-local
+
+sam-local-invoke-provisioning:
+  sam local invoke Provisioning -e app/events/auth_documents.json --docker-network lambda-local
+
+sam-local-api:
+  sam local start-api --docker-network lambda-local

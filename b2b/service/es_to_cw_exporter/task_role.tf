@@ -2,11 +2,12 @@ data "aws_caller_identity" "current" {}
 
 locals {
   account_id = data.aws_caller_identity.current.account_id
+  prefix     = title(var.name_prefix)
 }
 
 data "aws_iam_policy_document" "assume_role_ecs_task" {
   statement {
-    sid     = "EcsTaskRoleCloudWatchPutMetrics"
+    sid     = "${local.prefix}EcsTaskRoleCloudWatchPutMetrics"
     effect  = "Allow"
     actions = ["sts:AssumeRole"]
 
@@ -24,7 +25,7 @@ data "aws_iam_policy_document" "assume_role_ecs_task" {
 }
 
 resource "aws_iam_role" "ecs_task_role" {
-  name               = "EcsTaskRoleCloudWatchPutMetrics"
+  name               = "${local.prefix}EcsTaskRoleCloudWatchPutMetrics"
   description        = "ElasticSearch to CloudWatch metric exporter task role"
   assume_role_policy = data.aws_iam_policy_document.assume_role_ecs_task.json
   tags               = var.tags
@@ -40,7 +41,7 @@ data "aws_iam_policy_document" "cw_put_metrics" {
 }
 
 resource "aws_iam_policy" "cw_put_metrics" {
-  name        = "EcsTaskRoleCloudWatchPutMetricsPolicy"
+  name        = "${local.prefix}EcsTaskRoleCloudWatchPutMetricsPolicy"
   description = "ElasticSearch to CloudWatch metric exporter task policy"
   policy      = data.aws_iam_policy_document.cw_put_metrics.json
   tags        = var.tags

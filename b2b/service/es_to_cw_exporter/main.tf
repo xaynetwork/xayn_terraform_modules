@@ -1,8 +1,12 @@
+locals {
+  pascal_case_name = replace(title(replace(var.name, "-", " ")), " ", "")
+}
+
 module "execution_role" {
   source = "../../../generic/service/role"
 
   description = "ElasticSearch to CloudWatch metric exporter execution role"
-  prefix      = "EsToCwMetricExporter"
+  prefix      = local.pascal_case_name
   tags        = var.tags
 }
 
@@ -12,14 +16,14 @@ module "secret_policy" {
   role_name          = module.execution_role.name
   ssm_parameter_arns = [var.elasticsearch_password_ssm_parameter_arn]
   description        = "Allow ElasticSearch to CloudWatch metric exporter access to the parameter store"
-  prefix             = "EsToCwMetricExporter"
+  prefix             = local.pascal_case_name
   tags               = var.tags
 }
 
 module "security_group" {
   source = "git::https://github.com/terraform-aws-modules/terraform-aws-security-group?ref=v4.16.0"
 
-  name        = "es-to-cw-metric-exporter-sg"
+  name        = "${var.name}-sg"
   description = "Forbid inbound traffic, Allow all egress traffic (Docker, ElasticSearch and CloudWatch)"
   vpc_id      = var.vpc_id
 
@@ -39,7 +43,11 @@ data "aws_region" "current" {}
 module "service" {
   source = "../../../generic/es_to_cw_exporter"
 
-  name               = "es-to-cw-metric-exporter"
+  name = var.name
+
+  pc_exporter_name = var.name_prefix == "" ? "pc-exporter" : "pc-${var.name_prefix}-exporter"
+  es_exporter_name = var.name_prefix == "" ? "es-exporter" : "es-${var.name_prefix}-exporter"
+
   security_group_ids = [module.security_group.security_group_id]
 
   cluster_id = var.cluster_id

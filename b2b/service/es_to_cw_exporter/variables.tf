@@ -81,6 +81,18 @@ variable "es_cluster_name" {
   type        = string
 }
 
+variable "name" {
+  description = "The name in (kebab case, with dashes) of the service"
+  type        = string
+  default     = "es-to-cw-metric-exporter"
+}
+
+variable "name_prefix" {
+  description = "A prefix for roles and groups"
+  type        = string
+  default     = ""
+}
+
 # other
 variable "tags" {
   description = "Custom tags to set on the underlining resources"

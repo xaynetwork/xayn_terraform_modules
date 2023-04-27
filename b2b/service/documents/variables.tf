@@ -156,7 +156,7 @@ variable "scale_target_value" {
   default     = 80
 
   validation {
-    condition     = var.target_value > 0 && var.target_value <= 100
+    condition     = var.scale_target_value > 0 && var.scale_target_value <= 100
     error_message = "Target of the CPU utilization should be between 1 and 100"
   }
 }

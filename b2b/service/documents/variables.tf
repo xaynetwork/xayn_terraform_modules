@@ -149,6 +149,30 @@ variable "max_body_size" {
   default     = 4194304
 }
 
+# target scaling options
+variable "scale_target_value" {
+  description = "The target to keep the CPU utilization at"
+  type        = number
+  default     = 80
+
+  validation {
+    condition     = var.target_value > 0 && var.target_value <= 100
+    error_message = "Target of the CPU utilization should be between 1 and 100"
+  }
+}
+
+variable "scale_in_cooldown" {
+  description = "Amount of time, in seconds, after a scale in activity completes before another scale in activity can start"
+  type        = number
+  default     = 300
+}
+
+variable "scale_out_cooldown" {
+  description = "Amount of time, in seconds, after a scale out activity completes before another scale out activity can start"
+  type        = number
+  default     = 60
+}
+
 variable "log_retention_in_days" {
   description = "Specifies the number of days you want to retain log events of the container"
   type        = number

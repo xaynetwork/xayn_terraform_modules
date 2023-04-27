@@ -111,10 +111,13 @@ module "service" {
 module "asg" {
   source = "../../../generic/service/asg"
 
-  cluster_name = var.cluster_name
-  service_name = module.service.name
-  min_tasks    = var.desired_count
-  max_tasks    = var.max_count
+  cluster_name       = var.cluster_name
+  service_name       = module.service.name
+  min_tasks          = var.desired_count
+  max_tasks          = var.max_count
+  target_value       = var.scale_target_value
+  scale_in_cooldown  = var.scale_in_cooldown
+  scale_out_cooldown = var.scale_out_cooldown
 }
 
 # CloudWatch alarms

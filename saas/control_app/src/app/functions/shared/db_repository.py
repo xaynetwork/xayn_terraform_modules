@@ -5,6 +5,18 @@ from app.functions.shared.tenant import Tenant
 # logging.getLogger('botocore').setLevel(logging.DEBUG)
 
 
+class DbException(Exception):
+    pass
+
+
+class EmailAlreadyInUseException(DbException):
+    pass
+
+
+class TenantIdAlreadyInUseException(DbException):
+    pass
+
+
 class DbRepository():
     _endpoint_url: str
     _table_name: str
@@ -19,13 +31,22 @@ class DbRepository():
     def get_tenant(self, tenant_id: str) -> Tenant:
         pass
 
+    @abstractmethod
+    def create_tenant(email: str, tenantId: str) -> Tenant:
+        """Creates a tenant with a unique email. 
+        If the email is already taken returns a EmailAlreadyInUseException. 
+        If the tenantId is already taken returns a TenantIdAlreadyInUseException. 
+        """
+        pass
+
 
 class AwsDbRepository(DbRepository):
 
     @abstractmethod
     def get_tenant(self, tenant_id: str):
         dynamodb = boto3.client(
-            'dynamodb', region_name=self._region, endpoint_url=self._endpoint_url)
+            'dynamodb', region_name=self._region, endpoint_url=self._endpoint_url) if self._endpoint_url != None else boto3.client(
+            'dynamodb', region_name=self._region)
 
         response = dynamodb.get_item(
             TableName=self._table_name,
@@ -37,5 +58,5 @@ class AwsDbRepository(DbRepository):
 
         if 'Item' in response:
             return Tenant(response['Item'])
-        
+
         return None

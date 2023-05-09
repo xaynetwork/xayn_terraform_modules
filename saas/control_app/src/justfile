@@ -19,15 +19,20 @@ py-install:
 
 dynamodb-create-table:
   # TODO use JSON schema
-   AWS_ACCESS_KEY_ID=X AWS_SECRET_ACCESS_KEY=X aws dynamodb create-table --endpoint-url http://localhost:8000 \
-      --table-name saas \
-      --attribute-definitions AttributeName=dataType,AttributeType=S AttributeName=dataId,AttributeType=S \
-      --key-schema AttributeName=dataType,KeyType=HASH AttributeName=dataId,KeyType=RANGE \
-      --provisioned-throughput ReadCapacityUnits=10,WriteCapacityUnits=5 \
-      --region ddblocal
+  AWS_ACCESS_KEY_ID=X AWS_SECRET_ACCESS_KEY=X aws dynamodb create-table --endpoint-url http://localhost:8000 \
+  --table-name saas \
+  --attribute-definitions AttributeName=dataType,AttributeType=S AttributeName=dataId,AttributeType=S \
+  --key-schema AttributeName=dataType,KeyType=HASH AttributeName=dataId,KeyType=RANGE \
+  --provisioned-throughput ReadCapacityUnits=10,WriteCapacityUnits=5 \
+  --region ddblocal
 
-dynamodb-get-iten type id:
-  AWS_ACCESS_KEY_ID=X AWS_SECRET_ACCESS_KEY=X aws dynamodb get-item --endpoint-url http://localhost:8000 --table-name saas --key '{"dataType": {"S": "{{type}}"}, "dataId": {"S":"{{id}}"}}' --region ddblocal
+dynamodb-get-item type id:
+  #!/bin/bash
+  AWS_ACCESS_KEY_ID=X AWS_SECRET_ACCESS_KEY=X aws dynamodb get-item \ 
+  --endpoint-url http://localhost:8000 \ 
+  --table-name saas \ 
+  --key '{"dataType": {"S": "{{type}}"}, "dataId": {"S":"{{id}}"}}' \ 
+  --region ddblocal
 
 sam-start-dynamodb:
   #!/bin/bash

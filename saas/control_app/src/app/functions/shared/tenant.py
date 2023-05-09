@@ -26,10 +26,12 @@ class AuthPathGroups(Enum):
 
 
 class Tenant:
-    _data: dict[str]
-
     def __init__(self, data: dict):
         self._data = data
+
+    @property
+    def id(self) -> str:
+        raise Exception("id not yet implemented")
 
     def get_authorization_context(self, method_arn: str, auth_key: str) -> AuthContext:
         # i.e. arn:aws:execute-api:eu-central-1:917039226361:aidokeulnk/default/DELETE/documents

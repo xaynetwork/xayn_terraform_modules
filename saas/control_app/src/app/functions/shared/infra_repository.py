@@ -2,6 +2,8 @@ import logging
 import boto3
 from botocore.exceptions import ClientError
 from abc import abstractmethod
+from app.functions.shared.cloudformation_boto_repository import CloudformationBotoRepository
+from app.functions.shared.stacks.usage_plan_stack import (UsagePlanStack)
 
 
 class InfraException(Exception):
@@ -29,25 +31,49 @@ class CreateUsagePlanResponse():
 
 
 class InfraRepository():
-    _endpoint_url: str
-    _region: str
-
-    def __init__(self, region: str, endpoint_url: str = None) -> None:
+    def __init__(self, region: str, endpoint_url: str = None, account_id: str) -> None:
         self._endpoint_url = endpoint_url
         self._region = region
+        self._account_id = account_id
 
     @abstractmethod
-    def create_usage_plan(self, api_id: str, tenant_id: str, stage_name: str) -> CreateUsagePlanResponse:
+    def create_usage_plan(self, api_id: str, tenant_id: str, stage_name: str, api_key_value: str) -> CreateUsagePlanResponse:
         pass
 
 
+class CdkInfraRepository(InfraRepository):
+    def create_usage_plan(self, api_id: str, tenant_id: str, stage_name: str, api_key_value: str) -> CreateUsagePlanResponse:
+
+        cdkboto = CloudformationBotoRepository(region="eu-west-3")
+
+        stack_name = f"UsagePlanStack-{tenant_id}"
+        app = cdk.App(context={
+            "tenant_id": tenant_id,
+            "api_id": api_id,
+            "stage_name": stage_name
+            "api_key_value": api_key_value
+        })
+        stack = UsagePlanStack(app, stack_name, env=cdk.Environment(
+            account=self._account_id, region=self._region))
+        synth = app.synth()
+        dir = synth.directory
+
+        cdkboto.create_update(stack_name=stack_name,
+                              template=f"{dir}/{stack_name}.template.json")
+
+        # cdkboto.destroy(stack_name=stack_name)
+
+        return CreateUsagePlanResponse()
+
+
+# Legacy Repo to deploy a Apikey change only using the AWS api, this is very fast but has no automatic rollback and management solution
 class BotoInfraRepository(InfraRepository):
-    def create_usage_plan(self, api_id: str, tenant_id: str, stage_name: str) -> CreateUsagePlanResponse:
+    def create_usage_plan(self, api_id: str, tenant_id: str, stage_name: str, api_key_value: str) -> CreateUsagePlanResponse:
         api_key_response, usage_plan_response, usage_plan_key_response
 
         try:
             api_key_response = self._create_api_key_for_usage_plan(
-                tenant_id=tenant_id)
+                tenant_id=tenant_id, value=api_key_value)
             usage_plan_response = self._create_usage_plan(
                 tenant_id=tenant_id, stage_name=stage_name, api_id=api_id)
             usage_plan_key_response = self._create_usage_api_key(
@@ -58,7 +84,7 @@ class BotoInfraRepository(InfraRepository):
 
         return CreateUsagePlanResponse(usage_plan_id=usage_plan_response["id"], api_key_id=api_key_response["id"], api_key_value=api_key_response["value"])
 
-    def _create_api_key_for_usage_plan(self, tenant_id: str) -> str:
+    def _create_api_key_for_usage_plan(self, tenant_id: str, value: str) -> str:
         try:
             apigateway = boto3.client(
                 'apigateway', region_name=self._region, endpoint_url=self._endpoint_url)
@@ -67,6 +93,7 @@ class BotoInfraRepository(InfraRepository):
                 name=f'saas_api_plan_{tenant_id}',
                 description=f'The API usage plan key for {tenant_id}, managed by provisioning.py',
                 enabled=True,
+                value=value
                 tags={
                     'tenant': tenant_id
                 })

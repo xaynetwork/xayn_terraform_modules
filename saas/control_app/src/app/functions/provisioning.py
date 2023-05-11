@@ -65,11 +65,11 @@ def handle_signup(email: str, db_repo: DbRepository, infra_repo: InfraRepository
 
     tenant : Tenant = None
     try:
-        tenant = db_repo.create_tenant(email=email, tenantId= tenant_utils.create_id())
+        tenant = db_repo.create_tenant(email=email, tenant_id= tenant_utils.create_id())
     except TenantIdAlreadyInUseException:
         # Retry to create another tenantId in case of a single collision, in this case we just let the requester know that they need to try that again. 
         try: 
-            tenant = db_repo.create_tenant(email=email, tenantId= tenant_utils.create_id())
+            tenant = db_repo.create_tenant(email=email, tenant_id= tenant_utils.create_id())
         except:
             return build_response(f"Can not create tenant, try again later. ", status_code=500)
     except EmailAlreadyInUseException:
@@ -85,7 +85,6 @@ def handle_signup(email: str, db_repo: DbRepository, infra_repo: InfraRepository
     
     try:
         db_repo.update_tenant(tenant.set_usage_plan(usage_plan_response))
-
     except DbException as de:
          # TODO remove the usage_plan again
          return build_response(f"Can not create tenant", status_code=500)

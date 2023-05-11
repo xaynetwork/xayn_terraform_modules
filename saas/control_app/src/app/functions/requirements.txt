@@ -1,3 +1,4 @@
 requests
 boto3
-aws-cdk-lib
+aws-cdk.aws-codestar-alpha
+aws_cdk.cli_lib_alpha

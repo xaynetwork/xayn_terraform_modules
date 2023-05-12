@@ -18,11 +18,11 @@ class TenantIdAlreadyInUseException(DbException):
 
 
 class DbRepository():
-    _endpoint_url: str
+    _endpoint_url: str | None
     _table_name: str
     _region: str
 
-    def __init__(self, endpoint_url: str, table_name: str, region: str) -> None:
+    def __init__(self, endpoint_url: str | None, table_name: str, region: str) -> None:
         self._endpoint_url = endpoint_url
         self._table_name = table_name
         self._region = region
@@ -66,11 +66,11 @@ class AwsDbRepository(DbRepository):
         response = dynamodb.put_item(
             TableName=self._table_name,
             Item={
-                'dataType': 'tenants',
-                'dataId': tenant_id,
-                'auth_keys': {},
-                'plan_keys': {},
-                'email': email,
+                'dataType': {'S' : 'tenants' },
+                'dataId': { 'S' : tenant_id },
+                'auth_keys': { 'M' : {} },
+                'plan_keys': { 'M' : {} },
+                'email': { 'S' : email},
             }
         )
        

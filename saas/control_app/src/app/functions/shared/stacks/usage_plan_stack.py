@@ -1,11 +1,6 @@
-from aws_cdk import (
-    # Duration,
-    Stack,
-    # aws_sqs as sqs,
-    CfnParameter
-)
+import typing
+from aws_cdk import Stack
 from constructs import Construct
-import aws_cdk as cdk
 import aws_cdk.aws_apigateway as apigateway
 
 
@@ -21,22 +16,22 @@ class UsagePlanStack(Stack):
         api_key_value = scope.node.get_context("api_key_value")
 
         # optional
-        limit = scope.node.try_get_context("limit") ?? "10000"
-        period = scope.node.try_get_context("period") ?? "DAY"
-        rate_limit = scope.node.try_get_context("rate_limit") ?? "10"
-        burst_limit = scope.node.try_get_context("burst_limit") ?? "5"
+        limit = scope.node.try_get_context("limit") or "10000"
+        period = scope.node.try_get_context("period") or "DAY"
+        rate_limit = scope.node.try_get_context("rate_limit") or "10"
+        burst_limit = scope.node.try_get_context("burst_limit") or "5"
 
-        api: apigateway.RestApi = apigateway.RestApi.from_rest_api_id(
-            self, id="Api", rest_api_id=api_id)
+        api = typing.cast(apigateway.RestApi, apigateway.RestApi.from_rest_api_id(
+            self, id="Api", rest_api_id=api_id))
 
         throttle = apigateway.ThrottleSettings(
-            burst_limit=int(burst_limit), rate_limit=int(burst_limit))
+            burst_limit=int(burst_limit), rate_limit=int(rate_limit))
         quota = apigateway.QuotaSettings(
             limit=int(limit), period=apigateway.Period[period])
 
         plan = api.add_usage_plan(f'UsagePlan-{tenant_id}',
                                   throttle=throttle, quota=quota)
-        cfnPlan: apigateway.CfnUsagePlan = plan.node.default_child
+        cfnPlan = typing.cast(apigateway.CfnUsagePlan, plan.node.default_child)
 
         cfnPlan.add_property_override("ApiStages", [
             {
@@ -52,8 +47,9 @@ class UsagePlanStack(Stack):
             }
         ])
 
-        key = apigateway.ApiKey(self, 'ApiKey', api_key_name='Tenant-key', value=api_key_value)
-        cfnKey: apigateway.CfnApiKey = key.node.default_child
+        key = apigateway.ApiKey(
+            self, 'ApiKey', api_key_name='Tenant-key', value=api_key_value)
+        cfnKey = typing.cast(apigateway.CfnApiKey, key.node.default_child)
         cfnKey.add_property_override('StageKeys', [
             {
                 "RestApiId": api_id,
@@ -62,4 +58,3 @@ class UsagePlanStack(Stack):
         ])
 
         plan.add_api_key(key)
-        

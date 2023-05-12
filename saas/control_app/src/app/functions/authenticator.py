@@ -22,7 +22,7 @@ class PolicyEffect(Enum):
 
 def build_policy(api_token: str, method_arn: list[str], effect: PolicyEffect):
     return {
-        "principalId": "customer_id_" + api_token,
+        "principalId": f"customer_id_{api_token}",
         # used by the usage plan
         "usageIdentifierKey": api_token,
         "policyDocument": {

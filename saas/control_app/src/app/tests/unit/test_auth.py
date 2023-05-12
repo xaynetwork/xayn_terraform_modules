@@ -2,11 +2,11 @@
 import pytest
 from app.functions.shared.auth_utils import encode_auth_key
 from app.functions import authenticator
-from app.tests.unit.fakes import (fake_tenant, fake_no_tenant)
+from app.tests.unit.fakes import (fake_tenant_db, fake_no_tenant_db)
 
 
 @pytest.fixture()
-def apigw_event():
+def apigw_correct_event():
     """ Generates API GW Event"""
 
     return {
@@ -15,10 +15,20 @@ def apigw_event():
         "authorizationToken": encode_auth_key('tenant1', 'authKey2')
     }
 
+@pytest.fixture()
+def apigw_incorrect_event():
+    """ Generates API GW Event"""
 
-def test_lambda_should_return_allow(apigw_event):
+    return {
+        "type": "TOKEN",
+        "methodArn": "arn:aws:execute-api:eu-west-3:917039226361:4qnmcgc1lg/ESTestInvoke-stage/GET/documents",
+        "authorizationToken": "dsjhagfsdjh"
+    }
 
-    data = authenticator.handle(apigw_event, fake_tenant())
+
+def test_lambda_should_return_allow(apigw_correct_event):
+
+    data = authenticator.handle(apigw_correct_event, fake_tenant_db())
 
     assert "policyDocument" in data
     assert "Statement" in data["policyDocument"]
@@ -26,11 +36,13 @@ def test_lambda_should_return_allow(apigw_event):
     assert data["policyDocument"]["Statement"][0]["Effect"] == "Allow"
 
 
-def test_lambda_should_return_deny_when_tenant_does_not_exist(apigw_event):
+def test_lambda_should_return_deny_when_tenant_does_not_exist(apigw_correct_event):
 
-    data = authenticator.handle(apigw_event, fake_no_tenant())
+    data = authenticator.handle(apigw_correct_event, fake_no_tenant_db())
 
     assert "policyDocument" in data
     assert "Statement" in data["policyDocument"]
     assert "Effect" in data["policyDocument"]["Statement"][0]
     assert data["policyDocument"]["Statement"][0]["Effect"] == "Deny"
+
+

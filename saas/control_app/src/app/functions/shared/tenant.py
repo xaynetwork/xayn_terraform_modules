@@ -19,6 +19,8 @@ from app.functions.shared.auth_context import AuthContext, NotAuthorizedContext,
 #     }
 # }
 
+class SerializeException(Exception):
+    pass
 
 class Endpoint(Enum):
     USERS = "users"
@@ -35,12 +37,22 @@ class AuthPathGroup(Enum):
 
 
 class AuthKey():
-    def __init__(self, type: AuthPathGroup) -> None:
-        _type = type
+    _group: AuthPathGroup
+
+    def __init__(self, group: AuthPathGroup) -> None:
+        self._group = group
+    
+    @staticmethod
+    def from_json(data: dict):
+        if 'group' not in data:
+            raise SerializeException('No group in AuthKey json')
+        return AuthKey(AuthPathGroup[data["group"]])
 
     @property
-    def type(self) -> AuthPathGroup:
-        return self._type
+    def group(self) -> AuthPathGroup:
+        return self._group
+    
+
 
 
 class Tenant:
@@ -51,17 +63,19 @@ class Tenant:
 
     @staticmethod
     def from_json(json: dict):
-        auth_keys = json['Item']['auth_keys']
-        auth_keys = json['Item']['plan_keys']
-        auth_keys = dict(map(lambda item: (item[0], AuthKey.from_json(item[1])), auth_keys ?? {}))
-        plan_keys = dict(map(lambda item: (AuthPathGroup[item[0]], item[1]), plan_keys ?? {}))
-        return Tenant(id=json['Item']['dataId'], auth_keys=auth_keys, plan_keys=plan_keys)
+        auth_keys: dict = json['auth_keys'] or {}
+        plan_keys: dict = json['plan_keys'] or {}
+        auth_keys = dict(
+            map(lambda item: (item[0], AuthKey.from_json(item[1])), auth_keys.items() ))
+        plan_keys = dict(
+            map(lambda item: (Endpoint(item[0]), item[1]), plan_keys.items()))
+        return Tenant(id=json['dataId'], auth_keys=auth_keys, plan_keys=plan_keys, email=json['email'])
 
-    def __init__(self, id: str, auth_keys: dict[str, AuthKey], plan_keys: dict[Endpoint, str]):
-        _id = id
-        _auth_keys = auth_keys ?? {}
-        _plan_keys = plan_keys ?? {}
-        self._data = data
+    def __init__(self, id: str, auth_keys: dict[str, AuthKey], plan_keys: dict[Endpoint, str], email: str):
+        self._id = id
+        self._auth_keys = auth_keys or {}
+        self._plan_keys = plan_keys or {}
+        self._email = email
 
     @property
     def id(self) -> str:
@@ -81,11 +95,12 @@ class Tenant:
             re.split(r':|\/', method_arn) + [None])[:9]
 
         if auth_key in self._auth_keys:
-            paths_group = self._auth_keys[auth_key].type
+            paths_group = self._auth_keys[auth_key].group
             auth_paths = paths_group.value
-            if path in auth_paths:
+            endpoint_path = Endpoint(path)
+            if endpoint_path in auth_paths:
                 method_arns = map(
                     lambda x: f"{arn_prefix}:{aws}:{arn_method}:{region}:{account}:{api_id}/{api_version}/{method}/{x}", auth_paths)
-                return AuthorizedContext(plan_key=self._plan_keys[path], method_arns=list(method_arns))
+                return AuthorizedContext(plan_key=self._plan_keys[endpoint_path], method_arns=list(method_arns))
 
         return NotAuthorizedContext(method_arns=[method_arn])

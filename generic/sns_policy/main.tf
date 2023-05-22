@@ -8,7 +8,7 @@ data "aws_iam_policy_document" "sns_topic_policy" {
       identifiers = ["events.amazonaws.com"]
     }
 
-    resources = [var.var.sns_arn]
+    resources = [var.sns_arn]
   }
 }
 

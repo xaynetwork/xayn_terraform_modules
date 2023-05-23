@@ -12,7 +12,7 @@ data "aws_iam_policy_document" "sns_topic_policy" {
   }
 }
 
-resource "aws_sns_topic_policy" "default" {
+resource "aws_sns_topic_policy" "this" {
   arn    = var.sns_arn
   policy = data.aws_iam_policy_document.sns_topic_policy.json
 }

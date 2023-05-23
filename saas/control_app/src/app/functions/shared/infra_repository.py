@@ -1,7 +1,7 @@
+from abc import abstractmethod
 import logging
 import boto3
 from botocore.exceptions import ClientError
-from abc import abstractmethod
 from app.functions.shared.cloudformation_boto_repository import CloudformationBotoRepository
 from app.functions.shared.stacks.usage_plan_stack import (UsagePlanStack)
 import aws_cdk as cdk
@@ -29,14 +29,14 @@ class InfraRepository():
         self._account_id = account_id
 
     @abstractmethod
-    def create_usage_plan(self, api_id: str, tenant_id: str, stage_name: str) -> CreateUsagePlanResponse:
+    def create_usage_plan(self, api_id: str, tenant_id: str, stage_name: str, api_key_value: str) -> CreateUsagePlanResponse:
         pass
 
 
 class CdkInfraRepository(InfraRepository):
 
-    def create_usage_plan(self, api_id: str, tenant_id: str, stage_name: str) -> CreateUsagePlanResponse:
-        cdkboto = CloudformationBotoRepository(region="eu-west-3")
+    def create_usage_plan(self, api_id: str, tenant_id: str, stage_name: str, api_key_value: str) -> CreateUsagePlanResponse:
+        cdkboto = CloudformationBotoRepository(region=self._region, endpoint_url=self._endpoint_url)
         api_key_value = create_random_password()
 
         stack_name = f"UsagePlanStack-{tenant_id}"

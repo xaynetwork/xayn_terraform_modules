@@ -1,4 +1,5 @@
 # pylint: disable=wrong-import-position
+# pylint: disable=invalid-name
 import os
 import logging
 import json
@@ -13,7 +14,9 @@ import app.functions.shared.tenant_utils as tenant_utils
 
 from app.functions.shared.tenant import Tenant
 from app.functions.shared.infra_repository import InfraRepository
-from saas.control_app.src.app.functions.shared.infra_repository import CreateUsagePlanResponse, InfraException
+from app.functions.shared.infra_repository import CreateUsagePlanResponse, InfraException
+from app.functions.shared.db_repository import DbException
+from saas.control_app.src.app.functions.shared.infra_repository import CdkInfraRepository
 
 region = os.environ['REGION'] if 'REGION' in os.environ else "ddblocal"
 db_table = os.environ['DB_TABLE'] if 'DB_TABLE' in os.environ else "saas"
@@ -30,17 +33,17 @@ class EventException(Exception):
 
 
 def assert_event_key(event: dict, *keys: str):
-    event = event
+    _event = event
     path = keys[0]
     for index, key in enumerate(keys, start=1):
         if index == len(keys):
-            if key in event:
-                return event[key]
+            if key in _event:
+                return _event[key]
             else:
                 raise EventException(f"event does not contain \"{path}\"")
         else:
-            if key in event:
-                event = event[key]
+            if key in _event:
+                _event = _event[key]
                 path = f"{path}.{key}"
             else:
                 raise EventException(f"event does not contain \"{path}\"")
@@ -80,15 +83,20 @@ def handle_signup(email: str, db_repo: DbRepository, infra_repo: InfraRepository
     try:
         usage_plan_response = infra_repo.create_usage_plan(
             api_id=api_id, stage_name=api_stage_name, tenant_id=tenant.id)
-    except InfraException as ie:
-        logging.error("Could not create ")
+    # pylint: disable=invalid-name
+    except InfraException:
+        logging.exception("Could not create tenant, because plan createion faild.")
+        return build_response("Can not create tenant", status_code=500)
+    
+    try:
+        tenant = tenant.update_auth_defaults(usage_plan_response.api_key_value)
+        db_repo.update_tenant(tenant)
+    except DbException:
+        logging.exception("Could not update the tenant with auth information. Will rollback changes... TODO")
+        # TODO remove the usage_plan again
         return build_response(f"Can not create tenant", status_code=500)
-
-    # try:
-    #     db_repo.update_tenant(tenant.set_usage_plan(usage_plan_response))
-    # except DbException as de:
-    #     # TODO remove the usage_plan again
-    #     return build_response(f"Can not create tenant", status_code=500)
+    
+    # TODO send email via SNS
 
     return build_response(f"User created ({email}).", status_code=204)
 
@@ -97,6 +105,7 @@ def handle(event, repo: DbRepository) -> dict:
     path = assert_event_key(event, "path")
     http_method = assert_event_key(event, "httpMethod")
     raw_body = assert_event_key(event, "body")
+    assert raw_body
     body = json.loads(raw_body)
     if path == "/signup" and http_method == "POST":
         return handle_signup(assert_event_key(body, "email"), repo)
@@ -106,6 +115,8 @@ def handle(event, repo: DbRepository) -> dict:
 
 def lambda_handler(event, context) -> dict:
     db_repo = AwsDbRepository(endpoint_url=db_endpoint,
+                              table_name=db_table, region=region)
+    infra_repo = CdkInfraRepository(endpoint_url=db_endpoint,
                               table_name=db_table, region=region)
     try:
         return handle(event, db_repo)

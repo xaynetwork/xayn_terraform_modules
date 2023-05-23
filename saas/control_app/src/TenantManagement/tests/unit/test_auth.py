@@ -25,8 +25,25 @@ def apigw_incorrect_event():
         "authorizationToken": "dsjhagfsdjh"
     }
 
+def event(path,token):
+    """ Generates API GW Event"""
 
-def test_lambda_should_return_allow(apigw_correct_event):
+    return {
+        "type": "TOKEN",
+        "methodArn": f"arn:aws:execute-api:eu-west-3:917039226361:4qnmcgc1lg/ESTestInvoke-stage/GET/{path}",
+        "authorizationToken": token
+    }
+
+def test_lambda_should_return_allow_candidates():
+
+    data = authenticator.handle(event("candidates",encode_auth_key('tenant1', 'authKey2')), fake_tenant_db())
+
+    assert "policyDocument" in data
+    assert "Statement" in data["policyDocument"]
+    assert "Effect" in data["policyDocument"]["Statement"][0]
+    assert data["policyDocument"]["Statement"][0]["Effect"] == "Allow"
+
+def test_lambda_should_return_allow_(apigw_correct_event):
 
     data = authenticator.handle(apigw_correct_event, fake_tenant_db())
 

@@ -12,7 +12,7 @@ log = logging.getLogger('deploy.cf.create_or_update')
 
 class CloudformationBotoRepository():
 
-    def __init__(self, region: str, endpoint_url: str = None) -> None:
+    def __init__(self, region: str, endpoint_url: str | None = None) -> None:
         self._endpoint_url = endpoint_url
         self._region = region
         self._cf = boto3.client('cloudformation', region_name=self._region, endpoint_url=self._endpoint_url)

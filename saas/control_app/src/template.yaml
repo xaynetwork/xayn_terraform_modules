@@ -7,7 +7,7 @@ Description: >
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
-    Timeout: 3
+    Timeout: 10
     MemorySize: 128
 
 Resources:
@@ -15,7 +15,7 @@ Resources:
     Type: AWS::Serverless::Function 
     Properties:
       CodeUri: .
-      Handler: app.functions.authenticator.lambda_handler
+      Handler: TenantManagement.functions.authenticator.lambda_handler
       Runtime: python3.10
       Architectures:
         - x86_64
@@ -34,9 +34,8 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: .
-      Handler: app.functions.provisioning.lambda_handler
-      PackageType: Image
-      Timeout: 120
+      Handler: TenantManagement.functions.provisioning.lambda_handler
+      Runtime: python3.10
       Architectures:
         - x86_64
       Events:
@@ -52,11 +51,6 @@ Resources:
           DB_ENDPOINT: http://dynamodb:8000
           API_ID: dsds
           ACCOUNT_ID: 1234332
-          JSII_DEBUG: 1
-    Metadata:
-      DockerTag: nodejs16_python3.10
-      DockerContext: .
-      Dockerfile: Dockerfile
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function

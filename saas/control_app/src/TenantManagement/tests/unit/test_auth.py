@@ -1,8 +1,8 @@
 # pylint: disable=redefined-outer-name
 import pytest
-from app.functions.shared.auth_utils import encode_auth_key
-from app.functions import authenticator
-from app.tests.unit.fakes import (fake_tenant_db, fake_no_tenant_db)
+from TenantManagement.functions.shared.auth_utils import encode_auth_key
+from TenantManagement.functions import authenticator
+from TenantManagement.tests.unit.fakes import (fake_tenant_db, fake_no_tenant_db)
 
 
 @pytest.fixture()

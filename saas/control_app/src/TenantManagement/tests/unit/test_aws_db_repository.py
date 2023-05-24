@@ -1,7 +1,7 @@
 import os
-from app.functions.shared.db_repository import AwsDbRepository
-from app.functions.shared.tenant_utils import create_id
-from app.functions.shared.tenant import AuthPathGroup
+from TenantManagement.functions.shared.db_repository import AwsDbRepository
+from TenantManagement.functions.shared.tenant_utils import create_id
+from TenantManagement.functions.shared.tenant import AuthPathGroup
 import boto3
 
 

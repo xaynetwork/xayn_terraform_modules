@@ -2,6 +2,7 @@ from abc import abstractmethod
 import boto3
 from TenantManagement.functions.shared.tenant import Tenant
 from boto3.dynamodb.types import (TypeDeserializer, TypeSerializer)
+from TenantManagement.functions.shared.tenant import DeploymentState
 
 _deserializer = TypeDeserializer()
 _serializer = TypeSerializer()
@@ -46,11 +47,15 @@ class DbRepository():
         pass
 
     @abstractmethod
-    def create_tenant(self, email: str, tenant_id: str) -> Tenant:
+    def create_tenant(self, email: str, tenant_id: str, deployment_state: DeploymentState, auth_keys: dict = {}, plan_keys: dict = {}) -> Tenant:
         """Creates a tenant with a unique email. 
         If the email is already taken returns a EmailAlreadyInUseException. 
         If the tenantId is already taken returns a TenantIdAlreadyInUseException. 
         """
+        pass
+
+    @abstractmethod
+    def save_new_tenant(self, tenant: Tenant) -> Tenant:
         pass
 
     @abstractmethod
@@ -125,8 +130,9 @@ class AwsDbRepository(DbRepository):
                 ':email': _serializer.serialize(tenant.email),
                 ':auth_keys': _serializer.serialize(auth_keys),
                 ':plan_keys': _serializer.serialize(plan_keys),
+                ':deployment_state': _serializer.serialize(tenant.deployment_state.value),
             },
-            UpdateExpression='SET plan_keys = :plan_keys, auth_keys = :auth_keys, email = :email',
+            UpdateExpression='SET plan_keys = :plan_keys, auth_keys = :auth_keys, email = :email, deployment_state = :deployment_state',
         )
 
         if response['ResponseMetadata']['HTTPStatusCode'] != 200:
@@ -138,7 +144,10 @@ class AwsDbRepository(DbRepository):
 
         return updated
 
-    def create_tenant(self, email: str, tenant_id: str) -> Tenant:
+    def save_new_tenant(self, tenant: Tenant) -> Tenant:
+        return self.create_tenant(email=tenant.email, tenant_id=tenant.id, auth_keys=tenant.auth_keys, plan_keys=tenant.plan_keys, deployment_state=tenant.deployment_state)
+
+    def create_tenant(self, email: str, tenant_id: str, deployment_state: DeploymentState, auth_keys: dict = {}, plan_keys: dict = {}) -> Tenant:
         dynamodb = boto3.client(
             'dynamodb', region_name=self._region, endpoint_url=self._endpoint_url)
 
@@ -152,14 +161,20 @@ class AwsDbRepository(DbRepository):
             raise EmailAlreadyInUseException(
                 f'Tenant email  {email} already exists')
 
+        auth_keys = dict(
+            map(lambda item: (item[0], item[1].to_json()), auth_keys.items()))
+        plan_keys = dict(
+            map(lambda item: (item[0].value, item[1]), plan_keys.items()))
+
         response = dynamodb.put_item(
             TableName=self._table_name,
             Item={
                 'dataType': _serializer.serialize('tenants'),
                 'dataId': _serializer.serialize(tenant_id),
-                'auth_keys': _serializer.serialize({}),
-                'plan_keys': _serializer.serialize({}),
+                'auth_keys': _serializer.serialize(auth_keys),
+                'plan_keys': _serializer.serialize(plan_keys),
                 'email': _serializer.serialize(email),
+                'deployment_state': _serializer.serialize(deployment_state.value),
             }
         )
         if response['ResponseMetadata']['HTTPStatusCode'] != 200:

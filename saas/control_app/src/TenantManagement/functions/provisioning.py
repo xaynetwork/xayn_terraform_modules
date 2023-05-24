@@ -13,9 +13,8 @@ from TenantManagement.functions.shared.db_repository import (
 import TenantManagement.functions.shared.tenant_utils as tenant_utils
 
 from TenantManagement.functions.shared.tenant import Tenant
-from TenantManagement.functions.shared.infra_repository import (InfraRepository, CdkInfraRepository)
-from TenantManagement.functions.shared.infra_repository import CreateUsagePlanResponse, InfraException
-from TenantManagement.functions.shared.db_repository import DbException
+from TenantManagement.functions.shared.tenant_utils import create_random_password
+from TenantManagement.functions.shared.tenant import DeploymentState
 
 region = os.environ['REGION'] if 'REGION' in os.environ else "ddblocal"
 db_table = os.environ['DB_TABLE'] if 'DB_TABLE' in os.environ else "saas"
@@ -58,51 +57,30 @@ def build_response(message: str, status_code: int):
     }
 
 
-def handle_signup(email: str, db_repo: DbRepository, infra_repo: InfraRepository) -> dict:
+def handle_signup(email: str, db_repo: DbRepository) -> dict:
     if not EMAIL_REGEX.match(email):
         return build_response(f"Email address is not valid", 400)
 
-    tenant: Tenant | None = None
+    tenant = Tenant(email=email, id=tenant_utils.create_id(), auth_keys={}, plan_keys={
+    }, deployment_state=DeploymentState.NEEDS_UPDATE).update_auth_defaults(create_random_password())
     try:
-        tenant = db_repo.create_tenant(
-            email=email, tenant_id=tenant_utils.create_id())
+        tenant = db_repo.save_new_tenant(tenant)
     except TenantIdAlreadyInUseException:
         # Retry to create another tenantId in case of a single collision, in this case we just let the requester know that they need to try that again.
-        try:
-            tenant = db_repo.create_tenant(
-                email=email, tenant_id=tenant_utils.create_id())
-        except Exception as _:
-            return build_response("Can not create tenant, try again later. ", status_code=500)
+        logging.exception(
+            "Couldn't generate a unique id, abort the process.")
+        return build_response("Can not create tenant, try again later. ", status_code=500)
     except EmailAlreadyInUseException:
         # Actually this message should be "Email already in use, but this could be a spoofing mechanism to detect use emails from us. TODO intoduce a captcha, mechanism"
         return build_response("Can not create tenant", status_code=409)
 
-    # Create Api-key in api-gateway
-    usage_plan_response: CreateUsagePlanResponse
-    try:
-        usage_plan_response = infra_repo.create_usage_plan(
-            api_id=api_id, stage_name=api_stage_name, tenant_id=tenant.id)
-    # pylint: disable=invalid-name
-    except InfraException:
-        logging.exception(
-            "Could not create tenant, because plan creation failed.")
-        return build_response("Can not create tenant", status_code=500)
-
-    try:
-        tenant = tenant.update_auth_defaults(usage_plan_response.api_key_value)
-        db_repo.update_tenant(tenant)
-    except DbException:
-        logging.exception(
-            "Could not update the tenant with auth information. Will rollback changes... TODO")
-        # TODO remove the usage_plan again
-        return build_response(f"Can not create tenant", status_code=500)
-
-    # TODO send email via SNS
+    # TODO start the StackDeployment service that should create then stack
+    # boto.lambda(...)
 
     return build_response(f"User created ({email}).", status_code=204)
 
 
-def handle(event, repo: DbRepository, infra_repo: InfraRepository) -> dict:
+def handle(event, repo: DbRepository) -> dict:
     path = assert_event_key(event, "path")
     http_method = assert_event_key(event, "httpMethod")
     raw_body = assert_event_key(event, "body")
@@ -111,18 +89,16 @@ def handle(event, repo: DbRepository, infra_repo: InfraRepository) -> dict:
     if path == "/signup" and http_method == "POST":
         email = assert_event_key(body, "email")
         assert email
-        return handle_signup(email, repo, infra_repo)
+        return handle_signup(email, repo)
     else:
         return build_response(f"Unsupported path (\"{path}\")  or method (\"{http_method}\").", 400)
 
 
-def lambda_handler(event, context) -> dict:
+def lambda_handler(event, _context) -> dict:
     db_repo = AwsDbRepository(endpoint_url=db_endpoint,
                               table_name=db_table, region=region)
-    infra_repo = CdkInfraRepository(account_id=account_id, endpoint_url=db_endpoint,
-                                    region=region)
     try:
-        return handle(event, db_repo, infra_repo)
+        return handle(event, db_repo)
     except EventException as ee:
         return build_response(f"Error: {ee}", 400)
     except json.JSONDecodeError as je:

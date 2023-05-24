@@ -6,7 +6,7 @@ default:
     @{{just_executable()}} --list
 
 py-lint:
-  pylint ./app --rcfile .pylintrc
+  python3 -m pylint ./app --rcfile .pylintrc
 
 py-test:
   python3 -m pytest ./app/tests/unit
@@ -15,7 +15,7 @@ py-test-debug:
   python3 -m pytest --trace --pdbcls=IPython.terminal.debugger:TerminalPdb ./app/tests/unit
 
 py-install:
-  pip3 install -r ./app/requirements.txt
+  python3 -m pip install -r ./TenantManagement/requirements.txt
 
 dynamodb-create-table:
   # TODO use JSON schema

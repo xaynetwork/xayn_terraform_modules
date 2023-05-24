@@ -5,10 +5,10 @@ import logging
 
 # sys.path.append(os.path.join(os.path.dirname(__file__), 'functions'))
 from enum import Enum
-from app.functions.shared.auth_utils import try_decode_auth_key
-from app.functions.shared.auth_context import AuthorizedContext
-from app.functions.shared.db_repository import AwsDbRepository
-from app.functions.shared.db_repository import DbRepository
+from TenantManagement.functions.shared.auth_utils import try_decode_auth_key
+from TenantManagement.functions.shared.auth_context import AuthorizedContext
+from TenantManagement.functions.shared.db_repository import AwsDbRepository
+from TenantManagement.functions.shared.db_repository import DbRepository
 
 region = os.environ['REGION'] if 'REGION' in os.environ else "ddblocal"
 db_table = os.environ['DB_TABLE'] if 'DB_TABLE' in os.environ else "saas"

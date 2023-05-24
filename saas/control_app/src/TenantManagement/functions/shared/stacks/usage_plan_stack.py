@@ -1,5 +1,5 @@
 import typing
-from aws_cdk import Stack
+from aws_cdk import CfnParameter, Stack
 from constructs import Construct
 import aws_cdk.aws_apigateway as apigateway
 
@@ -9,9 +9,12 @@ class UsagePlanStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
+        tenant_id_param = CfnParameter(self, "tenant_id", type=)
+
         # required
         api_id = scope.node.get_context("api_id")
-        tenant_id = scope.node.get_context("tenant_id")
+        # tenant_id = scope.node.get_context("tenant_id")
+        tenant_id = tenant_id_param.value_as_string
         stage_name = scope.node.get_context("stage_name")
         api_key_value = scope.node.get_context("api_key_value")
 

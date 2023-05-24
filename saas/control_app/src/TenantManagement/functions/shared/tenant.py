@@ -4,8 +4,8 @@ from __future__ import annotations
 from enum import Enum
 from strenum import StrEnum
 import re
-from app.functions.shared.auth_context import AuthContext, NotAuthorizedContext, AuthorizedContext
-from app.functions.shared.tenant_utils import create_random_password
+from TenantManagement.functions.shared.auth_context import AuthContext, NotAuthorizedContext, AuthorizedContext
+from TenantManagement.functions.shared.tenant_utils import create_random_password
 
 # Example Tenant
 # {

@@ -6,13 +6,13 @@ default:
     @{{just_executable()}} --list
 
 py-lint:
-  python3 -m pylint ./app --rcfile .pylintrc
+  python3 -m pylint ./TenantManagement --rcfile .pylintrc
 
 py-test:
-  python3 -m pytest ./app/tests/unit
+  python3 -m pytest ./TenantManagement/tests/unit
 
 py-test-debug:
-  python3 -m pytest --trace --pdbcls=IPython.terminal.debugger:TerminalPdb ./app/tests/unit
+  python3 -m pytest --trace --pdbcls=IPython.terminal.debugger:TerminalPdb ./TenantManagement/tests/unit
 
 py-install:
   python3 -m pip install -r ./TenantManagement/requirements.txt
@@ -44,10 +44,10 @@ sam-start-dynamodb:
   docker run -p 8000:8000 --network lambda-local --name dynamodb amazon/dynamodb-local -jar DynamoDBLocal.jar -sharedDb -inMemory  
 
 sam-local-invoke-authentication:
-  sam local invoke Authentication -e app/events/auth_documents.json --docker-network lambda-local
+  sam build && sam local invoke Authentication -e TenantManagement/events/auth_documents.json  --docker-network lambda-local
 
 sam-local-invoke-provisioning:
-  sam local invoke Provisioning -e app/events/auth_documents.json --docker-network lambda-local
+ sam build &&  sam local invoke Provisioning -e TenantManagement/events/signup.json --docker-network lambda-local
 
 sam-local-api:
   sam local start-api --docker-network lambda-local

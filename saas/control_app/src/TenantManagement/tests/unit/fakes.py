@@ -1,6 +1,6 @@
 from typing import Callable
-from app.functions.shared.tenant import Tenant
-from app.functions.shared.db_repository import DbRepository
+from TenantManagement.functions.shared.tenant import Tenant
+from TenantManagement.functions.shared.db_repository import DbRepository
 
 FAKE_TENANT_1 = {
     "auth_keys": {

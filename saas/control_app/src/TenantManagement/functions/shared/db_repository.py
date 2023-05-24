@@ -1,6 +1,6 @@
 from abc import abstractmethod
 import boto3
-from app.functions.shared.tenant import Tenant
+from TenantManagement.functions.shared.tenant import Tenant
 from boto3.dynamodb.types import (TypeDeserializer, TypeSerializer)
 
 _deserializer = TypeDeserializer()

@@ -12,11 +12,11 @@ Globals:
 
 Resources:
   Authentication:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function 
     Properties:
       CodeUri: .
       Handler: app.functions.authenticator.lambda_handler
-      Runtime: python3.9
+      Runtime: python3.10
       Architectures:
         - x86_64
       Environment:
@@ -26,7 +26,7 @@ Resources:
           DB_ENDPOINT: http://dynamodb:8000
       Events:
         HelloWorld:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Type: Api
           Properties:
             Path: /hello
             Method: get
@@ -35,7 +35,8 @@ Resources:
     Properties:
       CodeUri: .
       Handler: app.functions.provisioning.lambda_handler
-      Runtime: python3.9
+      PackageType: Image
+      Timeout: 120
       Architectures:
         - x86_64
       Events:
@@ -49,6 +50,13 @@ Resources:
           REGION: ddblocal
           DB_TABLE: saas
           DB_ENDPOINT: http://dynamodb:8000
+          API_ID: dsds
+          ACCOUNT_ID: 1234332
+          JSII_DEBUG: 1
+    Metadata:
+      DockerTag: nodejs16_python3.10
+      DockerContext: .
+      Dockerfile: Dockerfile
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function

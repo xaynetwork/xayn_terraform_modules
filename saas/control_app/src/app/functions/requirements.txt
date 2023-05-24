@@ -1,5 +1,0 @@
-requests
-boto3
-aws-cdk.aws-codestar-alpha
-aws_cdk.cli_lib_alpha
-strenum

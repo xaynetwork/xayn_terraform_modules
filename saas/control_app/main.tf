@@ -71,7 +71,7 @@ module "authentication_function" {
   tags                  = var.tags
 
   environment_variables = {
-      REGION = data.aws_region.current.name
-      DB_TABLE  = var.dynamodb_table_name 
+    REGION   = data.aws_region.current.name
+    DB_TABLE = var.dynamodb_table_name
   }
 }

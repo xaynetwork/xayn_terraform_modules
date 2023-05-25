@@ -94,7 +94,7 @@ class Tenant:
             map(lambda item: (Endpoint(item[0]), item[1]), plan_keys.items()))
         state = DeploymentState[json["deployment_state"]
                                 ] if "deployment_state" in json else DeploymentState.NEEDS_UPDATE
-        return Tenant(id=json['dataId'], auth_keys=auth_keys, plan_keys=plan_keys, email=json['email'], deployment_state=state)
+        return Tenant(id=json['id'], auth_keys=auth_keys, plan_keys=plan_keys, email=json['email'], deployment_state=state)
 
     # pylint: disable=invalid-name
     # pylint: disable=redefined-builtin

@@ -1,5 +1,5 @@
 locals {
-  db_name = "saas"
+  db_name = "saas_tenants"
 }
 
 module "dynamodb_table" {
@@ -8,22 +8,16 @@ module "dynamodb_table" {
   name = local.db_name
 
   ######
-  # DataType # DataId
-  # tenants  |  0001   | { auth-keys: [...],  name: "John Doe"}
-  #          |  0002   | {...}
-  # settings |  global | { max-signup-limit: 100 }    
+  # tenantId # email
+  #   0001   | { auth-keys: [...],  name: "John Doe"}
+  #   0002   | {...}    
 
-  hash_key     = "dataType"
-  range_key    = "dataId"
+  hash_key     = "id"
   billing_mode = "PAY_PER_REQUEST"
 
   attributes = [
     {
-      name = "dataType"
-      type = "S"
-    },
-    {
-      name = "dataId"
+      name = "id"
       type = "S"
     }
   ]

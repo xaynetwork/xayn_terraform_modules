@@ -4,7 +4,7 @@ from TenantManagement.functions.shared.cloudformation_boto_repository import Clo
 from TenantManagement.functions.shared.stacks.usage_plan_stack import (UsagePlanStack)
 import aws_cdk as cdk
 
-from TenantManagement.functions.shared.tenant_utils import create_random_password
+from TenantManagement.functions.shared.tenant_utils import create_secure_string
 
 
 class InfraException(Exception):
@@ -35,7 +35,7 @@ class CdkInfraRepository(InfraRepository):
 
     def create_usage_plan(self, api_id: str, tenant_id: str, stage_name: str) -> CreateUsagePlanResponse:
         cdkboto = CloudformationBotoRepository(region=self._region, endpoint_url=self._endpoint_url)
-        api_key_value = create_random_password()
+        api_key_value = create_secure_string()
 
         stack_name = f"UsagePlanStack-{tenant_id}"
         app = cdk.App(context={

@@ -46,14 +46,7 @@ class DbRepository():
         pass
 
     @abstractmethod
-    def create_tenant(self, email: str, tenant_id: str, deployment_state: DeploymentState, auth_keys: dict | None = None, plan_keys: dict | None = None) -> Tenant:
-        """Creates a tenant with a unique email. 
-        If the email is already taken returns a EmailAlreadyInUseException. 
-        If the tenantId is already taken returns a TenantIdAlreadyInUseException. 
-        """
-
-    @abstractmethod
-    def save_new_tenant(self, tenant: Tenant) -> Tenant:
+    def save_tenant(self, tenant: Tenant) -> Tenant:
         pass
 
     @abstractmethod
@@ -95,16 +88,14 @@ class AwsDbRepository(DbRepository):
             TableName=self._table_name,
         )
 
-        if 'Items' in response:
-            if len(response['Items']) == 0:
-                return None
-            if len(response['Items']) == 1:
-                return Tenant.from_json(self._deserialize(response['Items'][0]))
+        if len(response['Items']) == 0:
+            return None
+        if len(response['Items']) == 1:
+            return Tenant.from_json(self._deserialize(response['Items'][0]))
 
-            raise TooManyTenantsWithSameEmail(
-                f'Found more than one tenant with email {email}')
+        raise TooManyTenantsWithSameEmail(
+            f'Found more than one tenant with email {email}')
 
-        return None
 
     def update_tenant(self, tenant: Tenant) -> Tenant:
         dynamodb = boto3.client(
@@ -138,10 +129,10 @@ class AwsDbRepository(DbRepository):
 
         return updated
 
-    def save_new_tenant(self, tenant: Tenant) -> Tenant:
-        return self.create_tenant(email=tenant.email, tenant_id=tenant.id, auth_keys=tenant.auth_keys, plan_keys=tenant.plan_keys, deployment_state=tenant.deployment_state)
+    def save_tenant(self, tenant: Tenant) -> Tenant:
+        return self._create_tenant(email=tenant.email, tenant_id=tenant.id, auth_keys=tenant.auth_keys, plan_keys=tenant.plan_keys, deployment_state=tenant.deployment_state)
 
-    def create_tenant(self, email: str, tenant_id: str, deployment_state: DeploymentState, auth_keys: dict | None = None, plan_keys: dict | None = None) -> Tenant:
+    def _create_tenant(self, email: str, tenant_id: str, deployment_state: DeploymentState, auth_keys: dict | None = None, plan_keys: dict | None = None) -> Tenant:
         dynamodb = boto3.client(
             'dynamodb', region_name=self._region, endpoint_url=self._endpoint_url)
 

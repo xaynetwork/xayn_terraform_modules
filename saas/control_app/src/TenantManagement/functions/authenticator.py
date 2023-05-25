@@ -1,18 +1,12 @@
 # pylint: disable=wrong-import-position
 import os
 import logging
-# import sys
 
-# sys.path.append(os.path.join(os.path.dirname(__file__), 'functions'))
 from enum import Enum
 from TenantManagement.functions.shared.auth_utils import try_decode_auth_key
 from TenantManagement.functions.shared.auth_context import AuthorizedContext
 from TenantManagement.functions.shared.db_repository import AwsDbRepository
 from TenantManagement.functions.shared.db_repository import DbRepository
-
-region = os.environ['REGION'] if 'REGION' in os.environ else "ddblocal"
-db_table = os.environ['DB_TABLE'] if 'DB_TABLE' in os.environ else "saas"
-db_endpoint = os.environ['DB_ENDPOINT'] if 'DB_ENDPOINT' in os.environ else None
 
 
 class PolicyEffect(Enum):
@@ -20,9 +14,10 @@ class PolicyEffect(Enum):
     DENY = 'Deny'
     ALLOW = 'Allow'
 
-def build_policy(api_token: str, method_arn: list[str], effect: PolicyEffect):
+
+def build_policy(api_token: str, tenant_id: str, method_arn: list[str], effect: PolicyEffect):
     return {
-        "principalId": f"customer_id_{api_token}",
+        "principalId": tenant_id,
         # used by the usage plan
         "usageIdentifierKey": api_token,
         "policyDocument": {
@@ -38,26 +33,27 @@ def build_policy(api_token: str, method_arn: list[str], effect: PolicyEffect):
     }
 
 
-def handle(event, repo : DbRepository):
+def handle(event, repo: DbRepository):
     api_token = event["authorizationToken"] if "authorizationToken" in event else ""
     method_arn = event["methodArn"] if "methodArn" in event else ""
-
+  
     tenant_id, auth_key = try_decode_auth_key(api_token)
     if tenant_id is None or auth_key is None:
         logging.error("Could not decode %s", api_token)
-        return build_policy(api_token, [method_arn], effect=PolicyEffect.DENY)
+        return build_policy(api_token, "", [method_arn], effect=PolicyEffect.DENY)
 
-    tenant = repo.get_tenant(tenant_id=tenant_id)
+    tenant = repo.get_tenant(tenant_id)
     if tenant is None:
         logging.error("No tenant found with id %s", tenant_id)
-        return build_policy(api_token, [method_arn], effect=PolicyEffect.DENY)
+        return build_policy(api_token, "", [method_arn], effect=PolicyEffect.DENY)
 
     context = tenant.get_authorization_context(method_arn, auth_key)
 
     if isinstance(context, AuthorizedContext):
-        return build_policy(context.plan_key, context.method_arns, effect=PolicyEffect.ALLOW)
+        return build_policy(context.plan_key, tenant_id, context.method_arns, effect=PolicyEffect.ALLOW)
 
-    return build_policy(api_token, [method_arn], effect=PolicyEffect.DENY)
+    return build_policy(api_token, "", [method_arn], effect=PolicyEffect.DENY)
+
 
 def lambda_handler(event, _context):
     """Sample pure Lambda function
@@ -80,5 +76,10 @@ def lambda_handler(event, _context):
 
         Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
     """
-    db_repo = AwsDbRepository(endpoint_url=db_endpoint, table_name=db_table, region=region)
+    region = os.environ['REGION']
+    db_table = os.environ['DB_TABLE']
+    db_endpoint = os.environ['DB_ENDPOINT'] if "DB_ENDPOINT" in os.environ else None
+
+    db_repo = AwsDbRepository(endpoint_url=db_endpoint,
+                              table_name=db_table, region=region)
     return handle(event, db_repo)

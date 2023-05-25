@@ -56,13 +56,13 @@ jobs:
           just-version: '${{ env.JUST_VERSION }}'
 
       - name: Install dependencies
-        working-directory: saas
+        working-directory: saas/control_app/src
         run: just py-install
 
       - name: Run lint
-        working-directory: saas
+        working-directory: saas/control_app/src
         run: just py-lint
 
       - name: Run test
-        working-directory: saas
+        working-directory: saas/control_app/src
         run: just py-test

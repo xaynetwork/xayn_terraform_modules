@@ -4,27 +4,6 @@ from TenantManagement.functions.shared.auth_utils import encode_auth_key
 from TenantManagement.functions import authenticator
 from TenantManagement.tests.unit.fakes import (fake_tenant_db, fake_no_tenant_db)
 
-
-@pytest.fixture()
-def apigw_correct_event():
-    """ Generates API GW Event"""
-
-    return {
-        "type": "TOKEN",
-        "methodArn": "arn:aws:execute-api:eu-west-3:917039226361:4qnmcgc1lg/ESTestInvoke-stage/GET/documents",
-        "authorizationToken": encode_auth_key('tenant1', 'authKey2')
-    }
-
-@pytest.fixture()
-def apigw_incorrect_event():
-    """ Generates API GW Event"""
-
-    return {
-        "type": "TOKEN",
-        "methodArn": "arn:aws:execute-api:eu-west-3:917039226361:4qnmcgc1lg/ESTestInvoke-stage/GET/documents",
-        "authorizationToken": "dsjhagfsdjh"
-    }
-
 def event(path,token):
     """ Generates API GW Event"""
 
@@ -34,7 +13,7 @@ def event(path,token):
         "authorizationToken": token
     }
 
-def test_lambda_should_return_allow_candidates():
+def test_lambda_should_return_allow_candidates_path():
 
     data = authenticator.handle(event("candidates",encode_auth_key('tenant1', 'authKey2')), fake_tenant_db())
 
@@ -43,9 +22,9 @@ def test_lambda_should_return_allow_candidates():
     assert "Effect" in data["policyDocument"]["Statement"][0]
     assert data["policyDocument"]["Statement"][0]["Effect"] == "Allow"
 
-def test_lambda_should_return_allow_(apigw_correct_event):
+def test_lambda_should_return_allow_documents_path():
 
-    data = authenticator.handle(apigw_correct_event, fake_tenant_db())
+    data = authenticator.handle(event("documents",encode_auth_key('tenant1', 'authKey2')), fake_tenant_db())
 
     assert "policyDocument" in data
     assert "Statement" in data["policyDocument"]
@@ -53,9 +32,36 @@ def test_lambda_should_return_allow_(apigw_correct_event):
     assert data["policyDocument"]["Statement"][0]["Effect"] == "Allow"
 
 
-def test_lambda_should_return_deny_when_tenant_does_not_exist(apigw_correct_event):
+def test_lambda_should_return_deny_when_tenant_does_not_exist():
 
-    data = authenticator.handle(apigw_correct_event, fake_no_tenant_db())
+    data = authenticator.handle(event("documents",encode_auth_key('tenant1', 'authKey2')), fake_no_tenant_db())
+
+    assert "policyDocument" in data
+    assert "Statement" in data["policyDocument"]
+    assert "Effect" in data["policyDocument"]["Statement"][0]
+    assert data["policyDocument"]["Statement"][0]["Effect"] == "Deny"
+
+def test_lambda_should_return_deny_when_key_incorrect():
+
+    data = authenticator.handle(event("documents",encode_auth_key('tenant1', 'authKey1')), fake_tenant_db())
+
+    assert "policyDocument" in data
+    assert "Statement" in data["policyDocument"]
+    assert "Effect" in data["policyDocument"]["Statement"][0]
+    assert data["policyDocument"]["Statement"][0]["Effect"] == "Deny"
+
+def test_lambda_should_return_deny_when_key_empty():
+
+    data = authenticator.handle(event("documents",encode_auth_key('tenant1', '')), fake_tenant_db())
+
+    assert "policyDocument" in data
+    assert "Statement" in data["policyDocument"]
+    assert "Effect" in data["policyDocument"]["Statement"][0]
+    assert data["policyDocument"]["Statement"][0]["Effect"] == "Deny"
+
+def test_lambda_should_return_deny_when_tenant_incorrect_key_exist():
+
+    data = authenticator.handle(event("documents",encode_auth_key('fa', 'authKey2')), fake_no_tenant_db())
 
     assert "policyDocument" in data
     assert "Statement" in data["policyDocument"]

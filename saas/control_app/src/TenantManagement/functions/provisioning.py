@@ -20,9 +20,6 @@ from TenantManagement.functions.shared.infra_repository import (InfraRepository,
 region = os.environ['REGION'] if 'REGION' in os.environ else "ddblocal"
 db_table = os.environ['DB_TABLE'] if 'DB_TABLE' in os.environ else "saas"
 db_endpoint = os.environ['DB_ENDPOINT'] if 'DB_ENDPOINT' in os.environ else None
-api_id = os.environ['API_ID']
-account_id = os.environ['ACCOUNT_ID']
-api_stage_name = os.environ['API_STAGE_NAME'] if 'API_STAGE_NAME' in os.environ else "default"
 
 EMAIL_REGEX = re.compile(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
 
@@ -39,8 +36,8 @@ def assert_event_key(event: dict, *keys: str):
         if index == len(keys):
             if key in _event:
                 result = _event[key]
-
-            raise EventException(f"event does not contain \"{path}\"")
+            else:
+                raise EventException(f"event does not contain \"{path}\"")
 
         if key in _event:
             _event = _event[key]

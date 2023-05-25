@@ -1,10 +1,11 @@
 locals {
-  function_name         = "authenticator"
+  function_name_auth    = "authenticator"
+  function_name_prov    = "provisioning"
   app_path              = "${path.module}/src"
   function_path         = "${local.app_path}/TenantManagement"
   function_build_path   = "${path.module}/build"
-  function_zip_filename = "${local.function_name}.zip"
-  dest_dir_name         = "app"
+  function_zip_filename = "TenantManagement.zip"
+  dest_dir_name         = "TenantManagement"
   output_path           = "${local.function_build_path}/${local.function_zip_filename}"
 }
 
@@ -61,7 +62,7 @@ EOF
 module "authentication_function" {
   source = "../../generic/lambda/function"
 
-  function_name         = local.function_name
+  function_name         = local.function_name_auth
   handler               = "TenantManagement.functions.authenticator.lambda_handler"
   runtime               = "python3.10"
   source_code_hash      = filebase64sha256(data.external.build.result.output)
@@ -79,7 +80,7 @@ module "authentication_function" {
 module "provisioning_function" {
   source = "../../generic/lambda/function"
 
-  function_name         = local.function_name
+  function_name         = local.function_name_prov
   handler               = "TenantManagement.functions.provisioning.lambda_handler"
   runtime               = "python3.10"
   source_code_hash      = filebase64sha256(data.external.build.result.output)
@@ -93,3 +94,20 @@ module "provisioning_function" {
     DB_TABLE = var.dynamodb_table_name
   }
 }
+
+
+# module "provisioning_function" {
+#   source = "terraform-aws-modules/lambda/aws"
+#   function_name = local.function_name_prov
+#   handler = "TenantManagement.functions.provisioning.lambda_handler"
+#   runtime = "python3.10"
+
+#   local_existing_package = data.external.build.result.output
+
+#   environment_variables = {
+#     REGION   = data.aws_region.current.name
+#     DB_TABLE = var.dynamodb_table_name
+#   }
+
+#   tags = var.tags
+# }

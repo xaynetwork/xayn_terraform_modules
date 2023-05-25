@@ -6,6 +6,7 @@ disable=
     E0401, # Wrong import -> https://gist.github.com/gene1wood/06a64ba80cf3fe886053f0ca6d375bc0, best solution https://w11i.me/how_to_structure_a_python_aws_serverless_project
     R0903, #Too few public methods
     R0913, #Too many arguments
+    E1136, #False positive on list[str]
 
 [MAIN]
 

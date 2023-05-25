@@ -1,8 +1,10 @@
 import os
+import boto3
+
 from TenantManagement.functions.shared.db_repository import AwsDbRepository
 from TenantManagement.functions.shared.tenant_utils import create_id
 from TenantManagement.functions.shared.tenant import AuthPathGroup
-import boto3
+from TenantManagement.functions.shared.tenant import DeploymentState
 
 
 def test_write_tenant():
@@ -10,7 +12,7 @@ def test_write_tenant():
     boto3.setup_default_session(profile_name=profile)
     repo = AwsDbRepository(endpoint_url='http://localhost:8000',
                            region="eu-west-3", table_name="saas")
-    tenant = repo.create_tenant(email="test@test.de", tenant_id=create_id())
+    tenant = repo.create_tenant(email="test@test.de", tenant_id=create_id(), deployment_state=DeploymentState.NEEDS_UPDATE)
     assert tenant
     assert tenant.email == "test@test.de"
 

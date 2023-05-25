@@ -1,8 +1,7 @@
 from abc import abstractmethod
 import boto3
-from TenantManagement.functions.shared.tenant import Tenant
 from boto3.dynamodb.types import (TypeDeserializer, TypeSerializer)
-from TenantManagement.functions.shared.tenant import DeploymentState
+from TenantManagement.functions.shared.tenant import (Tenant, DeploymentState)
 
 _deserializer = TypeDeserializer()
 _serializer = TypeSerializer()
@@ -47,12 +46,11 @@ class DbRepository():
         pass
 
     @abstractmethod
-    def create_tenant(self, email: str, tenant_id: str, deployment_state: DeploymentState, auth_keys: dict = {}, plan_keys: dict = {}) -> Tenant:
+    def create_tenant(self, email: str, tenant_id: str, deployment_state: DeploymentState, auth_keys: dict | None = None, plan_keys: dict | None = None) -> Tenant:
         """Creates a tenant with a unique email. 
         If the email is already taken returns a EmailAlreadyInUseException. 
         If the tenantId is already taken returns a TenantIdAlreadyInUseException. 
         """
-        pass
 
     @abstractmethod
     def save_new_tenant(self, tenant: Tenant) -> Tenant:
@@ -147,7 +145,7 @@ class AwsDbRepository(DbRepository):
     def save_new_tenant(self, tenant: Tenant) -> Tenant:
         return self.create_tenant(email=tenant.email, tenant_id=tenant.id, auth_keys=tenant.auth_keys, plan_keys=tenant.plan_keys, deployment_state=tenant.deployment_state)
 
-    def create_tenant(self, email: str, tenant_id: str, deployment_state: DeploymentState, auth_keys: dict = {}, plan_keys: dict = {}) -> Tenant:
+    def create_tenant(self, email: str, tenant_id: str, deployment_state: DeploymentState, auth_keys: dict | None = None, plan_keys: dict | None = None) -> Tenant:
         dynamodb = boto3.client(
             'dynamodb', region_name=self._region, endpoint_url=self._endpoint_url)
 
@@ -162,9 +160,9 @@ class AwsDbRepository(DbRepository):
                 f'Tenant email  {email} already exists')
 
         auth_keys = dict(
-            map(lambda item: (item[0], item[1].to_json()), auth_keys.items()))
+            map(lambda item: (item[0], item[1].to_json()), (auth_keys or {}).items()))
         plan_keys = dict(
-            map(lambda item: (item[0].value, item[1]), plan_keys.items()))
+            map(lambda item: (item[0].value, item[1]), (plan_keys or {}).items()))
 
         response = dynamodb.put_item(
             TableName=self._table_name,

@@ -36,8 +36,8 @@
 # class CdkCli():
 #     @staticmethod
 #     def deploy(synthDir : str, profile: str) -> bool:
-#         process = subprocess.Popen(['cdk', 'deploy', '--profile', profile, '--app', synthDir], 
-#                         stdout=subprocess.PIPE, 
+#         process = subprocess.Popen(['cdk', 'deploy', '--profile', profile, '--app', synthDir],
+#                         stdout=subprocess.PIPE,
 #                         universal_newlines=True)
 #         while process.poll() == None:
 #             try:
@@ -48,13 +48,13 @@
 #             except AttributeError as e:
 #                 pass
 #                 # Ignore
-        
+
 #         return process.poll() == 0
-    
+
 #     @staticmethod
 #     def destroy(synthDir : str, profile: str) -> bool:
-#         process = subprocess.Popen(['cdk', 'destroy', '--force', '--profile', profile, '--app', synthDir], 
-#                         stdout=subprocess.PIPE, 
+#         process = subprocess.Popen(['cdk', 'destroy', '--force', '--profile', profile, '--app', synthDir],
+#                         stdout=subprocess.PIPE,
 #                         universal_newlines=True)
 #         while process.poll() == None:
 #             try:
@@ -64,9 +64,9 @@
 #                 print(err.strip())
 #             except AttributeError as e:
 #                 pass
-#                 # Ignore        
+#                 # Ignore
 #         return process.poll() == 0
-            
+
 
 
 # def test_create_api_key():
@@ -98,15 +98,13 @@
 
 #     print(dir)
 #     # CdkCli.deploy(synthDir=dir, profile=profile)
-   
+
 #     cdkboto.create_update(stack_name=stack_name, template=f"{dir}/{stack_name}.template.json")
 #     cdkboto.destroy(stack_name=stack_name)
-    
 
 #     # CdkCli.destroy(synthDir=dir, profile=profile)
-    
+
 
 
 # if __name__ == "__main__":
 #     test_cdk()
-

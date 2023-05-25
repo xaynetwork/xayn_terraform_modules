@@ -1,5 +1,5 @@
 import json
-import TenantManagement.functions.provisioning as provisioning
+from TenantManagement.functions import provisioning
 from TenantManagement.tests.unit.fakes import (fake_no_tenant_db, FakeInfraRepository)
 from TenantManagement.tests.unit.test_utils import get_root_module_path
 

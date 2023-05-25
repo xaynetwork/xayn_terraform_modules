@@ -44,5 +44,3 @@ def test_lambda_should_return_deny_when_tenant_does_not_exist(apigw_correct_even
     assert "Statement" in data["policyDocument"]
     assert "Effect" in data["policyDocument"]["Statement"][0]
     assert data["policyDocument"]["Statement"][0]["Effect"] == "Deny"
-
-

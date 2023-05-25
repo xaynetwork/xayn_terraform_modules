@@ -43,23 +43,23 @@ def handle(event, repo : DbRepository):
     method_arn = event["methodArn"] if "methodArn" in event else ""
 
     tenant_id, auth_key = try_decode_auth_key(api_token)
-    if tenant_id == None or auth_key == None:
+    if tenant_id is None or auth_key is None:
         logging.error("Could not decode %s", api_token)
         return build_policy(api_token, [method_arn], effect=PolicyEffect.DENY)
-    
+
     tenant = repo.get_tenant(tenant_id=tenant_id)
     if tenant is None:
         logging.error("No tenant found with id %s", tenant_id)
         return build_policy(api_token, [method_arn], effect=PolicyEffect.DENY)
-    
+
     context = tenant.get_authorization_context(method_arn, auth_key)
-    
+
     if isinstance(context, AuthorizedContext):
         return build_policy(context.plan_key, context.method_arns, effect=PolicyEffect.ALLOW)
 
     return build_policy(api_token, [method_arn], effect=PolicyEffect.DENY)
 
-def lambda_handler(event, context):
+def lambda_handler(event, _context):
     """Sample pure Lambda function
 
     Parameters

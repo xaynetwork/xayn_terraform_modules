@@ -4,7 +4,8 @@ disable=
     C0116, # missing-function-docstring
     C0115, # Missing class docstring (missing-class-docstring)
     E0401, # Wrong import -> https://gist.github.com/gene1wood/06a64ba80cf3fe886053f0ca6d375bc0, best solution https://w11i.me/how_to_structure_a_python_aws_serverless_project
-    R0903, #Too few public methods 
+    R0903, #Too few public methods
+    R0913, #Too many arguments
 
 [MAIN]
 
@@ -198,7 +199,8 @@ good-names=i,
            k,
            ex,
            Run,
-           _
+           _,
+           v
 
 # Good variable names regexes, separated by a comma. If names match any regex,
 # they will always be accepted
@@ -223,7 +225,7 @@ method-naming-style=snake_case
 #method-rgx=
 
 # Naming style matching correct module names.
-module-naming-style=snake_case
+module-naming-style=any
 
 # Regular expression matching correct module names. Overrides module-naming-
 # style. If left empty, module names will be checked with the set naming style.

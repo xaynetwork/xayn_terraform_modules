@@ -27,6 +27,10 @@ function checkElasticsearchParams(event) {
     event.elasticsearch_url_ssm_name != null,
     "'elasticsearch_url_ssm_name' param required."
   );
+  console.assert(
+    event.elasticsearch_index_embedding_dims != null,
+    "'elasticsearch_index_embedding_dims' param required."
+  );
 }
 
 function checkPostgresParams(event) {
@@ -60,6 +64,7 @@ async function execCommand(event) {
 }
 
 async function createElasticSearchIndex(event) {
+  checkElasticsearchParams(event);
   const request = async (tenant, user, password, url) => {
     const body = {
       mappings: {
@@ -69,7 +74,7 @@ async function createElasticSearchIndex(event) {
           },
           embedding: {
             type: "dense_vector",
-            dims: 128,
+            dims: event.elasticsearch_index_embedding_dims,
             index: true,
             similarity: "dot_product",
           },
@@ -98,6 +103,7 @@ async function createElasticSearchIndex(event) {
 }
 
 async function deleteElasticSearchIndex(event) {
+  checkElasticsearchParams(event);
   const request = async (tenant, user, password, url) => {
     return await fetch(`${url}/${tenant}`, {
       method: "DELETE",
@@ -112,7 +118,6 @@ async function deleteElasticSearchIndex(event) {
 
 async function callElasticSearch(task, event, request) {
   console.log(`${task} for ${event.tenant}`);
-  checkElasticsearchParams(event);
   const client = initSSMClient();
   const config = await getElasticSearchConfig(client, event);
 

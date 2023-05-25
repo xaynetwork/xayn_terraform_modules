@@ -11,6 +11,7 @@ async function run() {
     postgres_user_ssm_name: "/postgres/aurora-db-dev/username",
     postgres_password_ssm_name: "/postgres/aurora-db-dev/password",
     postgres_url_ssm_name: "/postgres/aurora-db-dev/url",
+    elasticsearch_index_embedding_dims: 128
   };
 
   let res = await handler(event);

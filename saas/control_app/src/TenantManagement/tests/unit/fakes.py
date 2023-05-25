@@ -1,5 +1,3 @@
-from typing import Callable
-
 from TenantManagement.functions.shared.tenant import Tenant
 from TenantManagement.functions.shared.db_repository import DbRepository
 from TenantManagement.functions.shared.tenant import DeploymentState
@@ -54,6 +52,9 @@ class FakeDbRepository(DbRepository):
     def create_tenant(self, email: str, tenant_id: str, deployment_state: DeploymentState, auth_keys: dict | None = None, plan_keys: dict | None = None) -> Tenant:
         tenant = Tenant(email=email, id=tenant_id, auth_keys=auth_keys or {
         }, deployment_state=deployment_state, plan_keys=plan_keys or {})
+        return self.save_new_tenant(tenant)
+
+    def update_tenant(self, tenant: Tenant) -> Tenant:
         return self.save_new_tenant(tenant)
 
 

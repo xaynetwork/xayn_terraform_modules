@@ -15,7 +15,7 @@ module "dynamodb_table" {
 
   hash_key     = "dataType"
   range_key    = "dataId"
-  billing_mode = "PROVISIONED"
+  billing_mode = "PAY_PER_REQUEST"
 
   attributes = [
     {

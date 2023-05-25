@@ -74,8 +74,7 @@ class AwsDbRepository(DbRepository):
         response = dynamodb.get_item(
             TableName=self._table_name,
             Key={
-                'dataType': _serializer.serialize('tenants'),
-                'dataId': _serializer.serialize(tenant_id)
+                'id': _serializer.serialize(tenant_id)
             }
         )
 
@@ -88,13 +87,11 @@ class AwsDbRepository(DbRepository):
         dynamodb = boto3.client(
             'dynamodb', region_name=self._region, endpoint_url=self._endpoint_url)
 
-        response = dynamodb.query(
+        response = dynamodb.scan(
             ExpressionAttributeValues={
-                ':dataType': _serializer.serialize('tenants'),
                 ':email': _serializer.serialize(email),
             },
             FilterExpression='contains(email, :email)',
-            KeyConditionExpression='dataType = :dataType',
             TableName=self._table_name,
         )
 
@@ -121,8 +118,7 @@ class AwsDbRepository(DbRepository):
         response = dynamodb.update_item(
             TableName=self._table_name,
             Key={
-                'dataType': _serializer.serialize('tenants'),
-                'dataId': _serializer.serialize(tenant.id),
+                'id': _serializer.serialize(tenant.id),
             },
             ExpressionAttributeValues={
                 ':email': _serializer.serialize(tenant.email),
@@ -167,8 +163,7 @@ class AwsDbRepository(DbRepository):
         response = dynamodb.put_item(
             TableName=self._table_name,
             Item={
-                'dataType': _serializer.serialize('tenants'),
-                'dataId': _serializer.serialize(tenant_id),
+                'id': _serializer.serialize(tenant_id),
                 'auth_keys': _serializer.serialize(auth_keys),
                 'plan_keys': _serializer.serialize(plan_keys),
                 'email': _serializer.serialize(email),

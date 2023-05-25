@@ -8,23 +8,23 @@ from TenantManagement.functions.shared.tenant import AuthPathGroup
 from TenantManagement.functions.shared.tenant import DeploymentState
 
 
-@pytest.mark.skip(reason="Integration test")
+# @pytest.mark.skip(reason="Integration test")
 def test_write_tenant():
     profile = os.environ.get('PROFILE_B2B_DEV')
     boto3.setup_default_session(profile_name=profile)
     repo = AwsDbRepository(endpoint_url='http://localhost:8000',
-                           region="eu-west-3", table_name="saas")
+                           region="eu-west-3", table_name="saas_tenants")
     tenant = repo.create_tenant(email="test@test.de", tenant_id=create_id(), deployment_state=DeploymentState.NEEDS_UPDATE)
     assert tenant
     assert tenant.email == "test@test.de"
 
 
-@pytest.mark.skip(reason="Integration test")
+# @pytest.mark.skip(reason="Integration test")
 def test_add_keys_to_tenant():
     boto3.setup_default_session(aws_access_key_id='X',
                                 aws_secret_access_key='X')
     repo = AwsDbRepository(endpoint_url='http://localhost:8000',
-                           region="eu-west-3", table_name="saas")
+                           region="eu-west-3", table_name="saas_tenants")
     tenant = repo.get_tenant_by_email(email="test@test.de")
     assert tenant
     assert tenant.email == "test@test.de"

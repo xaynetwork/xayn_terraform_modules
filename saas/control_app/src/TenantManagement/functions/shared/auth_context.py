@@ -31,6 +31,6 @@ class AuthorizedContext(AuthContext):
         return super().method_arns
 
 
-class NotAuthorizedContext(AuthContext):
+class UnauthorizedContext(AuthContext):
     def __init__(self, method_arns: list[str]) -> None:
         super().__init__(method_arns, False)

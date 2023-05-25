@@ -4,22 +4,15 @@ import os
 import logging
 import json
 import re
-# import sys
 
-# sys.path.append(os.path.join(os.path.dirname(__file__), 'functions'))
 from TenantManagement.functions.shared.db_repository import AwsDbRepository
 from TenantManagement.functions.shared.db_repository import (
     DbRepository, TenantIdAlreadyInUseException, EmailAlreadyInUseException)
-from TenantManagement.functions.shared import tenant_utils
 
 from TenantManagement.functions.shared.tenant import Tenant
-from TenantManagement.functions.shared.tenant_utils import create_random_password
-from TenantManagement.functions.shared.tenant import DeploymentState
-from TenantManagement.functions.shared.infra_repository import (InfraRepository, BotoInfraRepository)
+from TenantManagement.functions.shared.infra_repository import (
+    InfraRepository, BotoInfraRepository)
 
-region = os.environ['REGION'] if 'REGION' in os.environ else "ddblocal"
-db_table = os.environ['DB_TABLE'] if 'DB_TABLE' in os.environ else "saas"
-db_endpoint = os.environ['DB_ENDPOINT'] if 'DB_ENDPOINT' in os.environ else None
 
 EMAIL_REGEX = re.compile(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
 
@@ -47,6 +40,7 @@ def assert_event_key(event: dict, *keys: str):
 
     return result
 
+
 def build_response(message: str, status_code: int):
     return {
         "statusCode": status_code,
@@ -61,8 +55,7 @@ def handle_signup(email: str, db_repo: DbRepository, infra_repo: InfraRepository
     if not EMAIL_REGEX.match(email):
         return build_response("Email address is not valid", 400)
 
-    tenant = Tenant(email=email, id=tenant_utils.create_id(), auth_keys={}, plan_keys={
-    }, deployment_state=DeploymentState.NEEDS_UPDATE).update_auth_defaults(create_random_password())
+    tenant = Tenant.create_default(email=email)
     try:
         tenant = db_repo.save_new_tenant(tenant)
     except TenantIdAlreadyInUseException:
@@ -72,7 +65,7 @@ def handle_signup(email: str, db_repo: DbRepository, infra_repo: InfraRepository
         return build_response("Can not create tenant, try again later. ", status_code=500)
     except EmailAlreadyInUseException:
         # Actually this message should be "Email already in use, but this could be a spoofing mechanism to detect use emails from us. TODO intoduce a captcha, mechanism"
-        return build_response("Can not create tenant", status_code=409)
+        return build_response("Can not create tenant", status_code=400)
 
     # Check the resuklt and implement function
     infra_repo.notify_stack_deployment()
@@ -95,6 +88,10 @@ def handle(event, repo: DbRepository, infra_repo: InfraRepository) -> dict:
 
 
 def lambda_handler(event, _context) -> dict:
+    region = os.environ['REGION']
+    db_table = os.environ['DB_TABLE']
+    db_endpoint = os.environ['DB_ENDPOINT'] if 'DB_ENDPOINT' in os.environ else None
+
     db_repo = AwsDbRepository(endpoint_url=db_endpoint,
                               table_name=db_table, region=region)
     infra_repo = BotoInfraRepository()

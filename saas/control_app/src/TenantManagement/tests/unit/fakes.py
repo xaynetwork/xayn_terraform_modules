@@ -15,7 +15,7 @@ FAKE_TENANT_1 = {
         "documents": "planKey2",
         "candidates": "planKey2"
     },
-    "dataId": "tenant1",
+    "id": "tenant1",
     "email": "tenant@tenants.com",
     "deployment_state": "NEEDS_UPDATE"
 }

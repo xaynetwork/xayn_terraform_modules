@@ -4,7 +4,7 @@ output "arn" {
 }
 
 output "id" {
-  description = "id of the lambda role"
+  description = "Id of the lambda role"
   value       = aws_iam_role.lambda.id
 }
 

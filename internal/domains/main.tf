@@ -22,7 +22,7 @@ module "records" {
 
   zone_name = keys(module.zones.route53_zone_zone_id)[0]
 
-  records = var.records
+  records_jsonencoded = jsonencode(var.jsonencode)
 
   depends_on = [module.zones]
 }

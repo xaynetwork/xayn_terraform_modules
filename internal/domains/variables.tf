@@ -4,13 +4,9 @@ variable "hosted_zone_name" {
 }
 
 variable "records" {
-  description = "The name of the hosted zone for Route53"
-  type = list(object({
-    name    = string
-    type    = string
-    ttl     = number
-    records = list(string)
-  }))
+  description = "List of objects of DNS records"
+  type        = any
+  default     = []
 }
 
 variable "tags" {

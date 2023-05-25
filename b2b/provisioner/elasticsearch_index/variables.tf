@@ -38,3 +38,9 @@ variable "aws_profile" {
   description = "AWS Profile with which the provisioner should be executed"
   type        = string
 }
+
+variable "embedding_dims" {
+  description = " Number of vector dimensions"
+  type        = number
+  default     = 128
+}

@@ -1,11 +1,11 @@
 variable "dynamodb_table_arn" {
   description = "The ARN of the tenant table to provide read access to."
-  type = string
+  type        = string
 }
 
 variable "dynamodb_table_name" {
   description = "The Name of the tenant table to provide read access to."
-  type = string
+  type        = string
 }
 
 

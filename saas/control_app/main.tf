@@ -63,7 +63,7 @@ module "authentication_function" {
 
   function_name         = local.function_name
   handler               = "app.functions.authenticator.lambda_handler"
-  runtime               = "python3.9"
+  runtime               = "python3.10"
   source_code_hash      = filebase64sha256(data.external.build.result.output)
   output_path           = local.output_path
   lambda_role_arn       = module.role.arn

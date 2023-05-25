@@ -16,7 +16,7 @@ variable "tags" {
 }
 
 variable "role_postfix" {
-  description = "A postfix to distinguish the global role for other deployments"
+  description = "A postfix to distinguish the global role from other deployments"
   type        = string
-  default     = null
+  default     = "global"
 }

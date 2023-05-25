@@ -1,7 +1,7 @@
 locals {
   function_name         = "authenticator"
   app_path              = "${path.module}/src"
-  function_path         = "${local.app_path}/app"
+  function_path         = "${local.app_path}/TenantManagement"
   function_build_path   = "${path.module}/build"
   function_zip_filename = "${local.function_name}.zip"
   dest_dir_name         = "app"
@@ -62,7 +62,25 @@ module "authentication_function" {
   source = "../../generic/lambda/function"
 
   function_name         = local.function_name
-  handler               = "app.functions.authenticator.lambda_handler"
+  handler               = "TenantManagement.functions.authenticator.lambda_handler"
+  runtime               = "python3.10"
+  source_code_hash      = filebase64sha256(data.external.build.result.output)
+  output_path           = local.output_path
+  lambda_role_arn       = module.role.arn
+  log_retention_in_days = var.log_retention_in_days
+  tags                  = var.tags
+
+  environment_variables = {
+    REGION   = data.aws_region.current.name
+    DB_TABLE = var.dynamodb_table_name
+  }
+}
+
+module "provisioning_function" {
+  source = "../../generic/lambda/function"
+
+  function_name         = local.function_name
+  handler               = "TenantManagement.functions.provisioning.lambda_handler"
   runtime               = "python3.10"
   source_code_hash      = filebase64sha256(data.external.build.result.output)
   output_path           = local.output_path

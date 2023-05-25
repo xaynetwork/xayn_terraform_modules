@@ -1,5 +1,6 @@
 import os
 import boto3
+import pytest
 
 from TenantManagement.functions.shared.db_repository import AwsDbRepository
 from TenantManagement.functions.shared.tenant_utils import create_id
@@ -7,6 +8,7 @@ from TenantManagement.functions.shared.tenant import AuthPathGroup
 from TenantManagement.functions.shared.tenant import DeploymentState
 
 
+@pytest.mark.skip(reason="Integration test")
 def test_write_tenant():
     profile = os.environ.get('PROFILE_B2B_DEV')
     boto3.setup_default_session(profile_name=profile)
@@ -17,6 +19,7 @@ def test_write_tenant():
     assert tenant.email == "test@test.de"
 
 
+@pytest.mark.skip(reason="Integration test")
 def test_add_keys_to_tenant():
     boto3.setup_default_session(aws_access_key_id='X',
                                 aws_secret_access_key='X')

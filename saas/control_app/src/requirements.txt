@@ -1,1 +1,1 @@
--r app/requirements.txt
+-r TenantManagement/requirements.txt

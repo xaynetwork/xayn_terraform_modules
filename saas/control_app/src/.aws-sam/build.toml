@@ -5,7 +5,7 @@ codeuri = "/Users/joecks/git/xayn_terraform_modules/saas/control_app/src"
 runtime = "python3.10"
 architecture = "x86_64"
 handler = "app.functions.authenticator.lambda_handler"
-manifest_hash = "154ebb903b16d5f676852111a7574742"
+manifest_hash = "6907d41f5e54229b97be8765ba194073"
 packagetype = "Zip"
 functions = ["Authentication", "Provisioning"]
 

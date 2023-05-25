@@ -18,16 +18,23 @@ data "external" "build" {
   program = ["bash", "-c", "${local.app_path}/build.sh \"${local.function_path}\" \"${local.function_build_path}\" \"${local.dest_dir_name}\" \"${local.function_zip_filename}\" Function &> /tmp/temp.log && echo '{ \"output\": \"${local.output_path}\" }'"]
 }
 
-module "role" {
+module "role_auth" {
   source = "../../generic/lambda/role"
-  path   = "/saas/"
-  prefix = "AppSaas"
+  path   = "/saas/authentication/"
+  prefix = "AppSaasAuth"
+  tags   = var.tags
+}
+
+module "role_prov" {
+  source = "../../generic/lambda/role"
+  path   = "/saas/provisioning/"
+  prefix = "AppSaasProv"
   tags   = var.tags
 }
 
 resource "aws_iam_role_policy" "authenticator_dynamodb" {
   name   = "authenticator-dynamodb-policy"
-  role   = module.role.id
+  role   = module.role_auth.id
   policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -67,7 +74,7 @@ module "authentication_function" {
   runtime               = "python3.10"
   source_code_hash      = filebase64sha256(data.external.build.result.output)
   output_path           = local.output_path
-  lambda_role_arn       = module.role.arn
+  lambda_role_arn       = module.role_auth.arn
   log_retention_in_days = var.log_retention_in_days
   tags                  = var.tags
 
@@ -75,6 +82,43 @@ module "authentication_function" {
     REGION   = data.aws_region.current.name
     DB_TABLE = var.dynamodb_table_name
   }
+}
+
+
+resource "aws_iam_role_policy" "provisioning_dynamodb" {
+  name   = "provisioning-dynamodb-policy"
+  role   = module.role_prov.id
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+        "Effect": "Allow",
+        "Action": [
+            "dynamodb:List*",
+            "dynamodb:DescribeReservedCapacity*",
+            "dynamodb:DescribeLimits",
+            "dynamodb:DescribeTimeToLive"
+        ],
+        "Resource": "*"
+    },
+    {
+        "Effect": "Allow",
+        "Action": [
+            "dynamodb:BatchGet*",
+            "dynamodb:DescribeStream",
+            "dynamodb:DescribeTable",
+            "dynamodb:Get*",
+            "dynamodb:Query",
+            "dynamodb:Update*",
+            "dynamodb:PutItem",
+            "dynamodb:Scan"
+        ],
+        "Resource": "${var.dynamodb_table_arn}"
+    }
+  ]
+}
+EOF
 }
 
 module "provisioning_function" {
@@ -85,7 +129,7 @@ module "provisioning_function" {
   runtime               = "python3.10"
   source_code_hash      = filebase64sha256(data.external.build.result.output)
   output_path           = local.output_path
-  lambda_role_arn       = module.role.arn
+  lambda_role_arn       = module.role_prov.arn
   log_retention_in_days = var.log_retention_in_days
   tags                  = var.tags
 
@@ -94,20 +138,3 @@ module "provisioning_function" {
     DB_TABLE = var.dynamodb_table_name
   }
 }
-
-
-# module "provisioning_function" {
-#   source = "terraform-aws-modules/lambda/aws"
-#   function_name = local.function_name_prov
-#   handler = "TenantManagement.functions.provisioning.lambda_handler"
-#   runtime = "python3.10"
-
-#   local_existing_package = data.external.build.result.output
-
-#   environment_variables = {
-#     REGION   = data.aws_region.current.name
-#     DB_TABLE = var.dynamodb_table_name
-#   }
-
-#   tags = var.tags
-# }

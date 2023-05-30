@@ -12,7 +12,7 @@ class UsagePlanStack(Stack):
 
         # required
         api_id = scope.node.get_context("api_id")
-        # tenant_id = scope.node.get_context("tenant_id")
+        tenant_id = scope.node.get_context("tenant_id")
         tenant_id = tenant_id_param.value_as_string
         stage_name = scope.node.get_context("stage_name")
         api_key_value = scope.node.get_context("api_key_value")

@@ -7,11 +7,16 @@ import re
 
 from TenantManagement.functions.shared.db_repository import AwsDbRepository
 from TenantManagement.functions.shared.db_repository import (
-    DbRepository, TenantIdAlreadyInUseException, EmailAlreadyInUseException)
+    DbRepository,
+    TenantIdAlreadyInUseException,
+    EmailAlreadyInUseException,
+)
 
 from TenantManagement.functions.shared.tenant import Tenant
 from TenantManagement.functions.shared.infra_repository import (
-    InfraRepository, BotoInfraRepository)
+    InfraRepository,
+    BotoInfraRepository,
+)
 
 
 EMAIL_REGEX = re.compile(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
@@ -30,13 +35,13 @@ def assert_event_key(event: dict, *keys: str):
             if key in _event:
                 result = _event[key]
             else:
-                raise EventException(f"event does not contain \"{path}\"")
+                raise EventException(f'event does not contain "{path}"')
 
         if key in _event:
             _event = _event[key]
             path = f"{path}.{key}"
         else:
-            raise EventException(f"event does not contain \"{path}\"")
+            raise EventException(f'event does not contain "{path}"')
 
     return result
 
@@ -46,12 +51,14 @@ def build_response(message: str, status_code: int):
         "statusCode": status_code,
         "body": json.dumps({"message": message}),
         "headers": {
-            'Content-Type': 'application/json',
-        }
+            "Content-Type": "application/json",
+        },
     }
 
 
-def handle_signup(email: str, db_repo: DbRepository, infra_repo: InfraRepository) -> dict:
+def handle_signup(
+    email: str, db_repo: DbRepository, infra_repo: InfraRepository
+) -> dict:
     if not EMAIL_REGEX.match(email):
         return build_response("Email address is not valid", 400)
 
@@ -60,9 +67,10 @@ def handle_signup(email: str, db_repo: DbRepository, infra_repo: InfraRepository
         tenant = db_repo.save_new_tenant(tenant)
     except TenantIdAlreadyInUseException:
         # Retry to create another tenantId in case of a single collision, in this case we just let the requester know that they need to try that again.
-        logging.exception(
-            "Couldn't generate a unique id, abort the process.")
-        return build_response("Can not create tenant, try again later. ", status_code=500)
+        logging.exception("Couldn't generate a unique id, abort the process.")
+        return build_response(
+            "Can not create tenant, try again later. ", status_code=500
+        )
     except EmailAlreadyInUseException:
         # Actually this message should be "Email already in use, but this could be a spoofing mechanism to detect use emails from us. TODO intoduce a captcha, mechanism"
         return build_response("Can not create tenant", status_code=400)
@@ -84,16 +92,19 @@ def handle(event, repo: DbRepository, infra_repo: InfraRepository) -> dict:
         assert email
         return handle_signup(email, repo, infra_repo)
 
-    return build_response(f"Unsupported path (\"{path}\")  or method (\"{http_method}\").", 400)
+    return build_response(
+        f'Unsupported path ("{path}")  or method ("{http_method}").', 400
+    )
 
 
 def lambda_handler(event, _context) -> dict:
-    region = os.environ['REGION']
-    db_table = os.environ['DB_TABLE']
-    db_endpoint = os.environ['DB_ENDPOINT'] if 'DB_ENDPOINT' in os.environ else None
+    region = os.environ["REGION"]
+    db_table = os.environ["DB_TABLE"]
+    db_endpoint = os.environ["DB_ENDPOINT"] if "DB_ENDPOINT" in os.environ else None
 
-    db_repo = AwsDbRepository(endpoint_url=db_endpoint,
-                              table_name=db_table, region=region)
+    db_repo = AwsDbRepository(
+        endpoint_url=db_endpoint, table_name=db_table, region=region
+    )
     infra_repo = BotoInfraRepository()
     try:
         return handle(event, db_repo, infra_repo)

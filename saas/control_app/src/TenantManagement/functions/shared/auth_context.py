@@ -1,8 +1,8 @@
 class AuthContext:
-    _method_arns : list[str]
-    _is_authorized : bool
+    _method_arns: list[str]
+    _is_authorized: bool
 
-    def __init__(self, method_arns : list[str], is_authorized: bool) -> None:
+    def __init__(self, method_arns: list[str], is_authorized: bool) -> None:
         self._is_authorized = is_authorized
         self._method_arns = method_arns
 
@@ -18,7 +18,7 @@ class AuthContext:
 class AuthorizedContext(AuthContext):
     _plan_key: str
 
-    def __init__(self, plan_key: str, method_arns : list[str]) -> None:
+    def __init__(self, plan_key: str, method_arns: list[str]) -> None:
         self._plan_key = plan_key
         super().__init__(method_arns, True)
 

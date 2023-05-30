@@ -13,11 +13,11 @@ FAKE_TENANT_1 = {
         "semantic_search": "planKey1",
         "personalized_documents": "planKey1",
         "documents": "planKey2",
-        "candidates": "planKey2"
+        "candidates": "planKey2",
     },
     "id": "tenant1",
     "email": "tenant@tenants.com",
-    "deployment_state": "NEEDS_UPDATE"
+    "deployment_state": "NEEDS_UPDATE",
 }
 
 
@@ -32,7 +32,9 @@ def fake_no_tenant_db():
 class FakeDbRepository(DbRepository):
     _tenants = {}
 
-    def __init__(self, endpoint_url: str, table_name: str, tenants: dict[str, Tenant]) -> None:
+    def __init__(
+        self, endpoint_url: str, table_name: str, tenants: dict[str, Tenant]
+    ) -> None:
         self._tenants = tenants
         super().__init__(endpoint_url, table_name, "eu-local")
 
@@ -49,9 +51,21 @@ class FakeDbRepository(DbRepository):
         self._tenants[tenant.id] = tenant
         return tenant
 
-    def create_tenant(self, email: str, tenant_id: str, deployment_state: DeploymentState, auth_keys: dict | None = None, plan_keys: dict | None = None) -> Tenant:
-        tenant = Tenant(email=email, id=tenant_id, auth_keys=auth_keys or {
-        }, deployment_state=deployment_state, plan_keys=plan_keys or {})
+    def create_tenant(
+        self,
+        email: str,
+        tenant_id: str,
+        deployment_state: DeploymentState,
+        auth_keys: dict | None = None,
+        plan_keys: dict | None = None,
+    ) -> Tenant:
+        tenant = Tenant(
+            email=email,
+            id=tenant_id,
+            auth_keys=auth_keys or {},
+            deployment_state=deployment_state,
+            plan_keys=plan_keys or {},
+        )
         return self.save_new_tenant(tenant)
 
     def update_tenant(self, tenant: Tenant) -> Tenant:

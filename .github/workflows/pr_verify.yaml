@@ -64,6 +64,10 @@ jobs:
 
       - name: Run lint
         working-directory: saas/control_app/src
+        run: just py-format-check
+
+      - name: Run lint
+        working-directory: saas/control_app/src
         run: just py-lint
 
       - name: Run test

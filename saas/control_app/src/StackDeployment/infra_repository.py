@@ -1,7 +1,9 @@
 from abc import abstractmethod
 from botocore.exceptions import ClientError
-from TenantManagement.functions.shared.cloudformation_boto_repository import CloudformationBotoRepository
-from TenantManagement.functions.shared.stacks.usage_plan_stack import (UsagePlanStack)
+from TenantManagement.functions.shared.cloudformation_boto_repository import (
+    CloudformationBotoRepository,
+)
+from TenantManagement.functions.shared.stacks.usage_plan_stack import UsagePlanStack
 import aws_cdk as cdk
 
 from TenantManagement.functions.shared.tenant_utils import create_secure_string
@@ -11,7 +13,7 @@ class InfraException(Exception):
     pass
 
 
-class CreateUsagePlanResponse():
+class CreateUsagePlanResponse:
     def __init__(self, api_key_value: str) -> None:
         self._api_key_value = api_key_value
 
@@ -20,41 +22,52 @@ class CreateUsagePlanResponse():
         return self._api_key_value
 
 
-class InfraRepository():
-    def __init__(self, region: str, account_id: str, endpoint_url: str | None = None) -> None:
+class InfraRepository:
+    def __init__(
+        self, region: str, account_id: str, endpoint_url: str | None = None
+    ) -> None:
         self._endpoint_url = endpoint_url
         self._region = region
         self._account_id = account_id
 
     @abstractmethod
-    def create_usage_plan(self, api_id: str, tenant_id: str, stage_name: str) -> CreateUsagePlanResponse:
+    def create_usage_plan(
+        self, api_id: str, tenant_id: str, stage_name: str
+    ) -> CreateUsagePlanResponse:
         pass
 
 
 class CdkInfraRepository(InfraRepository):
-
-    def create_usage_plan(self, api_id: str, tenant_id: str, stage_name: str) -> CreateUsagePlanResponse:
-        cdkboto = CloudformationBotoRepository(region=self._region, endpoint_url=self._endpoint_url)
+    def create_usage_plan(
+        self, api_id: str, tenant_id: str, stage_name: str
+    ) -> CreateUsagePlanResponse:
+        cdkboto = CloudformationBotoRepository(
+            region=self._region, endpoint_url=self._endpoint_url
+        )
         api_key_value = create_secure_string()
 
         stack_name = f"UsagePlanStack-{tenant_id}"
-        app = cdk.App(context={
-            "tenant_id": tenant_id,
-            "api_id": api_id,
-            "stage_name": stage_name,
-            "api_key_value": api_key_value
-        })
-        UsagePlanStack(app, stack_name, env=cdk.Environment(
-            account=self._account_id, region=self._region))
+        app = cdk.App(
+            context={
+                "tenant_id": tenant_id,
+                "api_id": api_id,
+                "stage_name": stage_name,
+                "api_key_value": api_key_value,
+            }
+        )
+        UsagePlanStack(
+            app,
+            stack_name,
+            env=cdk.Environment(account=self._account_id, region=self._region),
+        )
         synth = app.synth()
         synth_dir = synth.directory
 
-        cdkboto.create_update(stack_name=stack_name,
-                              template=f"{synth_dir}/{stack_name}.template.json")
+        cdkboto.create_update(
+            stack_name=stack_name, template=f"{synth_dir}/{stack_name}.template.json"
+        )
 
         return CreateUsagePlanResponse(api_key_value=api_key_value)
-
-
 
 
 # Legacy Repo to deploy a Apikey change only using the AWS api, this is very fast but has no automatic rollback and management solution

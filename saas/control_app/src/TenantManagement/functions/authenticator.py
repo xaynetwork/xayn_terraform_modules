@@ -10,12 +10,15 @@ from TenantManagement.functions.shared.db_repository import DbRepository
 
 
 class PolicyEffect(Enum):
-    '''Effects for the AWS policy'''
-    DENY = 'Deny'
-    ALLOW = 'Allow'
+    """Effects for the AWS policy"""
+
+    DENY = "Deny"
+    ALLOW = "Allow"
 
 
-def build_policy(api_token: str, tenant_id: str, method_arn: list[str], effect: PolicyEffect):
+def build_policy(
+    api_token: str, tenant_id: str, method_arn: list[str], effect: PolicyEffect
+):
     return {
         "principalId": tenant_id,
         # used by the usage plan
@@ -36,7 +39,7 @@ def build_policy(api_token: str, tenant_id: str, method_arn: list[str], effect: 
 def handle(event, repo: DbRepository):
     api_token = event["authorizationToken"] if "authorizationToken" in event else ""
     method_arn = event["methodArn"] if "methodArn" in event else ""
-  
+
     tenant_id, auth_key = try_decode_auth_key(api_token)
     if tenant_id is None or auth_key is None:
         logging.error("Could not decode %s", api_token)
@@ -50,7 +53,9 @@ def handle(event, repo: DbRepository):
     context = tenant.get_authorization_context(method_arn, auth_key)
 
     if isinstance(context, AuthorizedContext):
-        return build_policy(context.plan_key, tenant_id, context.method_arns, effect=PolicyEffect.ALLOW)
+        return build_policy(
+            context.plan_key, tenant_id, context.method_arns, effect=PolicyEffect.ALLOW
+        )
 
     return build_policy(api_token, "", [method_arn], effect=PolicyEffect.DENY)
 
@@ -76,10 +81,11 @@ def lambda_handler(event, _context):
 
         Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
     """
-    region = os.environ['REGION']
-    db_table = os.environ['DB_TABLE']
-    db_endpoint = os.environ['DB_ENDPOINT'] if "DB_ENDPOINT" in os.environ else None
+    region = os.environ["REGION"]
+    db_table = os.environ["DB_TABLE"]
+    db_endpoint = os.environ["DB_ENDPOINT"] if "DB_ENDPOINT" in os.environ else None
 
-    db_repo = AwsDbRepository(endpoint_url=db_endpoint,
-                              table_name=db_table, region=region)
+    db_repo = AwsDbRepository(
+        endpoint_url=db_endpoint, table_name=db_table, region=region
+    )
     return handle(event, db_repo)

@@ -5,11 +5,10 @@ import aws_cdk.aws_apigateway as apigateway
 
 
 class UsagePlanStack(Stack):
-
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        tenant_id_param = CfnParameter(self, "tenant_id", type=)
+        # tenant_id_param = CfnParameter(self, "tenant_id", type=)
 
         # required
         api_id = scope.node.get_context("api_id")
@@ -24,40 +23,46 @@ class UsagePlanStack(Stack):
         rate_limit = scope.node.try_get_context("rate_limit") or "10"
         burst_limit = scope.node.try_get_context("burst_limit") or "5"
 
-        api = typing.cast(apigateway.RestApi, apigateway.RestApi.from_rest_api_id(
-            self, id="Api", rest_api_id=api_id))
+        api = typing.cast(
+            apigateway.RestApi,
+            apigateway.RestApi.from_rest_api_id(self, id="Api", rest_api_id=api_id),
+        )
 
         throttle = apigateway.ThrottleSettings(
-            burst_limit=int(burst_limit), rate_limit=int(rate_limit))
+            burst_limit=int(burst_limit), rate_limit=int(rate_limit)
+        )
         quota = apigateway.QuotaSettings(
-            limit=int(limit), period=apigateway.Period[period])
+            limit=int(limit), period=apigateway.Period[period]
+        )
 
-        plan = api.add_usage_plan(f'UsagePlan-{tenant_id}',
-                                  throttle=throttle, quota=quota)
+        plan = api.add_usage_plan(
+            f"UsagePlan-{tenant_id}", throttle=throttle, quota=quota
+        )
         cfnPlan = typing.cast(apigateway.CfnUsagePlan, plan.node.default_child)
 
-        cfnPlan.add_property_override("ApiStages", [
-            {
-                "ApiId": api_id,
-                "Stage": stage_name,
-                # Can also specify limits for each endpoint
-                # "Throttle": {
-                #     "/": {
-                #         "BurstLimit": 123,
-                #         "RateLimit": 123
-                #     }
-                # }
-            }
-        ])
+        cfnPlan.add_property_override(
+            "ApiStages",
+            [
+                {
+                    "ApiId": api_id,
+                    "Stage": stage_name,
+                    # Can also specify limits for each endpoint
+                    # "Throttle": {
+                    #     "/": {
+                    #         "BurstLimit": 123,
+                    #         "RateLimit": 123
+                    #     }
+                    # }
+                }
+            ],
+        )
 
         key = apigateway.ApiKey(
-            self, 'ApiKey', api_key_name='Tenant-key', value=api_key_value)
+            self, "ApiKey", api_key_name="Tenant-key", value=api_key_value
+        )
         cfnKey = typing.cast(apigateway.CfnApiKey, key.node.default_child)
-        cfnKey.add_property_override('StageKeys', [
-            {
-                "RestApiId": api_id,
-                "StageName": stage_name
-            }
-        ])
+        cfnKey.add_property_override(
+            "StageKeys", [{"RestApiId": api_id, "StageName": stage_name}]
+        )
 
         plan.add_api_key(key)

@@ -69,7 +69,7 @@ class AwsDbRepository(DbRepository):
         )
 
         if "Item" in response:
-            return Tenant.from_json(self._deserialize(response["Item"]))
+            return Tenant.from_dict(self._deserialize(response["Item"]))
 
         return None
 
@@ -89,7 +89,7 @@ class AwsDbRepository(DbRepository):
         if len(response["Items"]) == 0:
             return None
         if len(response["Items"]) == 1:
-            return Tenant.from_json(self._deserialize(response["Items"][0]))
+            return Tenant.from_dict(self._deserialize(response["Items"][0]))
 
         raise TooManyTenantsWithSameEmail(
             f"Found more than one tenant with email {email}"
@@ -101,7 +101,7 @@ class AwsDbRepository(DbRepository):
         )
 
         auth_keys = dict(
-            map(lambda item: (item[0], item[1].to_json()), tenant.auth_keys.items())
+            map(lambda item: (item[0], item[1].to_dict()), tenant.auth_keys.items())
         )
         plan_keys = dict(
             map(lambda item: (item[0].value, item[1]), tenant.plan_keys.items())

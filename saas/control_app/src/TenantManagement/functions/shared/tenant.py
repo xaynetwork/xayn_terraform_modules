@@ -1,14 +1,6 @@
-# pylint: disable=too-many-locals
-
 from __future__ import annotations
 from enum import Enum
-import re
 from strenum import StrEnum
-from TenantManagement.functions.shared.auth_context import (
-    AuthContext,
-    UnauthorizedContext,
-    AuthorizedContext,
-)
 from TenantManagement.functions.shared.tenant_utils import create_secure_string
 from TenantManagement.functions.shared import tenant_utils
 
@@ -63,21 +55,21 @@ class AuthKey:
         self._group = group
 
     @staticmethod
-    def from_json(data: dict):
+    def from_dict(data: dict):
         if "group" not in data:
-            raise SerializeException("No group in AuthKey json")
+            raise SerializeException("No group in AuthKey dict")
         return AuthKey(AuthPathGroup[data["group"]])
 
     @property
     def group(self) -> AuthPathGroup:
         return self._group
 
-    def to_json(self) -> dict:
+    def to_dict(self) -> dict:
         return {"group": self.group.name}
 
     def __eq__(self, other):
         if self.__class__ is other.__class__:
-            return self.to_json() == other.to_json()
+            return self.to_dict() == other.to_dict()
         return NotImplemented
 
 
@@ -109,21 +101,21 @@ class Tenant:
         )
 
     @staticmethod
-    def from_json(json: dict):
-        auth_keys: dict = json["auth_keys"] if "auth_keys" in json else {}
-        plan_keys: dict = json["plan_keys"] if "plan_keys" in json else {}
+    def from_dict(data: dict):
+        auth_keys: dict = data["auth_keys"] if "auth_keys" in data else {}
+        plan_keys: dict = data["plan_keys"] if "plan_keys" in data else {}
         auth_keys = dict(
-            map(lambda item: (item[0], AuthKey.from_json(item[1])), auth_keys.items())
+            map(lambda item: (item[0], AuthKey.from_dict(item[1])), auth_keys.items())
         )
         plan_keys = dict(
             map(lambda item: (Endpoint(item[0]), item[1]), plan_keys.items())
         )
-        state = DeploymentState[json["deployment_state"]]
+        state = DeploymentState[data["deployment_state"]]
         return Tenant(
-            id=json["id"],
+            id=data["id"],
             auth_keys=auth_keys,
             plan_keys=plan_keys,
-            email=json["email"],
+            email=data["email"],
             deployment_state=state,
         )
 
@@ -170,44 +162,6 @@ class Tenant:
             if v.group is group:
                 keys.append(k)
         return keys
-
-    def get_authorization_context(self, method_arn: str, auth_key: str) -> AuthContext:
-        # i.e. arn:aws:execute-api:eu-central-1:917039226361:aidokeulnk/default/DELETE/documents
-        # 3: region
-        # 4: awsAccountId
-        # 5: path
-        # path:
-        # 0: restId
-        # 1: stage
-        # 2: method
-        # 3..path.size: resource segements
-        (
-            arn_prefix,
-            aws,
-            arn_method,
-            region,
-            account,
-            api_id,
-            api_version,
-            method,
-            path,
-        ) = (re.split(r":|\/", method_arn) + [None])[:9]
-
-        if auth_key in self._auth_keys:
-            paths_group = self._auth_keys[auth_key].group
-            auth_paths = paths_group.value
-            endpoint_path = Endpoint(path)
-            if endpoint_path in auth_paths:
-                method_arns = map(
-                    lambda x: f"{arn_prefix}:{aws}:{arn_method}:{region}:{account}:{api_id}/{api_version}/{method}/{x}",
-                    auth_paths,
-                )
-                return AuthorizedContext(
-                    plan_key=self._plan_keys[endpoint_path],
-                    method_arns=list(method_arns),
-                )
-
-        return UnauthorizedContext(method_arns=[method_arn])
 
     def __eq__(self, other) -> bool:
         """Overrides the default implementation"""

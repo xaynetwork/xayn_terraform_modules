@@ -26,24 +26,12 @@ class EventException(Exception):
     pass
 
 
-def assert_event_key(event: dict, *keys: str):
-    _event = event
-    path = keys[0]
-    result = None
-    for index, key in enumerate(keys, start=1):
-        if index == len(keys):
-            if key in _event:
-                result = _event[key]
-            else:
-                raise EventException(f'event does not contain "{path}"')
+def assert_event_key(event: dict, key: str) -> str:
+    value = event.get(key, None)
+    if value is not None:
+        return value
 
-        if key in _event:
-            _event = _event[key]
-            path = f"{path}.{key}"
-        else:
-            raise EventException(f'event does not contain "{path}"')
-
-    return result
+    raise EventException(f"No {key} found.")
 
 
 def build_response(message: str, status_code: int):
@@ -109,9 +97,5 @@ def lambda_handler(event, _context) -> dict:
     infra_repo = BotoInfraRepository()
     try:
         return handle(event, db_repo, infra_repo)
-    except EventException as ee:
+    except (EventException, json.JSONDecodeError, TypeError) as ee:
         return build_response(f"Error: {ee}", 400)
-    except json.JSONDecodeError as je:
-        return build_response(f"Error: {je}", 400)
-    except TypeError as te:
-        return build_response(f"Error: {te}", 400)

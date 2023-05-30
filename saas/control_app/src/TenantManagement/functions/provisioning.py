@@ -64,7 +64,7 @@ def handle_signup(
 
     tenant = Tenant.create_default(email=email)
     try:
-        tenant = db_repo.save_new_tenant(tenant)
+        tenant = db_repo.save_tenant(tenant)
     except TenantIdAlreadyInUseException:
         # Retry to create another tenantId in case of a single collision, in this case we just let the requester know that they need to try that again.
         logging.exception("Couldn't generate a unique id, abort the process.")
@@ -98,6 +98,7 @@ def handle(event, repo: DbRepository, infra_repo: InfraRepository) -> dict:
 
 
 def lambda_handler(event, _context) -> dict:
+    # pylint: disable=duplicate-code
     region = os.environ["REGION"]
     db_table = os.environ["DB_TABLE"]
     db_endpoint = os.environ["DB_ENDPOINT"] if "DB_ENDPOINT" in os.environ else None

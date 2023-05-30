@@ -47,7 +47,7 @@ class FakeDbRepository(DbRepository):
                 return v
         return None
 
-    def save_new_tenant(self, tenant: Tenant) -> Tenant:
+    def save_tenant(self, tenant: Tenant) -> Tenant:
         self._tenants[tenant.id] = tenant
         return tenant
 
@@ -66,10 +66,10 @@ class FakeDbRepository(DbRepository):
             deployment_state=deployment_state,
             plan_keys=plan_keys or {},
         )
-        return self.save_new_tenant(tenant)
+        return self.save_tenant(tenant)
 
     def update_tenant(self, tenant: Tenant) -> Tenant:
-        return self.save_new_tenant(tenant)
+        return self.save_tenant(tenant)
 
 
 class FakeInfraRepository(InfraRepository):

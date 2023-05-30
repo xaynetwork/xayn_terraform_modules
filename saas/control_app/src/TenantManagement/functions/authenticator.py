@@ -3,8 +3,12 @@ import os
 import logging
 
 from enum import Enum
+import typing
 from TenantManagement.functions.shared.auth_utils import try_decode_auth_key
-from TenantManagement.functions.shared.auth_context import AuthorizedContext
+from TenantManagement.functions.shared.auth_context import (
+    AuthorizedContext,
+    create_authorization_context,
+)
 from TenantManagement.functions.shared.db_repository import AwsDbRepository
 from TenantManagement.functions.shared.db_repository import DbRepository
 
@@ -37,8 +41,8 @@ def build_policy(
 
 
 def handle(event, repo: DbRepository):
-    api_token = event["authorizationToken"] if "authorizationToken" in event else ""
-    method_arn = event["methodArn"] if "methodArn" in event else ""
+    api_token = event.get("authorizationToken", "")
+    method_arn = event.get("methodArn", "")
 
     tenant_id, auth_key = try_decode_auth_key(api_token)
     if tenant_id is None or auth_key is None:
@@ -50,11 +54,14 @@ def handle(event, repo: DbRepository):
         logging.error("No tenant found with id %s", tenant_id)
         return build_policy(api_token, "", [method_arn], effect=PolicyEffect.DENY)
 
-    context = tenant.get_authorization_context(method_arn, auth_key)
+    context = create_authorization_context(tenant, method_arn, auth_key)
 
-    if isinstance(context, AuthorizedContext):
+    if context.is_authorized:
         return build_policy(
-            context.plan_key, tenant_id, context.method_arns, effect=PolicyEffect.ALLOW
+            typing.cast(AuthorizedContext, context).plan_key,
+            tenant_id,
+            context.method_arns,
+            effect=PolicyEffect.ALLOW,
         )
 
     return build_policy(api_token, "", [method_arn], effect=PolicyEffect.DENY)

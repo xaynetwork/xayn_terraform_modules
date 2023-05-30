@@ -22,7 +22,7 @@ FAKE_TENANT_1 = {
 
 
 def fake_tenant_db():
-    return FakeDbRepository("", "", {"tenant1": Tenant.from_json(FAKE_TENANT_1)})
+    return FakeDbRepository("", "", {"tenant1": Tenant.from_dict(FAKE_TENANT_1)})
 
 
 def fake_no_tenant_db():

@@ -3,7 +3,7 @@ locals {
 }
 
 module "execution_role" {
-  source = "../../../generic/service/role"
+  source = "../../../service/role"
 
   description = "ElasticSearch to CloudWatch metric exporter execution role"
   prefix      = local.pascal_case_name
@@ -11,7 +11,7 @@ module "execution_role" {
 }
 
 module "secret_policy" {
-  source = "../../../generic/service/secret_policy"
+  source = "../../../service/secret_policy"
 
   role_name          = module.execution_role.name
   ssm_parameter_arns = [var.elasticsearch_password_ssm_parameter_arn]
@@ -41,7 +41,7 @@ module "security_group" {
 data "aws_region" "current" {}
 
 module "service" {
-  source = "../../../generic/es_to_cw_exporter"
+  source = "../service_template"
 
   name = var.name
 

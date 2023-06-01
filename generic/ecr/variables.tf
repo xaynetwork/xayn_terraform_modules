@@ -9,6 +9,12 @@ variable "read_access_account_ids" {
   default     = []
 }
 
+variable "repository_type" {
+  type = string
+  description = "The type of the repository to be created."
+  default = "private"
+}
+
 variable "tags" {
   description = "Custom tags to set on the underlining resources"
   type        = map(string)

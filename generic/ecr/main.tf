@@ -9,6 +9,7 @@ module "ecr" {
   version  = "1.5.1"
 
   repository_name = each.key
+  repository_type = var.repository_type
 
   create_lifecycle_policy = true
   repository_lifecycle_policy = jsonencode({

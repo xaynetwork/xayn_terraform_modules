@@ -1,6 +1,6 @@
-# AWS VPC endpoint Terraform module
+# AWS Elastic Cloud VPC endpoint Terraform module
 
-Terraform module which creates VPC endpoint for elasticsearch resource on AWS.
+Terraform module which creates VPC endpoint for Elastic Cloud on AWS.
 
 ## Usage
 

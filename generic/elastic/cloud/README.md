@@ -1,7 +1,6 @@
-# Elasticsearch Terraform module
+# Elastic Cloud Terraform module
 
-Terraform module which creates the Elasticsearch.
-Export API Key is located: https://start.1password.com/open/i?a=C37D4GZQDJHGRCPCV2MUZHRSBE&v=6teygc45uzab5citwbdhkfwel4&i=2uocmbv7kqjuazwh2nxyqwq4nm&h=xaynag.1password.com under terraform section.
+Terraform module which creates a Elastic Cloud deployment.
 
 ## Usage
 

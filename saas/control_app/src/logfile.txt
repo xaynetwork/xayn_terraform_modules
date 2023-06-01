@@ -1,0 +1,4 @@
+START RequestId: 66c08c97-96ac-4935-aa7c-cc6047395442 Version: $LATEST
+31 May 2023 16:28:04,492 [ERROR] (rapid) Init failed error=Runtime exited with error: signal: killed InvokeID=
+END RequestId: 9dd00f7a-20dd-4ea4-8889-5615db2c06f9
+REPORT RequestId: 9dd00f7a-20dd-4ea4-8889-5615db2c06f9	Init Duration: 1.37 ms	Duration: 17828.83 ms	Billed Duration: 17829 ms	Memory Size: 128 MB	Max Memory Used: 128 MB	

@@ -22,7 +22,7 @@ Resources:
       Environment:
         Variables:
           REGION: ddblocal
-          DB_TABLE: saas
+          DB_TABLE: saas_tenants
           DB_ENDPOINT: http://dynamodb:8000
       Events:
         HelloWorld:
@@ -47,7 +47,29 @@ Resources:
       Environment:
         Variables:
           REGION: ddblocal
-          DB_TABLE: saas
+          DB_TABLE: saas_tenants
+          DB_ENDPOINT: http://dynamodb:8000
+  TenantPipeline:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Timeout: 100
+      CodeUri: TenantPipeline/
+      Handler:  dist/handler.runPipelineHandler
+      Runtime: nodejs18.x
+      Architectures:
+        - x86_64 
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /run
+            Method: get
+      Environment:
+        Variables:
+          REGION: ddblocal
+          DB_TABLE: saas_tenants
           DB_ENDPOINT: http://dynamodb:8000
 
 Outputs:

@@ -5,22 +5,29 @@
     "cdk": "bin/cdk.js"
   },
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc -w",
-    "test": "jest",
-    "cdk": "cdk"
+    "build": "node_modules/typescript/bin/tsc",
+    "watch": "node_modules/typescript/bin/tsc -w",
+    "cdk": "cdk",
+    "clean": "rm -rf dist || true",
+    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js"
   },
   "devDependencies": {
-    "@types/jest": "^29.4.0",
+    "@types/jest": "^29.5.2",
     "@types/node": "18.14.6",
+    "aws-cdk": "2.78.0",
     "jest": "^29.5.0",
     "ts-jest": "^29.0.5",
-    "aws-cdk": "2.78.0",
     "ts-node": "^10.9.1",
     "typescript": "~4.9.5"
   },
   "dependencies": {
+    "@aws-cdk/cli-lib-alpha": "^2.81.0-alpha.0",
+    "@aws-sdk/client-cloudformation": "^3.342.0",
+    "@aws-sdk/client-dynamodb": "^3.341.0",
+    "@aws-sdk/credential-providers": "^3.342.0",
+    "@aws-sdk/lib-dynamodb": "^3.341.0",
     "aws-cdk-lib": "2.78.0",
+    "aws-sdk": "^2.1386.0",
     "constructs": "^10.0.0",
     "source-map-support": "^0.5.21"
   }

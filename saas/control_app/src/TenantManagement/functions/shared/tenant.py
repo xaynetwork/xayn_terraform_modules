@@ -28,6 +28,7 @@ class DeploymentState(StrEnum):
     NEEDS_UPDATE = "NEEDS_UPDATE"
     UPDATED_IN_PROGRESS = "UPDATED_IN_PROGRESS"
     DEPLOYED = "DEPLOYED"
+    NEEDS_DELETION = "NEEDS_DELETION"
 
 
 class Endpoint(StrEnum):

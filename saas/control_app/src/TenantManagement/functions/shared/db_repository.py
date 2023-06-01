@@ -164,7 +164,7 @@ class AwsDbRepository(DbRepository):
             raise EmailAlreadyInUseException(f"Tenant email: {email} already exists")
 
         auth_keys = dict(
-            map(lambda item: (item[0], item[1].to_json()), (auth_keys or {}).items())
+            map(lambda item: (item[0], item[1].to_dict()), (auth_keys or {}).items())
         )
         plan_keys = dict(
             map(lambda item: (item[0].value, item[1]), (plan_keys or {}).items())

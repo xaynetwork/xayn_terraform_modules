@@ -31,7 +31,8 @@ dynamodb-create-table:
   --attribute-definitions AttributeName=id,AttributeType=S \
   --key-schema AttributeName=id,KeyType=HASH \
   --provisioned-throughput ReadCapacityUnits=10,WriteCapacityUnits=5 \
-  --region ddblocal
+  --region ddblocal \
+  --stream-specification StreamEnabled=true,StreamViewType=NEW_AND_OLD_IMAGES
 
 dynamodb-get-item id:
   #!/bin/bash
@@ -55,6 +56,10 @@ sam-local-invoke-authentication:
 
 sam-local-invoke-provisioning:
  sam build &&  sam local invoke Provisioning -e TenantManagement/events/signup.json --docker-network lambda-local
+
+sam-local-invoke-tenant-pipeline:
+  sam build &&  sam local invoke TenantPipeline -e TenantPipeline/events/put_item.json --docker-network lambda-local
+
 
 sam-local-api:
   sam local start-api --docker-network lambda-local

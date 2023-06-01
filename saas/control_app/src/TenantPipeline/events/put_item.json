@@ -1,0 +1,23 @@
+{
+    "Records": [
+        {
+            "eventID": "7de3041dd709b024af6f29e4fa13d34c",
+            "eventName": "INSERT",
+            "eventVersion": "1.1",
+            "eventSource": "aws:dynamodb",
+            "awsRegion": "region",
+            "dynamodb": {
+                "ApproximateCreationDateTime": 1479499740,
+                "Keys": {
+                    "id": {
+                        "S": "457586fd-08e5-4535-91df-824b48f6400b"
+                    }
+                },
+                "SequenceNumber": "13021600000000001596893679",
+                "SizeBytes": 112,
+                "StreamViewType": "NEW_IMAGE"
+            },
+            "eventSourceARN": "arn:aws:dynamodb:region:account ID:table/BarkTable/stream/2016-11-16T20:42:48.104"
+        }
+    ]
+}

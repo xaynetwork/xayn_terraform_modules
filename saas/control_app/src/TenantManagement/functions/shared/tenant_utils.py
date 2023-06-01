@@ -11,4 +11,4 @@ def create_id() -> str:
 
 
 def create_secure_string() -> str:
-    return "".join(secrets.choice(_PASS_ALPHABET) for _ in range(16))
+    return "".join(secrets.choice(_PASS_ALPHABET) for _ in range(20))

@@ -71,6 +71,12 @@ Resources:
           REGION: ddblocal
           DB_TABLE: saas_tenants
           DB_ENDPOINT: http://dynamodb:8000
+          API_ID: iq30vaeryi
+          ACCOUNT_ID: 917039226361
+          API_STAGE_NAME: default
+          
+          
+          
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function

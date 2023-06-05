@@ -49,7 +49,7 @@ describe('Test runPipelineHandler', () => {
                         "ApproximateCreationDateTime": 1479499740,
                         "Keys": {
                             "id": {
-                                "S": "03f18ac3-5784-4aeb-862c-22b58c0e1dd3"
+                                "S": "52003cd4-eb78-4b88-aa83-9c6a5dc711d5"
                             }
                         },
                         "SequenceNumber": "13021600000000001596893679",

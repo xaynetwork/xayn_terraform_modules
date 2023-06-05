@@ -1,3 +1,7 @@
+locals {
+  environment_map = var.variables == null ? [] : [var.environment_variables]
+}
+
 resource "aws_lambda_function" "this" {
   architectures    = [var.architecture]
   filename         = var.output_path
@@ -16,8 +20,11 @@ resource "aws_lambda_function" "this" {
     }
   }
 
-  environment {
-    variables = var.environment_variables
+  dynamic "environment" {
+    for_each = local.environment_map
+    content {
+      variables = environment.value
+    }
   }
 
   tags = var.tags

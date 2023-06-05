@@ -11,7 +11,7 @@ module "secret_policy" {
   source = "../../../generic/service/secret_policy"
 
   role_name          = module.task_role.name
-  ssm_parameter_arns = [var.elasticsearch_password_ssm_parameter_arn, var.postgres_password_ssm_parameter_arn]
+  ssm_parameter_arns = [var.elasticsearch_password_ssm_parameter_arn, var.postgres_password_ssm_parameter_arn, var.pinecone_password_ssm_parameter_arn]
   description        = "Allow documents api service access to parameter store"
   path               = "/${var.tenant}/"
   prefix             = "${title(var.tenant)}DocumentsAPI"
@@ -97,10 +97,12 @@ module "service" {
     XAYN_WEB_API__NET__CLIENT_REQUEST_TIMEOUT         = var.request_timeout
     XAYN_WEB_API__LOGGING__LEVEL                      = var.logging_level
     XAYN_WEB_API__EMBEDDING__TOKEN_SIZE               = var.token_size
+    XAYN_WEB_API__STORAGE__PINECONE__NAMESPACE        = var.pinecone_namespace
   }
   secrets = {
     XAYN_WEB_API__STORAGE__ELASTIC__PASSWORD  = var.elasticsearch_password_ssm_parameter_arn
     XAYN_WEB_API__STORAGE__POSTGRES__PASSWORD = var.postgres_password_ssm_parameter_arn
+    XAYN_WEB_API__STORAGE__PINECONE__API_KEY  = var.pinecone_password_ssm_parameter_arn
   }
 
   log_retention_in_days = var.log_retention_in_days

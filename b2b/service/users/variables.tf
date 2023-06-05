@@ -55,6 +55,11 @@ variable "elasticsearch_password_ssm_parameter_arn" {
   type        = string
 }
 
+variable "pinecone_password_ssm_parameter_arn" {
+  description = "ARN of the Pinecone password SSM parameter"
+  type        = string
+}
+
 variable "postgres_url" {
   description = "Postgres URL"
   type        = string
@@ -165,6 +170,11 @@ variable "max_body_size" {
   description = "The max size for bodies"
   type        = number
   default     = 4194304
+}
+
+variable "pinecone_namespace" {
+  description = "The namespace used for the pinecone service"
+  type        = string
 }
 
 variable "log_retention_in_days" {

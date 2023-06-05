@@ -77,6 +77,12 @@ variable "alarm_error_rate" {
   default     = {}
 }
 
+variable "alarm_latency_by_method" {
+  description = "Alarm for API Gateway p90 latency by method and resource."
+  type        = any
+  default     = {}
+}
+
 variable "request_parameters" {
   description = "Request Parameters that can manipuate the request or the Headers being send to the service"
   type        = map(string)

@@ -14,10 +14,10 @@ variable "role_name" {
   default     = "ecr-github-actions-role"
 }
 
-variable "policy_name"{
+variable "policy_name" {
   description = "Name of the policy for ECR"
-  type = string
-  default = "ecr_gh_iam_policy"
+  type        = string
+  default     = "ecr_gh_iam_policy"
 }
 
 variable "tags" {

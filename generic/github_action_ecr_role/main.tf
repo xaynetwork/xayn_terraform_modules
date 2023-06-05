@@ -38,7 +38,4 @@ module "iam" {
   }
   tags = var.tags
 
-  depends_on = [
-    module.iam_github_oidc_provider
-  ]
 }

@@ -24,7 +24,7 @@ data "aws_iam_policy_document" "role_access_policy" {
 }
 
 resource "aws_iam_policy" "iam_policy" {
-  name   = "ecr_gh_iam_policy"
+  name   = var.policy_name
   policy = data.aws_iam_policy_document.role_access_policy.json
 }
 

@@ -1,5 +1,5 @@
 locals {
-  environment_map = var.variables == null ? [] : [var.environment_variables]
+  environment_map = var.environment_variables == null ? [] : [var.environment_variables]
 }
 
 resource "aws_lambda_function" "this" {

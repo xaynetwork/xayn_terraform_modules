@@ -1,9 +1,3 @@
-module "iam_github_oidc_provider" {
-  source = "github.com/terraform-aws-modules/terraform-aws-iam//modules/iam-github-oidc-provider?ref=v5.8.0"
-
-  tags = var.tags
-}
-
 data "aws_iam_policy_document" "role_access_policy" {
 
   statement {
@@ -30,7 +24,7 @@ data "aws_iam_policy_document" "role_access_policy" {
 }
 
 resource "aws_iam_policy" "iam_policy" {
-  name   = "ecr_gh_iam_policy"
+  name   = var.policy_name
   policy = data.aws_iam_policy_document.role_access_policy.json
 }
 
@@ -44,7 +38,4 @@ module "iam" {
   }
   tags = var.tags
 
-  depends_on = [
-    module.iam_github_oidc_provider
-  ]
 }

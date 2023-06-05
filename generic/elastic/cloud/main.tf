@@ -12,7 +12,7 @@ resource "ec_deployment_traffic_filter" "aws_vpce" {
 
 resource "ec_deployment" "es_cluster" {
   name                   = var.name
-  alias                  = var.name
+  alias                  = var.alias != null ? var.alias : var.name
   region                 = "aws-${data.aws_region.current.name}"
   version                = var.es_version
   deployment_template_id = var.deployment_template

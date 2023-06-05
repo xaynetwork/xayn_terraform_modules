@@ -1,22 +1,28 @@
 variable "name" {
-  description = "The name for the ES resources"
+  description = "Name for the deployment."
   type        = string
+}
+
+variable "alias" {
+  description = "Deployment alias, affects the format of the resource URLs."
+  type        = string
+  default     = null
 }
 
 variable "es_version" {
   description = "ES version to use for all the deployment resources"
   type        = string
-  default     = "8.5.3"
+  default     = "8.8.0"
 }
 
 variable "deployment_template" {
-  description = "The ID of the ES cluster deployment"
+  description = "Deployment template identifier to create the deployment from."
   type        = string
-  default     = "aws-cpu-optimized-arm-v5"
+  default     = "aws-cpu-optimized-arm-v6"
 }
 
 variable "hot_tier_memory_max" {
-  description = "Specifies maximum value of the memory resources (GB) for elastic to autoscale"
+  description = "Specifies maximum value of the memory resources (GB) for elastic to auto-scale"
   type        = number
   default     = 15
 }

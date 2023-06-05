@@ -10,7 +10,7 @@ variable "subdomain_name" {
 
 variable "custom_domain_association_certificate_validation_records" {
   type = any
-  descrdescription = "A set of certificate CNAME records used for this domain name."  
+  description = "A set of certificate CNAME records used for this domain name."  
 }
 
 variable "service_url" {

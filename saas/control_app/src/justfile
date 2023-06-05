@@ -58,7 +58,23 @@ sam-local-invoke-provisioning:
  sam build &&  sam local invoke Provisioning -e TenantManagement/events/signup.json --docker-network lambda-local
 
 sam-local-invoke-tenant-pipeline:
-  sam build &&  sam local invoke TenantPipeline -e TenantPipeline/events/put_item.json --docker-network lambda-local
+  #!/bin/bash
+  FILE=$(ls -tp  "$HOME/.aws/sso/cache/" | grep -v /$ | grep -v boto |  head -1)
+  FILE_PATH="$HOME/.aws/sso/cache/$FILE"
+  access_token=$(jq -r .accessToken < $FILE_PATH)
+  temp_keys=$(aws sso get-role-credentials --role-name AdministratorAccess --account-id 917039226361  --access-token $access_token)
+  access_key_id=$(echo $TEM | jq -r .roleCredentials.accessKeyId)
+  access_key_secret=$(echo $TEM | jq -r .roleCredentials.secretAccessKey)
+  ENV_FILE=$(mktemp)
+  echo $ENV_FILE
+  jq -n --arg id "$access_key_id" --arg secret "$access_key_secret" '{ "AWS_ACCESS_KEY_ID": $id,  "AWS_SECRET_ACCESS_KEY": $secret }'  > "$ENV_FILE"
+
+  # sam build
+  sam local invoke TenantPipeline \
+  -e TenantPipeline/events/put_item.json \
+  --docker-network lambda-local \
+  --container-env-vars $ENV_FILE
+
 
 
 sam-local-api:

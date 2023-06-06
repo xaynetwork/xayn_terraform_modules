@@ -2,26 +2,11 @@ data "aws_route53_zone" "this" {
   name = var.domain_name
 }
 
-resource "aws_route53_record" "validation_records_linglinger_1" {
-  name    = tolist(var.custom_domain_association_certificate_validation_records)[0].name
-  type    = tolist(var.custom_domain_association_certificate_validation_records)[0].type
-  records = [tolist(var.custom_domain_association_certificate_validation_records)[0].value]
-  ttl     = 300
-  zone_id = data.aws_route53_zone.this.id
-}
-
-resource "aws_route53_record" "validation_records_linglinger_2" {
-  name    = tolist(var.custom_domain_association_certificate_validation_records)[1].name
-  type    = tolist(var.custom_domain_association_certificate_validation_records)[1].type
-  records = [tolist(var.custom_domain_association_certificate_validation_records)[1].value]
-  ttl     = 300
-  zone_id = data.aws_route53_zone.this.id
-}
-
-resource "aws_route53_record" "validation_records_linglinger_3" {
-  name    = tolist(var.custom_domain_association_certificate_validation_records)[2].name
-  type    = tolist(var.custom_domain_association_certificate_validation_records)[2].type
-  records = [tolist(var.custom_domain_association_certificate_validation_records)[2].value]
+resource "aws_route53_record" "validation_records_linglinger" {
+  count   = length(var.certificate_validation_records)
+  name    = var.certificate_validation_records[count.index].name
+  type    = var.certificate_validation_records[count.index].type
+  records = [var.certificate_validation_records[count.index].value]
   ttl     = 300
   zone_id = data.aws_route53_zone.this.id
 }

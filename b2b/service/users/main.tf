@@ -73,13 +73,6 @@ module "service" {
           name  = "X-Tenant-Id"
           value = var.tenant
         }
-      },
-      {
-        routing_path_pattern = ["/personalized_documents", "/personalized_documents/*"]
-        routing_header_condition = {
-          name  = "X-Tenant-Id"
-          value = var.tenant
-        }
       }
     ]
   }

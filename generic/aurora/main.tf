@@ -64,6 +64,14 @@ resource "aws_ssm_parameter" "postgres_username" {
   tags        = var.tags
 }
 
+resource "aws_ssm_parameter" "postgres_password" {
+  name        = "/postgres/${var.name}/password"
+  description = "Aurora password"
+  type        = "SecureString"
+  value       = module.aurora_postgresql_v2.cluster_master_password
+  tags        = var.tags
+}
+
 # cloudwatch alarms
 data "aws_caller_identity" "current" {}
 module "alarms" {

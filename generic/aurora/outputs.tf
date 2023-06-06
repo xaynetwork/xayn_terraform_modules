@@ -20,6 +20,16 @@ output "postgres_url_ssm_parameter_name" {
   value       = aws_ssm_parameter.postgres_url.name
 }
 
+output "postgres_password_ssm_parameter_arn" {
+  description = "ARN of the aurora password SSM parameter"
+  value       = aws_ssm_parameter.postgres_password.arn
+}
+
+output "postgres_password_ssm_parameter_name" {
+  description = "Name of the aurora password SSM parameter"
+  value       = aws_ssm_parameter.postgres_password.name
+}
+
 output "alarm_arns" {
   description = "ARNs of the CloudWatch alarms."
   value       = module.alarms.arns

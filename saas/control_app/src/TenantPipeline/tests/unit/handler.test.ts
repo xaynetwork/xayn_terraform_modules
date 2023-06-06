@@ -5,7 +5,6 @@ import { runPipeline } from '../../src/handler';
 import { DynamoDBDocumentClient, ScanCommand } from '@aws-sdk/lib-dynamodb';
 // import { mockClient } from "aws-sdk-client-mock";
 import { describe, expect, it, jest } from '@jest/globals'
-import { Credentials } from 'aws-cdk-lib/aws-rds';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { beforeEach } from 'node:test';
 

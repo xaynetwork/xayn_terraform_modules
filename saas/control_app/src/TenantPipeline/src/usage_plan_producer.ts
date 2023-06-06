@@ -1,5 +1,5 @@
 import { UsagePlanStack } from './usage_plan_stack';
-import * as cdk from 'aws-cdk-lib';
+import { App } from 'aws-cdk-lib';
 
 export interface UsagePlanProducerProps {
     tenantId: string,
@@ -25,7 +25,7 @@ export class UsagePlanProducer {
     async produce(): Promise<string> {
         const stack_name = this.getStackName();
 
-        const app = new cdk.App({
+        const app = new App({
             context: {
                 "tenant_id": this.props.tenantId,
                 "api_id": this.props.apiId,

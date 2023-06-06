@@ -1,11 +1,11 @@
-import * as cdk from 'aws-cdk-lib';
-import * as apigw from 'aws-cdk-lib/aws-apigateway';
+import { Stack, StackProps } from 'aws-cdk-lib';
+import {Period, RestApi, CfnUsagePlan, ApiKey, CfnApiKey } from 'aws-cdk-lib/aws-apigateway';
 import { Construct } from 'constructs';
 
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
-export class UsagePlanStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+export class UsagePlanStack extends Stack {
+  constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     const apiId = scope.node.getContext("api_id")
@@ -15,19 +15,19 @@ export class UsagePlanStack extends cdk.Stack {
 
     // optional
     const limit: number = +(scope.node.tryGetContext("limit") ?? "10000")
-    const periodKey = (scope.node.tryGetContext("period") ?? "DAY") as keyof typeof apigw.Period
-    const period = apigw.Period[periodKey]
+    const periodKey = (scope.node.tryGetContext("period") ?? "DAY") as keyof typeof Period
+    const period = Period[periodKey]
     const rateLimit: number = +(scope.node.tryGetContext("rate_limit") ?? "10")
     const burstLimit: number = +(scope.node.tryGetContext("burst_limit") ?? "5")
 
     const api =
-      apigw.RestApi.fromRestApiId(this, "Api", apiId) as apigw.RestApi
+      RestApi.fromRestApiId(this, "Api", apiId) as RestApi
 
     const plan = api.addUsagePlan(
       `UsagePlan-${tenantId}`, { throttle: { rateLimit: rateLimit, burstLimit: burstLimit }, quota: { limit: limit, period: period } }
     )
 
-    const cfnPlan = plan.node.defaultChild as apigw.CfnUsagePlan
+    const cfnPlan = plan.node.defaultChild as CfnUsagePlan
 
     cfnPlan.addPropertyOverride(
       "ApiStages",
@@ -46,10 +46,10 @@ export class UsagePlanStack extends cdk.Stack {
       ],
     )
 
-    const key = new apigw.ApiKey(
+    const key = new ApiKey(
       this, "ApiKey", { apiKeyName: `tenant_key_${tenantId}`, value: apiKeyValue }
     )
-    const cfnKey = key.node.defaultChild as apigw.CfnApiKey
+    const cfnKey = key.node.defaultChild as CfnApiKey
     cfnKey.addPropertyOverride(
       "StageKeys", [{ "RestApiId": apiId, "StageName": stageName }]
     )

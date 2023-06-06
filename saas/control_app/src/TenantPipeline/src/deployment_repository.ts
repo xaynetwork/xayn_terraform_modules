@@ -5,7 +5,7 @@ import { AttributeValue, DynamoDBClient, GetItemCommand, UpdateItemCommand } fro
 import { CloudFormationClient, waitUntilStackCreateComplete, waitUntilStackDeleteComplete, waitUntilStackUpdateComplete, DeleteStackCommand, CreateStackCommand, ListStacksCommand, UpdateStackCommand, StackStatus, DescribeStacksCommand } from '@aws-sdk/client-cloudformation';
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 import { WaiterState } from '@aws-sdk/util-waiter';
-import * as fs from 'fs';
+import { readFileSync } from 'fs';
 import { UsagePlanProducer } from './usage_plan_producer';
 
 
@@ -92,7 +92,7 @@ export class DeploymentRepository {
         const path = await producer.produce();
 
         const stackName = producer.getStackName()
-        const stackBody = fs.readFileSync(`${path}/${stackName}.template.json`, 'utf8');
+        const stackBody = readFileSync(`${path}/${stackName}.template.json`, 'utf8');
         const cloudformation = new CloudFormationClient({ region: this.context.region, credentials: this.context.credentials });
 
         try {

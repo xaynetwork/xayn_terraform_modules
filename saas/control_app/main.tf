@@ -13,6 +13,9 @@ locals {
 
 data "aws_region" "current" {}
 
+data "aws_caller_identity" "current" {}
+
+
 # ### needs to have installed
 # ### https://github.com/timo-reymann/deterministic-zip
 # ### https://www.reddit.com/r/Terraform/comments/aupudn/building_deterministic_zips_to_minimize_lambda/
@@ -197,6 +200,7 @@ module "tenant_pipeline_function" {
   function_name         = local.function_name_pipeline
   handler               = "dist/handler.runPipelineHandler"
   runtime               = "nodejs18.x"
+  timeout               = 300
   source_code_hash      = filebase64sha256(data.external.build_tenent_pipeline.result.output)
   output_path           = data.external.build_tenent_pipeline.result.output
   lambda_role_arn       = module.role_pipeline.arn
@@ -204,7 +208,10 @@ module "tenant_pipeline_function" {
   tags                  = var.tags
 
   environment_variables = {
-    REGION   = data.aws_region.current.name
-    DB_TABLE = var.dynamodb_table_name
+    REGION         = data.aws_region.current.name
+    DB_TABLE       = var.dynamodb_table_name
+    API_ID         = var.apigateway_api_id
+    API_STAGE_NAME = var.apigateway_api_stage_name
+    ACCOUNT_ID     = data.aws_caller_identity.current.account_id
   }
 }

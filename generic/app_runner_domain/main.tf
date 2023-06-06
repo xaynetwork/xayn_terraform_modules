@@ -2,6 +2,10 @@ data "aws_route53_zone" "this" {
   name = var.domain_name
 }
 
+locals {
+  url_no_protocol = replace(var.service_url, "https://", "")
+}
+
 resource "aws_route53_record" "validation_records_linglinger" {
   count   = length(var.certificate_validation_records)
   name    = var.certificate_validation_records[count.index].name
@@ -14,7 +18,7 @@ resource "aws_route53_record" "validation_records_linglinger" {
 resource "aws_route53_record" "custom_domain" {
   name    = var.subdomain_name
   type    = "CNAME"
-  records = [var.service_url]
+  records = [local.url_no_protocol]
   ttl     = 300
   zone_id = data.aws_route53_zone.this.id
 }

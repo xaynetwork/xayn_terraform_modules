@@ -1,9 +1,5 @@
-locals {
-  api_name = "api_${var.name}"
-}
-
 resource "aws_api_gateway_rest_api" "api" {
-  name           = local.api_name
+  name           = var.name
   description    = "API for ${var.name}"
   api_key_source = "AUTHORIZER"
 
@@ -182,7 +178,7 @@ module "alarms" {
   account_id = data.aws_caller_identity.current.account_id
   prefix     = "${data.aws_caller_identity.current.account_id}_"
 
-  api_name  = local.api_name
+  api_name  = var.name
   api_stage = aws_api_gateway_stage.api.stage_name
 
   http_5xx_error    = var.alarm_http_5xx_error

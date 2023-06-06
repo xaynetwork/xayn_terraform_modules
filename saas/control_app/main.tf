@@ -1,12 +1,12 @@
 locals {
-  function_name_auth     = "authenticator"
-  function_name_prov     = "provisioning"
-  app_path               = "${path.module}/src"
-  function_path          = "${local.app_path}/TenantManagement"
-  function_build_path    = "${path.module}/build"
-  function_zip_filename  = "TenantManagement.zip"
-  dest_dir_name          = "TenantManagement"
-  output_path            = "${local.function_build_path}/${local.function_zip_filename}"
+  function_name_auth    = "authenticator"
+  function_name_prov    = "provisioning"
+  app_path              = "${path.module}/src"
+  function_path         = "${local.app_path}/TenantManagement"
+  function_build_path   = "${path.module}/build"
+  function_zip_filename = "TenantManagement.zip"
+  dest_dir_name         = "TenantManagement"
+  output_path           = "${local.function_build_path}/${local.function_zip_filename}"
 }
 
 data "aws_region" "current" {}

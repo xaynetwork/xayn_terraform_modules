@@ -33,7 +33,6 @@ class DeploymentState(StrEnum):
 class Endpoint(StrEnum):
     USERS = "users"
     SEMANTIC_SEARCH = "semantic_search"
-    PERSONALIZED_DOCUMENTS = "personalized_documents"
     DOCUMENTS = "documents"
     CANDIDATES = "candidates"
 

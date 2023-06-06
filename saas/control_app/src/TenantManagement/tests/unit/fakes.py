@@ -11,7 +11,6 @@ FAKE_TENANT_1 = {
     "plan_keys": {
         "users": "planKey1",
         "semantic_search": "planKey1",
-        "personalized_documents": "planKey1",
         "documents": "planKey2",
         "candidates": "planKey2",
     },

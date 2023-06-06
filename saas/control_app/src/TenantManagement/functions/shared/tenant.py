@@ -39,7 +39,7 @@ class Endpoint(StrEnum):
 
 
 class AuthPathGroup(Enum):
-    FRONT_OFFICE = [Endpoint.USERS, Endpoint.SEMANTIC_SEARCH, Endpoint.SEMANTIC_SEARCH]
+    FRONT_OFFICE = [Endpoint.USERS, Endpoint.SEMANTIC_SEARCH]
     BACK_OFFICE = [Endpoint.DOCUMENTS, Endpoint.CANDIDATES]
 
     def __eq__(self, other):

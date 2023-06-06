@@ -29,6 +29,7 @@ mkdir -p ${build_path}/tmp_building
 mkdir -p ${temp_path}/${dest_dir_name}
 cp -r $src_code/* ${temp_path}/${dest_dir_name}
 pip install -r ${temp_path}/${dest_dir_name}/requirements.txt -t ${temp_path}
+rm -rf ${build_path}/tmp_building/TenantPipeline || true
 pushd ${build_path}/tmp_building/ && deterministic-zip -r $output_name . && popd
 mv "${build_path}/tmp_building/${output_name}" "${build_path}/$output_name"
 rm -rf ${build_path}/tmp_building

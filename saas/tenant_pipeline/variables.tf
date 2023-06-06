@@ -8,6 +8,21 @@ variable "dynamodb_table_name" {
   type        = string
 }
 
+variable "apigateway_api_id" {
+  description = "The id of the API that should be manipulated by the tenant pipeline."
+  type        = string
+}
+
+variable "apigateway_api_stage_name" {
+  description = "The name of the stage of the api that should be manipulated by the tenant pipeline."
+  type        = string
+}
+
+variable "dynamodb_stream_arn" {
+  description = "The arn of the dynamodb stream that notifies the pipeline."
+  type        = string
+}
+
 # optional parameters
 variable "log_retention_in_days" {
   description = "Specifies the number of days you want to retain log events of all lambdas"

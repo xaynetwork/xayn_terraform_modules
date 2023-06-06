@@ -8,6 +8,15 @@ variable "dynamodb_table_name" {
   type        = string
 }
 
+variable "apigateway_api_id" {
+  description = "The id of the API that should be manipulated by the tenant pipeline."
+  type        = string
+}
+
+variable "apigateway_api_stage_name" {
+  description = "The name of the stage of the api that should be manipulated by the tenant pipeline."
+  type        = string
+}
 
 # optional parameters
 variable "log_retention_in_days" {

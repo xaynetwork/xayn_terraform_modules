@@ -140,8 +140,8 @@ module "provisioning_function" {
   function_name         = local.function_name_prov
   handler               = "TenantManagement.functions.provisioning.lambda_handler"
   runtime               = "python3.10"
-  source_code_hash      = filebase64sha256(data.external.build_tenent_pipeline.result.output)
-  output_path           = data.external.build_tenent_pipeline.result.output
+  source_code_hash      = filebase64sha256(data.external.build.result.output)
+  output_path           = data.external.build.result.output
   lambda_role_arn       = module.role_prov.arn
   log_retention_in_days = var.log_retention_in_days
   tags                  = var.tags
@@ -197,8 +197,8 @@ module "tenant_pipeline_function" {
   function_name         = local.function_name_pipeline
   handler               = "dist/handler.runPipelineHandler"
   runtime               = "nodejs18.x"
-  source_code_hash      = filebase64sha256(data.external.build.result.output)
-  output_path           = local.output_path
+  source_code_hash      = filebase64sha256(data.external.build_tenent_pipeline.result.output)
+  output_path           = data.external.build_tenent_pipeline.result.output
   lambda_role_arn       = module.role_pipeline.arn
   log_retention_in_days = var.log_retention_in_days
   tags                  = var.tags

@@ -9,7 +9,7 @@ def encode_auth_key(tenant_id: str, auth_key: str) -> str:
 def try_decode_auth_key(encoded_auth_key: str) -> tuple[str | None, str | None]:
     """Returns a tuple with (tenantId, AuthKey) when encoded_auth_key is  base64encoded(tenenId:authKey)"""
     try:
-        decoded = base64.b64decode(encoded_auth_key).decode("utf-8").replace('\n', '')
+        decoded = base64.b64decode(encoded_auth_key).decode("utf-8").replace("\n", "")
         if ":" in decoded:
             (_id, key) = decoded.split(":", maxsplit=1)
             return (_id, key)

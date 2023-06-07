@@ -3,25 +3,35 @@ from TenantManagement.functions.shared.db_repository import DbRepository
 from TenantManagement.functions.shared.tenant import DeploymentState
 from TenantManagement.functions.shared.infra_repository import InfraRepository
 
-FAKE_TENANT_1 = {
-    "auth_keys": {
-        "authKey1": {"group": "FRONT_OFFICE"},
-        "authKey2": {"group": "BACK_OFFICE"},
-    },
-    "plan_keys": {
-        "users": "planKey1",
-        "semantic_search": "planKey1",
-        "documents": "planKey2",
-        "candidates": "planKey2",
-    },
-    "id": "tenant1",
-    "email": "tenant@tenants.com",
-    "deployment_state": "NEEDS_UPDATE",
-}
+FRONT_OFFICE_KEY = "kLT338LumaJaNJ8jNiW1"
+BACK_OFFICE_KEY = "NVU51pLO8zVXGdBNTflQ"
+TENANT_ID = "53a09747-2942-46a8-8bba-ccb5d40dbe32"
 
 
-def fake_tenant_db():
-    return FakeDbRepository("", "", {"tenant1": Tenant.from_dict(FAKE_TENANT_1)})
+def fake_tenant(frontoffice, backoffice, tenant_id):
+    # Changng any of those fields in the tenant model most likely needs a migration!
+    return {
+        "auth_keys": {
+            frontoffice: {"group": "FRONT_OFFICE"},
+            backoffice: {"group": "BACK_OFFICE"},
+        },
+        "deployment_state": "DEPLOYED",
+        "email": "bla@blub.de",
+        "id": tenant_id,
+        "plan_keys": {
+            "candidates": "vE1aHDPrtDLinis1Q76o",
+            "documents": "vE1aHDPrtDLinis1Q76o",
+            "semantic_search": "vE1aHDPrtDLinis1Q76o",
+            "users": "vE1aHDPrtDLinis1Q76o",
+        },
+    }
+
+
+# pylint: disable=dangerous-default-value
+
+
+def fake_tenant_db(tenant=fake_tenant(FRONT_OFFICE_KEY, BACK_OFFICE_KEY, TENANT_ID)):
+    return FakeDbRepository("", "", {tenant["id"]: Tenant.from_dict(tenant)})
 
 
 def fake_no_tenant_db():

@@ -37,6 +37,8 @@ def build_policy(
                 },
             ],
         },
+        # this can be used then by the API Gateway as: context.authorizer.principalId
+        "context": {"principalId": tenant_id},
     }
 
 

@@ -44,7 +44,7 @@ resource "aws_lightsail_container_service_deployment_version" "example" {
 
   public_endpoint {
     container_name = var.service_name
-    container_port = var.container_port
+    container_port = keys(var.ports)[0]
 
     health_check {
       healthy_threshold   = 2

@@ -27,7 +27,10 @@ variable "container_image" {
 
 variable "ports" {
   description = "The number of the port to access the container."
-  type        = any
+  type        = map(string)
+  default = {
+    80 = "HTTP"
+  }
 }
 
 variable "tags" {

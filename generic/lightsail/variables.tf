@@ -25,7 +25,7 @@ variable "container_image" {
   type        = string
 }
 
-variable "container_port" {
+variable "ports" {
   description = "The number of the port to access the container."
   type        = any
 }

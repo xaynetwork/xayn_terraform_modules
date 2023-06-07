@@ -69,7 +69,7 @@ def create_authorization_context(
     if auth_key in tenant.auth_keys:
         paths_group = tenant.auth_keys[auth_key].group
         auth_paths = paths_group.value
-        endpoint_path = Endpoint(path)
+        endpoint_path = Endpoint.find_endpoint(path)
         if endpoint_path in auth_paths:
             method_arns = map(
                 lambda x: f"{arn_prefix}:{aws}:{arn_method}:{region}:{account}:{api_id}/{api_version}/{method}/{x}",

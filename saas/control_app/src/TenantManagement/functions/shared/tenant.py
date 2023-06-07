@@ -37,6 +37,14 @@ class Endpoint(StrEnum):
     DOCUMENTS = "documents"
     CANDIDATES = "candidates"
 
+    @classmethod
+    def find_endpoint(cls, value: str | None) -> Endpoint | None:
+        """Does not throw when not finding an endpoint, which is safer for checking arbitrary values."""
+        for endpoint in Endpoint:
+            if endpoint.value == value:
+                return endpoint
+        return None
+
 
 class AuthPathGroup(Enum):
     FRONT_OFFICE = [Endpoint.USERS, Endpoint.SEMANTIC_SEARCH]

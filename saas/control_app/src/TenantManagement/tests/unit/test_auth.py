@@ -42,13 +42,22 @@ def test_auth_should_return_allow_for_any_url_that_starts_with_users():
     assert data["policyDocument"]["Statement"][0]["Effect"] == "Allow"
 
 
-def test_auth_should_deny_endpoints_that_dont_exist():
+def test_auth_should_return_allow_for_any_url_that_starts_with_semantic_search():
     data = authenticator.handle(
-        apigw_event(TENANT_ID, FRONT_OFFICE_KEY, "semantic_search"),
+        apigw_event(TENANT_ID, FRONT_OFFICE_KEY, "semantic_search/bla"),
         fake_tenant_db(),
     )
 
     assert data["policyDocument"]["Statement"][0]["Effect"] == "Allow"
+
+
+def test_auth_should_deny_endpoints_that_dont_exist():
+    data = authenticator.handle(
+        apigw_event(TENANT_ID, FRONT_OFFICE_KEY, "personalized_documents"),
+        fake_tenant_db(),
+    )
+
+    assert data["policyDocument"]["Statement"][0]["Effect"] == "Deny"
 
 
 def test_frontoffice_allow_should_contain_users_and_semantic_search():
@@ -59,6 +68,8 @@ def test_frontoffice_allow_should_contain_users_and_semantic_search():
     assert data["policyDocument"]["Statement"][0]["Resource"] == [
         f"{ARN}users",
         f"{ARN}semantic_search",
+        f"{ARN}users/*",
+        f"{ARN}semantic_search/*",
     ]
 
 
@@ -70,6 +81,8 @@ def test_backoffice_allow_should_contain_docuemtns_and_candidates():
     assert data["policyDocument"]["Statement"][0]["Resource"] == [
         f"{ARN}documents",
         f"{ARN}candidates",
+        f"{ARN}documents/*",
+        f"{ARN}candidates/*",
     ]
 
 

@@ -75,9 +75,13 @@ def create_authorization_context(
                 lambda x: f"{arn_prefix}:{aws}:{arn_method}:{region}:{account}:{api_id}/{api_version}/{method}/{x}",
                 auth_paths,
             )
+            method_arns_wildcards = map(
+                lambda x: f"{arn_prefix}:{aws}:{arn_method}:{region}:{account}:{api_id}/{api_version}/{method}/{x}/*",
+                auth_paths,
+            )
             return AuthorizedContext(
                 plan_key=tenant.plan_keys[endpoint_path],
-                method_arns=list(method_arns),
+                method_arns=list(method_arns) + list(method_arns_wildcards),
             )
 
     return UnauthorizedContext(method_arns=[method_arn])

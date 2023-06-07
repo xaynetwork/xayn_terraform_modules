@@ -13,7 +13,7 @@ resource "aws_lightsail_container_service" "this" {
   public_domain_names {
     certificate {
       certificate_name = aws_lightsail_certificate.this.name
-      domain_names = var.custom_domain
+      domain_names = [var.custom_domain]
     }
   }
 }

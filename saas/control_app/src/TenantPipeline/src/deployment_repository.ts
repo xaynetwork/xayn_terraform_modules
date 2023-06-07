@@ -45,7 +45,7 @@ export class DeploymentRepository {
             if (item != null) {
                 switch (item.deployment_state.S) {
                     case DeploymentState.NEEDS_UPDATE:
-                        await this.updateTenant(item);
+                        await this.createOrUpdateTenant(item);
                         break;
                     case DeploymentState.NEEDS_DELETION:
                         await this.deleteTenant(item);
@@ -73,7 +73,7 @@ export class DeploymentRepository {
         return ddbDocClient;
     }
 
-    async updateTenant(item: Record<string, AttributeValue>) {
+    async createOrUpdateTenant(item: Record<string, AttributeValue>) {
 
         const tenantId = item.id.S!;
         const apiKeyValue = item.plan_keys.M!.documents.S!
@@ -142,11 +142,11 @@ export class DeploymentRepository {
 
         const listResponse = await client.send(new ListStacksCommand({}))
 
-        const instances = listResponse.StackSummaries?.filter(f => f.StackName == stackName) ?? [];
+        const stacks = listResponse.StackSummaries?.filter(f => f.StackName == stackName) ?? [];
         const waiterConfig = { client, maxWaitTime: 200, maxDelay: 2, minDelay: 1 }
 
         var updateResponse;
-        if (instances.length > 0) {
+        if (stacks.length > 0) {
             // destroy
             await client.send(new DeleteStackCommand({
                 StackName: stackName,
@@ -170,11 +170,18 @@ export class DeploymentRepository {
 
         const listResponse = await client.send(new ListStacksCommand({}))
 
-        const instancesCreated = listResponse.StackSummaries?.filter(f => f.StackName == stackName && f.StackStatus == StackStatus.CREATE_COMPLETE) ?? [];
-        const instancesRolledBacked = listResponse.StackSummaries?.filter(f => f.StackName == stackName && (f.StackStatus == StackStatus.ROLLBACK_COMPLETE || f.StackStatus == StackStatus.UPDATE_ROLLBACK_COMPLETE)) ?? [];
+        const stacksCreated = listResponse.StackSummaries?.filter(f => f.StackName == stackName && f.StackStatus == StackStatus.CREATE_COMPLETE) ?? [];
+        const stacksRolledBacked = listResponse.StackSummaries?.filter(f => f.StackName == stackName && (f.StackStatus == StackStatus.ROLLBACK_COMPLETE)) ?? [];
+        const stacksUpdateRolledBacked = listResponse.StackSummaries?.filter(f => f.StackName == stackName && (f.StackStatus == StackStatus.UPDATE_ROLLBACK_COMPLETE)) ?? [];
         const waiterConfig = { client, maxWaitTime: 200, maxDelay: 2, minDelay: 1 }
+
+        // In case an update failed, lets stop the process and correct the status manually.
+        if (stacksUpdateRolledBacked.length > 0) {
+            return false
+        }
+
         var updateResponse;
-        if (instancesRolledBacked.length > 0) {
+        if (stacksRolledBacked.length > 0) {
             await client.send(new DeleteStackCommand({
                 StackName: stackName
             }))
@@ -183,7 +190,7 @@ export class DeploymentRepository {
         }
 
 
-        if (instancesCreated.length == 1) {
+        if (stacksCreated.length == 1) {
             // update
             try {
                 updateResponse = await client.send(new UpdateStackCommand({

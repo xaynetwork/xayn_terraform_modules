@@ -8,12 +8,12 @@ BACK_OFFICE_KEY = "NVU51pLO8zVXGdBNTflQ"
 TENANT_ID = "53a09747-2942-46a8-8bba-ccb5d40dbe32"
 
 
-def fake_tenant(frontoffice, backoffice, tenant_id):
-    # Changng any of those fields in the tenant model most likely needs a migration!
+def fake_tenant(front_office, back_office, tenant_id):
+    # Changing any of those fields in the tenant model most likely needs a migration!
     return {
         "auth_keys": {
-            frontoffice: {"group": "FRONT_OFFICE"},
-            backoffice: {"group": "BACK_OFFICE"},
+            front_office: {"group": "FRONT_OFFICE"},
+            back_office: {"group": "BACK_OFFICE"},
         },
         "deployment_state": "DEPLOYED",
         "email": "bla@blub.de",
@@ -30,7 +30,9 @@ def fake_tenant(frontoffice, backoffice, tenant_id):
 # pylint: disable=dangerous-default-value
 
 
-def fake_tenant_db(tenant=fake_tenant(FRONT_OFFICE_KEY, BACK_OFFICE_KEY, TENANT_ID)):
+def fake_tenant_db(tenant=None):
+    if tenant is None:
+        tenant = fake_tenant(FRONT_OFFICE_KEY, BACK_OFFICE_KEY, TENANT_ID)
     return FakeDbRepository("", "", {tenant["id"]: Tenant.from_dict(tenant)})
 
 

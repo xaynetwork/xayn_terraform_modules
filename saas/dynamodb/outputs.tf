@@ -9,6 +9,6 @@ output "db_arn" {
 }
 
 output "stream_arn" {
-  description = "The arn that a consumer can attach it self to listen for changes"
+  description = "The arn that a consumer can attach itself to listen for changes"
   value       = module.dynamodb_table.dynamodb_table_stream_arn
 }

@@ -81,7 +81,7 @@ module "tenant_pipeline_function" {
   function_name         = local.function_name_pipeline
   handler               = "dist/handler.runPipelineHandler"
   runtime               = "nodejs18.x"
-  timeout               = 300
+  timeout               = 900
   source_code_hash      = filebase64sha256(data.external.build_tenent_pipeline.result.output)
   output_path           = data.external.build_tenent_pipeline.result.output
   lambda_role_arn       = module.role_pipeline.arn

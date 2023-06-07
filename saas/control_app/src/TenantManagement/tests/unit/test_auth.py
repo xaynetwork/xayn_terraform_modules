@@ -33,6 +33,24 @@ def test_auth_should_return_allow():
     assert data["policyDocument"]["Statement"][0]["Effect"] == "Allow"
 
 
+def test_auth_should_return_allow_for_any_url_that_starts_with_users():
+    data = authenticator.handle(
+        apigw_event(TENANT_ID, FRONT_OFFICE_KEY, "users/simon/personalized_documents"),
+        fake_tenant_db(),
+    )
+
+    assert data["policyDocument"]["Statement"][0]["Effect"] == "Allow"
+
+
+def test_auth_should_deny_endpoints_that_dont_exist():
+    data = authenticator.handle(
+        apigw_event(TENANT_ID, FRONT_OFFICE_KEY, "semantic_search"),
+        fake_tenant_db(),
+    )
+
+    assert data["policyDocument"]["Statement"][0]["Effect"] == "Allow"
+
+
 def test_frontoffice_allow_should_contain_users_and_semantic_search():
     data = authenticator.handle(
         apigw_event(TENANT_ID, FRONT_OFFICE_KEY, "users"), fake_tenant_db()
@@ -63,6 +81,18 @@ def test_allow_should_contain_the_userid_as_pricipal():
     assert data["principalId"] == TENANT_ID
 
 
+def test_auth_should_return_deny_when_path_is_root():
+    event = {
+        "type": "TOKEN",
+        "methodArn": "arn:aws:execute-api:eu-west-3:917039226361:iq30vaeryi/ESTestInvoke-stage/GET/",
+        "authorizationToken": "NTNhMDk3NDctMjk0Mi00NmE4LThiYmEtY2NiNWQ0MGRiZTMyOk5WVTUxcExPOHpWWEdkQk5UZmxRCg==",
+    }
+
+    data = authenticator.handle(event, fake_tenant_db())
+
+    assert data["policyDocument"]["Statement"][0]["Effect"] == "Deny"
+
+
 def test_deny_should_not_contain_the_userid_as_pricipal():
     data = authenticator.handle(
         apigw_event(TENANT_ID, FRONT_OFFICE_KEY, "documents"), fake_tenant_db()
@@ -79,7 +109,7 @@ def test_auth_should_return_deny_when_tenant_does_not_exist():
     assert data["policyDocument"]["Statement"][0]["Effect"] == "Deny"
 
 
-def test_auth_should_return_deny_when_tenan_exist_but_wrong_endpoint_is_used():
+def test_auth_should_return_deny_when_tenant_exist_but_wrong_endpoint_is_used():
     data = authenticator.handle(
         apigw_event(TENANT_ID, FRONT_OFFICE_KEY, "documents"), fake_tenant_db()
     )

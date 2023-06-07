@@ -18,9 +18,9 @@ variable "repository_name" {
   description = "Name of the private ECR repo to download images."
 }
 
-variable "domain_name" {
-  type        = string
-  description = "Name of the custom domain for lightsail."
+variable "custom_domain" {
+  type        = list(string)
+  description = "List of custom domain names to access the app."
 }
 
 ## Container information

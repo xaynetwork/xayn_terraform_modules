@@ -2,8 +2,6 @@ import { Stack, StackProps } from 'aws-cdk-lib';
 import {Period, RestApi, CfnUsagePlan, ApiKey, CfnApiKey } from 'aws-cdk-lib/aws-apigateway';
 import { Construct } from 'constructs';
 
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
-
 export class UsagePlanStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);

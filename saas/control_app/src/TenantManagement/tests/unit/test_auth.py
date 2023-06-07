@@ -95,13 +95,9 @@ def test_allow_should_contain_the_userid_as_pricipal():
 
 
 def test_auth_should_return_deny_when_path_is_root():
-    event = {
-        "type": "TOKEN",
-        "methodArn": "arn:aws:execute-api:eu-west-3:917039226361:iq30vaeryi/ESTestInvoke-stage/GET/",
-        "authorizationToken": "NTNhMDk3NDctMjk0Mi00NmE4LThiYmEtY2NiNWQ0MGRiZTMyOk5WVTUxcExPOHpWWEdkQk5UZmxRCg==",
-    }
-
-    data = authenticator.handle(event, fake_tenant_db())
+    data = authenticator.handle(
+        apigw_event(TENANT_ID, FRONT_OFFICE_KEY, ""), fake_tenant_db()
+    )
 
     assert data["policyDocument"]["Statement"][0]["Effect"] == "Deny"
 
@@ -144,11 +140,7 @@ def test_e2e_check_auth():
         region="eu-west-3", table_name="saas_tenants", endpoint_url=None
     )
 
-    event = {
-        "type": "TOKEN",
-        "methodArn": "arn:aws:execute-api:eu-west-3:917039226361:4qnmcgc1lg/ESTestInvoke-stage/GET/documents",
-        "authorizationToken": "NTNhMDk3NDctMjk0Mi00NmE4LThiYmEtY2NiNWQ0MGRiZTMyOk5WVTUxcExPOHpWWEdkQk5UZmxRCg==",
-    }
+    event = apigw_event(TENANT_ID, BACK_OFFICE_KEY, "documents")
     data = authenticator.handle(event, repo)
 
     assert "policyDocument" in data

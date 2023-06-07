@@ -19,8 +19,8 @@ variable "repository_name" {
 }
 
 variable "custom_domain" {
-  type        = list(string)
-  description = "List of custom domain names to access the app."
+  type        = string
+  description = "Domain names to access the app."
 }
 
 ## Container information

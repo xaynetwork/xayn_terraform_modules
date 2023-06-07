@@ -58,3 +58,22 @@ resource "aws_lightsail_container_service_deployment_version" "example" {
 
   service_name = aws_lightsail_container_service.this.name
 }
+
+# Custom domain in Lightsail
+resource "aws_lightsail_domain" "domain_test" {
+  domain_name = var.domain_name
+}
+
+# resource "aws_lightsail_domain_entry" "test" {
+#   domain_name = aws_lightsail_domain.domain_test.domain_name
+#   name        = "www"
+#   type        = "A"
+#   target      = "127.0.0.1"
+# }
+
+# resource "aws_lightsail_domain_entry" "test" {
+#   domain_name = aws_lightsail_domain.domain_test.domain_name
+#   name        = "www"
+#   type        = "A"
+#   target      = "127.0.0.1"
+# }

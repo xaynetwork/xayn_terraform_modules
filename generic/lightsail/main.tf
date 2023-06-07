@@ -29,7 +29,7 @@ data "aws_iam_policy_document" "this" {
 
 resource "aws_ecr_repository_policy" "this" {
   repository = var.repository_name
-  policy     = data.aws_iam_policy_document.default.json
+  policy     = data.aws_iam_policy_document.this.json
 }
 
 resource "aws_lightsail_container_service_deployment_version" "example" {
@@ -39,9 +39,7 @@ resource "aws_lightsail_container_service_deployment_version" "example" {
 
     command = []
 
-    ports = {
-      var.container_port = "HTTP"
-    }
+    ports = var.ports
   }
 
   public_endpoint {

@@ -27,7 +27,7 @@ variable "container_image" {
 
 variable "container_port" {
   description = "The number of the port to access the container."
-  type        = number
+  type        = any
 }
 
 variable "tags" {

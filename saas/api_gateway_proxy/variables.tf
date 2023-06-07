@@ -87,6 +87,7 @@ variable "request_parameters" {
   description = "Request Parameters that can manipuate the request or the Headers being send to the service"
   type        = map(string)
   default = {
+    "integration.request.header.X-Xayn-Tenant-Id" = "context.authorizer.principalId"
   }
   # default = {
   #   "integration.request.header.X-Tenant-Id" = "'${var.tenant}'"

@@ -29,7 +29,7 @@ resource "aws_lightsail_container_service" "this" {
 
   private_registry_access {
     ecr_image_puller_role {
-      is_active = true
+      is_active = var.private_registry_access
     }
   }
 
@@ -49,7 +49,9 @@ resource "aws_lightsail_container_service_deployment_version" "this" {
     container_name = var.service_name
     image          = var.container_image
 
-    command = []
+    command = var.container_command
+
+    environment = var.environmental_variables
 
     ports = var.ports
   }

@@ -103,6 +103,12 @@ variable "alarm_write_latency" {
   default     = {}
 }
 
+variable "database_name" {
+  description = "Name for an automatically created database on cluster creation"
+  type        = string
+  default     = null
+}
+
 variable "tags" {
   description = "Map of tags for the deployment"
   type        = map(string)

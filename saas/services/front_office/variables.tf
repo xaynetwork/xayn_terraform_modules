@@ -9,8 +9,8 @@ variable "id" {
   type        = string
 
   validation {
-    condition     = can(regex("^[a-z0-9]{2,22}$", var.id))
-    error_message = "Only alphanumeric characters are allowed in 'id', and must be 2-22 characters"
+    condition     = can(regex("^[a-z0-9]{2,16}$", var.id))
+    error_message = "Only alphanumeric characters are allowed in 'id', and must be 2-16 characters"
   }
 }
 

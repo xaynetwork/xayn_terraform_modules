@@ -30,3 +30,9 @@ resource "aws_route53_record" "www_custom_domain" {
   ttl     = 300
   zone_id = data.aws_route53_zone.this.id
 }
+
+resource "aws_lightsail_certificate" "test" {
+  name                      = "test"
+  domain_name               = "testdomain.com"
+  subject_alternative_names = ["www.testdomain.com"]
+}

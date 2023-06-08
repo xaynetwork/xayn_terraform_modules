@@ -9,13 +9,6 @@ resource "aws_lightsail_container_service" "this" {
       is_active = true
     }
   }
-
-  public_domain_names {
-    certificate {
-      certificate_name = aws_lightsail_certificate.this.name
-      domain_names = [var.custom_domain]
-    }
-  }
 }
 
 data "aws_iam_policy_document" "this" {
@@ -64,11 +57,4 @@ resource "aws_lightsail_container_service_deployment_version" "example" {
   }
 
   service_name = aws_lightsail_container_service.this.name
-}
-
-
-resource "aws_lightsail_certificate" "this" {
-  name                      = "${var.service_name}-certificate"
-  domain_name               = var.custom_domain
-  subject_alternative_names = ["www.${var.custom_domain}"]
 }

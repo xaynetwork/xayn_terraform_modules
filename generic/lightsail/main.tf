@@ -44,7 +44,7 @@ resource "aws_lightsail_container_service" "this" {
   }
 }
 
-resource "aws_lightsail_container_service_deployment_version" "example" {
+resource "aws_lightsail_container_service_deployment_version" "this" {
   container {
     container_name = var.service_name
     image          = var.container_image

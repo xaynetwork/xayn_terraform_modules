@@ -45,6 +45,8 @@ module "aurora_postgresql_v2" {
   instance_class = "db.serverless"
   instances      = var.instances
 
+  database_name = var.database_name
+
   tags = var.tags
 }
 

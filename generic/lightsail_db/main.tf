@@ -2,8 +2,8 @@ data "aws_availability_zones" "available_zones" {
   state = "available"
 }
 
-resource "aws_lightsail_database" "test" {
-  name                 = var.db_name
+resource "aws_lightsail_database" "this" {
+  relational_database_name = var.db_name
   availability_zone    = data.aws_availability_zones.available_zones.names[0]
   master_database_name = var.db_name
   master_password      = var.db_password

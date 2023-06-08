@@ -7,5 +7,5 @@ output "lightsail_cert_subdomain" {
 }
 
 output "lightsail_cert_domain" {
-  value = var.subdomain_name
+  value = var.domain_name
 }

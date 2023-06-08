@@ -7,7 +7,7 @@ _PASS_ALPHABET = _ALPHABET + string.ascii_uppercase
 
 
 def create_id() -> str:
-    return str(uuid.uuid4())
+    return uuid.uuid4().hex
 
 
 def create_secure_string() -> str:

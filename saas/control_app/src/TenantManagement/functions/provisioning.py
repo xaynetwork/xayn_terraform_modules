@@ -13,9 +13,10 @@ from TenantManagement.functions.shared.db_repository import (
 )
 
 from TenantManagement.functions.shared.tenant import Tenant
-from TenantManagement.functions.shared.infra_repository import (
-    InfraRepository,
-    BotoInfraRepository,
+from TenantManagement.functions.shared.discovery_engine_repository import (
+    DiscoveryEngineRepository,
+    HttpDiscoveryEngineRepository,
+    DiscoveryEngineException,
 )
 
 
@@ -45,7 +46,7 @@ def build_response(message: str, status_code: int):
 
 
 def handle_signup(
-    email: str, db_repo: DbRepository, infra_repo: InfraRepository
+    email: str, db_repo: DbRepository, discovery_repo: DiscoveryEngineRepository
 ) -> dict:
     if not EMAIL_REGEX.match(email):
         return build_response("Email address is not valid", 400)
@@ -63,13 +64,14 @@ def handle_signup(
         # Actually this message should be "Email already in use, but this could be a spoofing mechanism to detect use emails from us. TODO intoduce a captcha, mechanism"
         return build_response("Can not create tenant", status_code=400)
 
-    # Check the resuklt and implement function
-    infra_repo.notify_stack_deployment()
+    discovery_repo.create_tenant(tenant.id)
 
     return build_response(f"User created ({email}).", status_code=204)
 
 
-def handle(event, repo: DbRepository, infra_repo: InfraRepository) -> dict:
+def handle(
+    event, repo: DbRepository, discovery_repo: DiscoveryEngineRepository
+) -> dict:
     path = assert_event_key(event, "path")
     http_method = assert_event_key(event, "httpMethod")
     raw_body = assert_event_key(event, "body")
@@ -78,24 +80,30 @@ def handle(event, repo: DbRepository, infra_repo: InfraRepository) -> dict:
     if path == "/signup" and http_method == "POST":
         email = assert_event_key(body, "email")
         assert email
-        return handle_signup(email, repo, infra_repo)
+        return handle_signup(email, repo, discovery_repo)
 
     return build_response(
         f'Unsupported path ("{path}")  or method ("{http_method}").', 400
     )
 
 
-def lambda_handler(event, _context) -> dict:
+def lambda_handler(event: dict, _context) -> dict:
     # pylint: disable=duplicate-code
     region = os.environ["REGION"]
     db_table = os.environ["DB_TABLE"]
-    db_endpoint = os.environ["DB_ENDPOINT"] if "DB_ENDPOINT" in os.environ else None
+    db_endpoint = os.environ.get("DB_ENDPOINT", None)
+    host = event.get("headers", {}).get("Host", "")
 
     db_repo = AwsDbRepository(
         endpoint_url=db_endpoint, table_name=db_table, region=region
     )
-    infra_repo = BotoInfraRepository()
+    infra_repo = HttpDiscoveryEngineRepository(endpoint=host, region=region)
     try:
         return handle(event, db_repo, infra_repo)
-    except (EventException, json.JSONDecodeError, TypeError) as ee:
+    except (
+        EventException,
+        json.JSONDecodeError,
+        TypeError,
+        DiscoveryEngineException,
+    ) as ee:
         return build_response(f"Error: {ee}", 400)

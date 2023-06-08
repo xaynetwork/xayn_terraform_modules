@@ -9,7 +9,7 @@
     "locally": "node run-locally.js"
   },
   "dependencies": {
-    "@aws-sdk/client-ssm": "^3.211.0",
+    "@aws-sdk/client-ssm": "^3.348.0",
     "node-fetch": "3.3.0",
     "pg": "^8.8.0"
   }

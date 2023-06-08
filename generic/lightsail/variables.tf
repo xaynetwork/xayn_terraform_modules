@@ -29,3 +29,19 @@ variable "ports" {
   description = "The number of the port to access the container."
   type        = map(string)
 }
+
+#Domain config
+variable "certificate_name" {
+  description = "Name of the validated certificate for SSL"
+  type        = string
+}
+
+variable "domain_name" {
+  description = "The name of the DNS region."
+  type        = string
+}
+
+variable "subdomain_name" {
+  description = "The domain name for the app."
+  type        = string
+}

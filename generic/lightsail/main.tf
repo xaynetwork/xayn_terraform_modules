@@ -1,16 +1,4 @@
-resource "aws_lightsail_container_service" "this" {
-  name        = var.service_name
-  power       = var.power
-  scale       = var.node_number
-  is_disabled = false
-
-  private_registry_access {
-    ecr_image_puller_role {
-      is_active = true
-    }
-  }
-}
-
+# ECR Settings
 data "aws_iam_policy_document" "this" {
   statement {
     effect = "Allow"
@@ -30,6 +18,30 @@ data "aws_iam_policy_document" "this" {
 resource "aws_ecr_repository_policy" "this" {
   repository = var.repository_name
   policy     = data.aws_iam_policy_document.this.json
+}
+
+# Lightsail Configuration
+resource "aws_lightsail_container_service" "this" {
+  name        = var.service_name
+  power       = var.power
+  scale       = var.node_number
+  is_disabled = false
+
+  private_registry_access {
+    ecr_image_puller_role {
+      is_active = true
+    }
+  }
+
+  public_domain_names {
+    certificate {
+      certificate_name = var.certificate_name
+      domain_names = [
+        var.subdomain_name,
+        "www.${var.subdomain_name}"
+      ]
+    }
+  }
 }
 
 resource "aws_lightsail_container_service_deployment_version" "example" {
@@ -57,4 +69,29 @@ resource "aws_lightsail_container_service_deployment_version" "example" {
   }
 
   service_name = aws_lightsail_container_service.this.name
+}
+
+#Domain settings
+data "aws_route53_zone" "this" {
+  name = var.domain_name
+}
+
+locals {
+  url_no_protocol = replace(aws_lightsail_container_service.this.url, "https://", "")
+}
+
+resource "aws_route53_record" "custom_domain" {
+  name    = var.subdomain_name
+  type    = "CNAME"
+  records = [local.url_no_protocol]
+  ttl     = 300
+  zone_id = data.aws_route53_zone.this.id
+}
+
+resource "aws_route53_record" "www_custom_domain" {
+  name    = "www.${var.subdomain_name}"
+  type    = "CNAME"
+  records = [local.url_no_protocol]
+  ttl     = 300
+  zone_id = data.aws_route53_zone.this.id
 }

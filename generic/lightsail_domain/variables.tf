@@ -17,9 +17,3 @@ variable "certificate_validation_records" {
   type        = any
   description = "Records to validate the certificates"
 }
-
-variable "tags" {
-  description = "Custom tags to set on the underlining resources"
-  type        = map(string)
-  default     = {}
-}

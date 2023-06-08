@@ -34,9 +34,3 @@ variable "ports" {
   description = "The number of the port to access the container."
   type        = map(string)
 }
-
-variable "tags" {
-  description = "Custom tags to set on the underlining resources"
-  type        = map(string)
-  default     = {}
-}

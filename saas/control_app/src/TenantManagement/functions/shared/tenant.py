@@ -34,6 +34,7 @@ class DeploymentState(StrEnum):
     UPDATE_FAILED = "UPDATE_FAILED"
     DELETION_FAILED = "DELETION_FAILED"
 
+
 class Endpoint(StrEnum):
     USERS = "users"
     SEMANTIC_SEARCH = "semantic_search"

@@ -1,5 +1,7 @@
 import base64
 import binascii
+import boto3
+from aws_requests_auth.aws_auth import AWSRequestsAuth
 
 
 def encode_auth_key(tenant_id: str, auth_key: str) -> str:
@@ -18,3 +20,17 @@ def try_decode_auth_key(encoded_auth_key: str) -> tuple[str | None, str | None]:
         return (None, None)
     except binascii.Error:
         return (None, None)
+
+
+def get_auth(host, region):
+    session = boto3.Session()
+    credentials = session.get_credentials()
+    auth = AWSRequestsAuth(
+        aws_access_key=credentials.access_key,
+        aws_secret_access_key=credentials.secret_key,
+        aws_token=credentials.token,
+        aws_host=host,
+        aws_region=region,
+        aws_service="execute-api",
+    )
+    return auth

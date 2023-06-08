@@ -1,7 +1,9 @@
 from TenantManagement.functions.shared.tenant import Tenant
 from TenantManagement.functions.shared.db_repository import DbRepository
 from TenantManagement.functions.shared.tenant import DeploymentState
-from TenantManagement.functions.shared.infra_repository import InfraRepository
+from TenantManagement.functions.shared.discovery_engine_repository import (
+    DiscoveryEngineRepository,
+)
 
 FRONT_OFFICE_KEY = "kLT338LumaJaNJ8jNiW1"
 BACK_OFFICE_KEY = "NVU51pLO8zVXGdBNTflQ"
@@ -83,6 +85,6 @@ class FakeDbRepository(DbRepository):
         return self.save_tenant(tenant)
 
 
-class FakeInfraRepository(InfraRepository):
+class FakeDiscoveryEngineRepository(DiscoveryEngineRepository):
     def notify_stack_deployment(self):
         pass

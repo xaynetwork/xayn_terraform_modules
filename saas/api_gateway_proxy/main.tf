@@ -151,6 +151,35 @@ resource "aws_api_gateway_integration" "candidates" {
   timeout_milliseconds    = 29000
 }
 
+#### private _silo_management
+
+resource "aws_api_gateway_resource" "_silo_management" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  parent_id   = aws_api_gateway_rest_api.api.root_resource_id
+  path_part   = "_silo_management"
+}
+
+resource "aws_api_gateway_method" "_silo_management" {
+  rest_api_id      = aws_api_gateway_rest_api.api.id
+  resource_id      = aws_api_gateway_resource._silo_management.id
+  http_method      = "POST"
+  authorization    = "AWS_IAM"
+  api_key_required = false
+}
+
+resource "aws_api_gateway_integration" "_silo_management" {
+  rest_api_id             = aws_api_gateway_rest_api.api.id
+  resource_id             = aws_api_gateway_resource._silo_management.id
+  http_method             = aws_api_gateway_method._silo_management.http_method
+  type                    = "HTTP_PROXY"
+  integration_http_method = "POST"
+  uri                     = "http://${var.nlb_dns_name}/_silo_management"
+  passthrough_behavior    = "WHEN_NO_MATCH"
+  connection_type         = "VPC_LINK"
+  connection_id           = var.nlb_vpc_link_id
+  timeout_milliseconds    = 29000
+}
+
 #########
 
 resource "aws_api_gateway_deployment" "api" {
@@ -175,6 +204,9 @@ resource "aws_api_gateway_deployment" "api" {
       aws_api_gateway_resource.candidates.id,
       aws_api_gateway_method.candidates.id,
       aws_api_gateway_integration.candidates.id,
+      aws_api_gateway_resource._silo_management.id,
+      aws_api_gateway_method._silo_management.id,
+      aws_api_gateway_integration._silo_management.id,
       aws_api_gateway_integration.candidates.request_parameters,
       aws_api_gateway_method.options_cors.id,
       aws_api_gateway_integration.options_cors.id,
@@ -276,13 +308,28 @@ data "aws_iam_policy_document" "_silo_management" {
     effect = "Allow"
 
     principals {
-      type        = "AWS"
-      identifiers = [var.provisiong_lambda_role]
+      type        = "*"
+      identifiers = ["*"]
     }
 
     actions   = ["execute-api:Invoke"]
     resources = ["${aws_api_gateway_rest_api.api.execution_arn}/*/*/*"]
+  }
+  statement {
+    effect = "Deny"
 
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+
+    actions   = ["execute-api:Invoke"]
+    resources = ["${aws_api_gateway_rest_api.api.execution_arn}/*/*/_silo_management"]
+    condition {
+      test     = "StringNotEquals"
+      variable = "aws:PrincipalArn"
+      values   = [var.provisiong_lambda_role]
+    }
   }
 }
 resource "aws_api_gateway_rest_api_policy" "_silo_management" {

@@ -6,11 +6,13 @@ variable "service_name" {
 variable "power" {
   description = "The power specifies the amount of memory, the number of vCPUs, and the monthly price of each node of the container service."
   type        = string
+  default     = "nano"
 }
 
 variable "node_number" {
   description = "The allocated compute nodes of the container service."
   type        = number
+  default     = 1
 }
 
 variable "repository_name" {

@@ -9,6 +9,9 @@ resource "aws_route53_record" "validation_records_linglinger" {
   records = [aws_lightsail_certificate.this.domain_validation_options[count.index].resource_record_value]
   ttl     = 300
   zone_id = data.aws_route53_zone.this.id
+  depends_on = [
+    aws_lightsail_certificate.this
+  ]
 }
 
 resource "aws_lightsail_certificate" "this" {

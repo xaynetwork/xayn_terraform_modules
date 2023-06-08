@@ -12,10 +12,10 @@ import { UsagePlanProducer } from './usage_plan_producer';
 class DeploymentState {
     static NEEDS_UPDATE = "NEEDS_UPDATE"
     static UPDATED_IN_PROGRESS = "UPDATED_IN_PROGRESS"
-    static DELETION_IN_PROGRESS = "DELETION_IN_PROGRESS"
     static DEPLOYED = "DEPLOYED"
-    static DELETED = "DELETED"
     static NEEDS_DELETION = "NEEDS_DELETION"
+    static DELETION_IN_PROGRESS = "DELETION_IN_PROGRESS"
+    static DELETED = "DELETED"
     static UPDATE_FAILED = "UPDATE_FAILED"
     static DELETION_FAILED = "DELETION_FAILED"
 }

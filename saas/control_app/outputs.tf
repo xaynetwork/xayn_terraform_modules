@@ -7,3 +7,8 @@ output "authentication_arn" {
   description = "ARN of the the `authentication` lambda"
   value       = module.authentication_function.arn
 }
+
+output "provisioning_role_arn" {
+  description = "ARN of the role of the `provisioning` lambda"
+  value       = module.role_prov.arn
+}

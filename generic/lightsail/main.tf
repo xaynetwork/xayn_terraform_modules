@@ -71,13 +71,13 @@ resource "aws_lightsail_container_service_deployment_version" "this" {
   service_name = aws_lightsail_container_service.this.name
 }
 
-#Domain settings
+# Domain settings
 data "aws_route53_zone" "this" {
   name = var.domain_name
 }
 
 locals {
-  url_no_protocol = replace(replace(aws_lightsail_container_service.this.url, "https://", ""),"//$/","")
+  url_no_protocol = replace(replace(aws_lightsail_container_service.this.url, "https://", ""), "//$/", "")
 }
 
 resource "aws_route53_record" "custom_domain" {

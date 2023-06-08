@@ -32,7 +32,7 @@ variable "ports" {
   type        = map(string)
 }
 
-#Domain config
+# Domain settings
 variable "certificate_name" {
   description = "Name of the validated certificate for SSL"
   type        = string

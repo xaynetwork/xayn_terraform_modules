@@ -2,11 +2,15 @@ data "aws_route53_zone" "this" {
   name = var.domain_name
 }
 
+locals {
+  domain_validation_options = tolist(aws_lightsail_certificate.this.domain_validation_options)
+}
+
 resource "aws_route53_record" "validation_records_linglinger" {
   count   = 2
-  name    = aws_lightsail_certificate.this.domain_validation_options[count.index].resource_record_name
-  type    = aws_lightsail_certificate.this.domain_validation_options[count.index].resource_record_type
-  records = [aws_lightsail_certificate.this.domain_validation_options[count.index].resource_record_value]
+  name    = local.domain_validation_options[count.index].resource_record_name
+  type    = local.domain_validation_options[count.index].resource_record_type
+  records = [local.domain_validation_options[count.index].resource_record_value]
   ttl     = 300
   zone_id = data.aws_route53_zone.this.id
   depends_on = [

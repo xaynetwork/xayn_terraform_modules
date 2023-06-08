@@ -1,7 +1,7 @@
 locals {
-  container_name = "front-office"
+  container_name = "back-office"
   service_name   = "${local.container_name}-${var.id}"
-  alb_rules      = [["/users", "/users/*", "/semantic_search", "/semantic_search/*"]]
+  alb_rules      = [["/documents", "/documents/*", "/candidates", "/candidates/*"]]
 }
 
 module "service" {
@@ -193,7 +193,7 @@ module "alarms" {
 
   cluster_name   = var.cluster_name
   service_name   = module.service.name
-  log_group_name = module.service.container_definitions.front-office.cloudwatch_log_group_name
+  log_group_name = module.service.container_definitions.back-office.cloudwatch_log_group_name
 
   cpu_usage = var.alarm_cpu_usage
   log_error = var.alarm_log_error

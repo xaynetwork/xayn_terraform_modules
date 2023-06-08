@@ -14,7 +14,7 @@ variable "subdomain_name" {
 }
 
 variable "certificate_validation_records" {
-  type = any
+  type        = any
   description = "Records to validate the certificates"
 }
 

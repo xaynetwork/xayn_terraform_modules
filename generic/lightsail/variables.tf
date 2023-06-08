@@ -18,11 +18,6 @@ variable "repository_name" {
   description = "Name of the private ECR repo to download images."
 }
 
-variable "custom_domain" {
-  type        = string
-  description = "Domain names to access the app."
-}
-
 ## Container information
 
 variable "container_image" {

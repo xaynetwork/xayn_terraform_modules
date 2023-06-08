@@ -4,7 +4,7 @@ data "aws_availability_zones" "available_zones" {
 
 resource "aws_lightsail_database" "test" {
   name                 = var.db_name
-  availability_zone    = data.aws_availability_zones.available_zones.names[count.index]
+  availability_zone    = data.aws_availability_zones.available_zones.names[0]
   master_database_name = var.db_name
   master_password      = var.db_password
   master_username      = var.db_username

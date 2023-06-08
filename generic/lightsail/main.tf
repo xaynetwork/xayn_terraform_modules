@@ -77,7 +77,7 @@ data "aws_route53_zone" "this" {
 }
 
 locals {
-  url_no_protocol = replace(aws_lightsail_container_service.this.url, "https://", "")
+  url_no_protocol = replace(regex_replace("^https://", "", var.url), "/$", "")
 }
 
 resource "aws_route53_record" "custom_domain" {

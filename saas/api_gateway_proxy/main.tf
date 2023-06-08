@@ -177,7 +177,8 @@ resource "aws_api_gateway_deployment" "api" {
       aws_api_gateway_integration.candidates.id,
       aws_api_gateway_integration.candidates.request_parameters,
       aws_api_gateway_method.options_cors.id,
-      aws_api_gateway_integration.options_cors.id
+      aws_api_gateway_integration.options_cors.id,
+      aws_api_gateway_rest_api_policy._silo_management.id
     ]))
   }
 
@@ -265,4 +266,26 @@ module "alarms" {
 
 
   tags = var.tags
+}
+
+
+# Resource Policies
+
+data "aws_iam_policy_document" "_silo_management" {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "AWS"
+      identifiers = [var.provisiong_lambda_role]
+    }
+
+    actions   = ["execute-api:Invoke"]
+    resources = ["${aws_api_gateway_rest_api.api.execution_arn}/*/*/*"]
+
+  }
+}
+resource "aws_api_gateway_rest_api_policy" "_silo_management" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  policy      = data.aws_iam_policy_document._silo_management.json
 }

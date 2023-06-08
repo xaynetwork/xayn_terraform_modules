@@ -100,6 +100,11 @@ variable "request_parameters" {
   # }
 }
 
+variable "provisiong_lambda_role" {
+  description = "The role / principal that can call the internal _silo_management_api"
+  type        = string
+}
+
 variable "tags" {
   description = "Map of tags for the deployment"
   type        = map(string)

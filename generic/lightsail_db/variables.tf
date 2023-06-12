@@ -29,3 +29,9 @@ variable "subdomain_name" {
   description = " The name of the domain for the container."
   type        = string
 }
+
+variable "skip_final_snapshot" {
+  description = "Skip the final snapshot before deletion."
+  type        = bool
+  default     = true
+}

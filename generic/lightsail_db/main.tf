@@ -10,4 +10,5 @@ resource "aws_lightsail_database" "this" {
   master_username          = var.db_username
   blueprint_id             = var.db_blueprint
   bundle_id                = var.db_bundle_id
+  skip_final_snapshot      = var.skip_final_snapshot
 }

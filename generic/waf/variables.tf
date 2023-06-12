@@ -1,3 +1,8 @@
+variable "name" {
+  description = "Name of the WAF"
+  type        = string
+}
+
 variable "blacklist" {
   description = "IPV4 addresses (CIDR notation 1.1.1.1/32) that should be part of the blacklist"
   type        = list(string)

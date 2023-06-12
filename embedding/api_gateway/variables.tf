@@ -107,6 +107,12 @@ variable "alarm_latency" {
   default     = {}
 }
 
+variable "alarm_latency_by_method" {
+  description = "Alarm for API Gateway p90 latency by method and resource."
+  type        = any
+  default     = {}
+}
+
 variable "alarm_error_rate" {
   description = "Alarm for an increased error rate on the API Gateway."
   type        = any

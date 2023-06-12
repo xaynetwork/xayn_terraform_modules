@@ -1,5 +1,5 @@
 resource "aws_wafv2_ip_set" "blacklist" {
-  name               = "b2b-api-gateway-blacklist"
+  name               = "${var.name}-blacklist"
   description        = "B2b API Gateway blacklist of IP addresses"
   scope              = "REGIONAL"
   ip_address_version = "IPV4"
@@ -9,7 +9,7 @@ resource "aws_wafv2_ip_set" "blacklist" {
 }
 
 resource "aws_wafv2_ip_set" "whitelist" {
-  name               = "b2b-api-gateway-whitelist"
+  name               = "${var.name}-whitelist"
   description        = "B2b API Gateway whitelist of IP addresses"
   scope              = "REGIONAL"
   ip_address_version = "IPV4"
@@ -19,8 +19,8 @@ resource "aws_wafv2_ip_set" "whitelist" {
 }
 
 resource "aws_wafv2_web_acl" "api_gateway" {
-  name        = "b2b-api-gateway-basic-protection"
-  description = "Basic ACL for the b2b API Gateway"
+  name        = var.name
+  description = "WAF with basic rules"
   scope       = "REGIONAL"
 
   default_action {

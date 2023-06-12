@@ -23,8 +23,8 @@ variable "repository_name" {
 ## ECR
 variable "private_registry_access" {
   description = "Describes a request to configure an Amazon Lightsail container service to access private container image repositories"
-  type = bool
-  default = false
+  type        = bool
+  default     = false
 }
 
 ## Container data
@@ -40,12 +40,12 @@ variable "ports" {
 
 variable "environmental_variables" {
   description = "Pair of key-value environmental variables for the container."
-  default = {}
+  default     = {}
 }
 
 variable "container_command" {
   description = "Launch commands for the container."
-  default = []
+  default     = []
 }
 
 # Domain settings

@@ -16,13 +16,13 @@ variable "db_username" {
 variable "db_blueprint" {
   description = "A blueprint describes the major engine version of a database."
   type        = string
-  default = "postgres_15"
+  default     = "postgres_15"
 }
 
 variable "db_bundle_id" {
   description = "Name for an automatically created database on creation"
   type        = string
-  default = "micro_1_0"
+  default     = "micro_1_0"
 }
 
 variable "subdomain_name" {

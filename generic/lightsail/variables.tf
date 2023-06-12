@@ -40,6 +40,7 @@ variable "ports" {
 
 variable "environmental_variables" {
   description = "Pair of key-value environmental variables for the container."
+  type        = map(string)
   default     = {}
 }
 

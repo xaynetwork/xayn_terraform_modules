@@ -22,7 +22,7 @@ variable "db_blueprint" {
 variable "db_bundle_id" {
   description = "Name for an automatically created database on creation"
   type        = string
-  default     = "micro_1_0"
+  default     = "micro_2_0"
 }
 
 variable "subdomain_name" {

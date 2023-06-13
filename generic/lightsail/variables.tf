@@ -20,8 +20,14 @@ variable "repository_name" {
   description = "Name of the private ECR repo to download images."
 }
 
-## Container information
+## ECR
+variable "private_registry_access" {
+  description = "Describes a request to configure an Amazon Lightsail container service to access private container image repositories"
+  type        = bool
+  default     = false
+}
 
+## Container data
 variable "container_image" {
   description = " The name of the container image."
   type        = string
@@ -30,6 +36,18 @@ variable "container_image" {
 variable "ports" {
   description = "The number of the port to access the container."
   type        = map(string)
+}
+
+variable "environmental_variables" {
+  description = "Pair of key-value environmental variables for the container."
+  type        = map(string)
+  default     = {}
+}
+
+variable "container_command" {
+  description = "Launch commands for the container."
+  type        = list(string)
+  default     = []
 }
 
 # Domain settings

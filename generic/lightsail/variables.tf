@@ -53,7 +53,7 @@ variable "container_command" {
 variable "health_check_path" {
   description = "The number of the port to access the container."
   type        = string
-  default = "/"
+  default     = "/"
 }
 
 # Domain settings

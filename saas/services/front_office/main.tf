@@ -1,5 +1,5 @@
 locals {
-  container_name = "front-office"
+  container_name = "fo"
   service_name   = "${local.container_name}-${var.id}"
   alb_rules      = [["/users", "/users/*", "/semantic_search", "/semantic_search/*"]]
 }

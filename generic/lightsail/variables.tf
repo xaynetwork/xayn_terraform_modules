@@ -50,6 +50,12 @@ variable "container_command" {
   default     = []
 }
 
+variable "health_check_path" {
+  description = "The number of the port to access the container."
+  type        = string
+  default = "/"
+}
+
 # Domain settings
 variable "certificate_name" {
   description = "Name of the validated certificate for SSL"

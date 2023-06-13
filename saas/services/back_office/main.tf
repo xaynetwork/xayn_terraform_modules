@@ -193,7 +193,7 @@ module "alarms" {
 
   cluster_name   = var.cluster_name
   service_name   = module.service.name
-  log_group_name = module.service.container_definitions.back-office.cloudwatch_log_group_name
+  log_group_name = module.service.container_definitions.bo.cloudwatch_log_group_name
 
   cpu_usage = var.alarm_cpu_usage
   log_error = var.alarm_log_error

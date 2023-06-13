@@ -65,7 +65,6 @@ variable "metrics_enabled_api" {
   default     = false
 }
 
-
 variable "alarm_http_5xx_error" {
   description = "Alarm for API Gateway HTTP-5XX errors."
   type        = any

@@ -86,7 +86,6 @@ variable "metrics_enabled_api" {
   default     = false
 }
 
-
 variable "web_acl_arn" {
   description = "The ARN of the web ACL"
   type        = string

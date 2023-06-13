@@ -80,6 +80,13 @@ variable "usage_plan_throttle_settings" {
   }
 }
 
+variable "metrics_enabled_api" {
+  description = "Whether to enable dimensions for metrics in the API Gateway"
+  type        = bool
+  default     = false
+}
+
+
 variable "web_acl_arn" {
   description = "The ARN of the web ACL"
   type        = string

@@ -59,6 +59,12 @@ variable "default_method_throttle_settings" {
   }
 }
 
+variable "metrics_enabled_api" {
+  description = "Whether to enable dimensions for metrics in the API Gateway"
+  type        = bool
+  default     = false
+}
+
 variable "alarm_http_5xx_error" {
   description = "Alarm for API Gateway HTTP-5XX errors."
   type        = any

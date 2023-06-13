@@ -201,6 +201,7 @@ resource "aws_api_gateway_method_settings" "api" {
     logging_level          = "INFO"
     throttling_burst_limit = var.default_method_throttle_settings.burst_limit
     throttling_rate_limit  = var.default_method_throttle_settings.rate_limit
+    metrics_enabled        = var.metrics_enabled_api
   }
 
   depends_on = [

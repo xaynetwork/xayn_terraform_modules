@@ -66,7 +66,7 @@ resource "aws_lightsail_container_service_deployment_version" "this" {
       timeout_seconds     = 2
       interval_seconds    = 5
       path                = var.health_check_path
-      success_codes       = "200-499"
+      success_codes       = var.health_success_codes
     }
   }
 

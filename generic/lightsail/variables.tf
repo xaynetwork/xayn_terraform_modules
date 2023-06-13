@@ -51,9 +51,15 @@ variable "container_command" {
 }
 
 variable "health_check_path" {
-  description = "The number of the port to access the container."
+  description = "The path to check the container health."
   type        = string
   default     = "/"
+}
+
+variable "health_success_codes" {
+  description = "The success code for the health of the container."
+  type        = string
+  default     = "200-499"
 }
 
 # Domain settings

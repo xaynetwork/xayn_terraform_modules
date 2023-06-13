@@ -46,6 +46,7 @@ variable "environmental_variables" {
 
 variable "container_command" {
   description = "Launch commands for the container."
+  type        = list(string)
   default     = []
 }
 

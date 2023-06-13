@@ -34,8 +34,9 @@ module "aurora_postgresql_v2" {
   create_cloudwatch_log_group     = true
   enabled_cloudwatch_logs_exports = ["postgresql"]
 
-  backup_retention_period = var.backup_retention_period
-  skip_final_snapshot     = var.skip_final_snapshot
+  backup_retention_period   = var.backup_retention_period
+  skip_final_snapshot       = var.skip_final_snapshot
+  final_snapshot_identifier = "${var.name}-final-snapshot"
 
   serverlessv2_scaling_configuration = {
     max_capacity = var.max_scaling

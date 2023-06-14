@@ -2,3 +2,4 @@ requests
 boto3
 strenum
 aws_requests_auth
+aws-lambda-powertools

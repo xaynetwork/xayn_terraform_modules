@@ -1,5 +1,6 @@
 import requests
 from TenantManagement.functions.shared.auth_utils import get_auth
+from TenantManagement.functions.shared.logging import logging
 
 _SILO_MANAGEMENT_ENDPOINT = "_ops/silo_management"
 
@@ -25,12 +26,12 @@ class HttpDiscoveryEngineRepository(DiscoveryEngineRepository):
         self._region = region
 
     def create_tenant(self, tenant_id: str) -> bool:
-        data = {"CreateTenant": {"tenant_id": tenant_id}}
+        data = self.create_operation("CreateTenant", tenant_id)
         auth = get_auth(region=self._region, host=self._endpoint)
         response = requests.post(
             url=f"https://{self._endpoint}/default/{_SILO_MANAGEMENT_ENDPOINT}",
             timeout=1000,
-            data=data,
+            json=data,
             auth=auth,
         )
         if response.status_code >= 200 and response.status_code < 300:
@@ -41,20 +42,28 @@ class HttpDiscoveryEngineRepository(DiscoveryEngineRepository):
         )
 
     def delete_tenant(self, tenant_id: str):
-        data = {"DeleteTenant": {"tenant_id": tenant_id}}
+        data = self.create_operation("DeleteTenant", tenant_id)
         auth = get_auth(region=self._region, host=self._endpoint)
         response = requests.post(
             url=f"https://{self._endpoint}/default/{_SILO_MANAGEMENT_ENDPOINT}",
             timeout=1000,
-            data=data,
+            json=data,
             auth=auth,
-            headers={
-                "Content-Type": "application/json"
-            }
+            headers={"Content-Type": "application/json"},
         )
         if response.status_code >= 200 and response.status_code < 300:
             return True
 
+        logging.error(
+            f"Failed request to {_SILO_MANAGEMENT_ENDPOINT} - {response.status_code}, {response.reason}, {response.content}"
+        )
         raise DiscoveryEngineException(
             f"{response.status_code} : {response.reason}  - {response.content}"
         )
+
+    def create_operation(self, operation: str, tenant_id: str) -> dict:
+        return {
+            "operations": [
+                {operation: {"tenant_id": tenant_id}},
+            ]
+        }

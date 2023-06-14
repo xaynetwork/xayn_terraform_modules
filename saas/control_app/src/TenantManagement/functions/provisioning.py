@@ -1,10 +1,10 @@
 # pylint: disable=wrong-import-position
 # pylint: disable=invalid-name
 import os
-import logging
 import json
 import re
 
+from TenantManagement.functions.shared.logging import logging
 from TenantManagement.functions.shared.db_repository import AwsDbRepository
 from TenantManagement.functions.shared.db_repository import (
     DbRepository,
@@ -106,4 +106,5 @@ def lambda_handler(event: dict, _context) -> dict:
         TypeError,
         DiscoveryEngineException,
     ) as ee:
+        logging.exception("Request failed.")
         return build_response(f"Error: {ee}", 400)

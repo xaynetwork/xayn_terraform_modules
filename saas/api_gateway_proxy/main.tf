@@ -153,10 +153,16 @@ resource "aws_api_gateway_integration" "candidates" {
 
 #### private _silo_management
 
-resource "aws_api_gateway_resource" "_silo_management" {
+resource "aws_api_gateway_resource" "_ops" {
   rest_api_id = aws_api_gateway_rest_api.api.id
   parent_id   = aws_api_gateway_rest_api.api.root_resource_id
-  path_part   = "_silo_management"
+  path_part   = "_ops"
+}
+
+resource "aws_api_gateway_resource" "_silo_management" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  parent_id   = aws_api_gateway_resource._ops.id
+  path_part   = "silo_management"
 }
 
 resource "aws_api_gateway_method" "_silo_management" {
@@ -173,7 +179,7 @@ resource "aws_api_gateway_integration" "_silo_management" {
   http_method             = aws_api_gateway_method._silo_management.http_method
   type                    = "HTTP_PROXY"
   integration_http_method = "POST"
-  uri                     = "http://${var.nlb_dns_name}/_silo_management"
+  uri                     = "http://${var.nlb_dns_name}/_ops/silo_management"
   passthrough_behavior    = "WHEN_NO_MATCH"
   connection_type         = "VPC_LINK"
   connection_id           = var.nlb_vpc_link_id
@@ -204,6 +210,7 @@ resource "aws_api_gateway_deployment" "api" {
       aws_api_gateway_resource.candidates.id,
       aws_api_gateway_method.candidates.id,
       aws_api_gateway_integration.candidates.id,
+       aws_api_gateway_resource._ops.id,
       aws_api_gateway_resource._silo_management.id,
       aws_api_gateway_method._silo_management.id,
       aws_api_gateway_integration._silo_management.id,
@@ -324,7 +331,7 @@ data "aws_iam_policy_document" "_silo_management" {
     }
 
     actions   = ["execute-api:Invoke"]
-    resources = ["${aws_api_gateway_rest_api.api.execution_arn}/*/*/_silo_management"]
+    resources = ["${aws_api_gateway_rest_api.api.execution_arn}/*/*/_ops/*"]
     condition {
       test     = "StringNotEquals"
       variable = "aws:PrincipalArn"

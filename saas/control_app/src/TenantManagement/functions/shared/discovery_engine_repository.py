@@ -1,6 +1,8 @@
 import requests
 from TenantManagement.functions.shared.auth_utils import get_auth
 
+_SILO_MANAGEMENT_ENDPOINT = "_ops/silo_management"
+
 
 class DiscoveryEngineException(Exception):
     pass
@@ -26,7 +28,7 @@ class HttpDiscoveryEngineRepository(DiscoveryEngineRepository):
         data = {"CreateTenant": {"tenant_id": tenant_id}}
         auth = get_auth(region=self._region, host=self._endpoint)
         response = requests.post(
-            url=f"https://{self._endpoint}/default/_silo_management",
+            url=f"https://{self._endpoint}/default/{_SILO_MANAGEMENT_ENDPOINT}",
             timeout=1000,
             data=data,
             auth=auth,
@@ -42,10 +44,13 @@ class HttpDiscoveryEngineRepository(DiscoveryEngineRepository):
         data = {"DeleteTenant": {"tenant_id": tenant_id}}
         auth = get_auth(region=self._region, host=self._endpoint)
         response = requests.post(
-            url=f"https://{self._endpoint}/default/_silo_management",
+            url=f"https://{self._endpoint}/default/{_SILO_MANAGEMENT_ENDPOINT}",
             timeout=1000,
             data=data,
             auth=auth,
+            headers={
+                "Content-Type": "application/json"
+            }
         )
         if response.status_code >= 200 and response.status_code < 300:
             return True

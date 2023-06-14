@@ -1,7 +1,7 @@
 locals {
   container_name = "bo"
   service_name   = "${local.container_name}-${var.id}"
-  alb_rules      = [["/documents", "/documents/*", "/candidates", "/candidates/*"]]
+  alb_rules      = [["/documents", "/documents/*", "/candidates", "/candidates/*", "/_ops/*"]]
 }
 
 module "service" {

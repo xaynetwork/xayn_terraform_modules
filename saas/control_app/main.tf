@@ -132,6 +132,7 @@ module "provisioning_function" {
   lambda_role_arn       = module.role_prov.arn
   log_retention_in_days = var.log_retention_in_days
   tags                  = var.tags
+  timeout               = 60
 
   environment_variables = {
     REGION   = data.aws_region.current.name

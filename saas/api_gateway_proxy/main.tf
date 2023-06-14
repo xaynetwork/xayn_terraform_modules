@@ -210,7 +210,7 @@ resource "aws_api_gateway_deployment" "api" {
       aws_api_gateway_resource.candidates.id,
       aws_api_gateway_method.candidates.id,
       aws_api_gateway_integration.candidates.id,
-       aws_api_gateway_resource._ops.id,
+      aws_api_gateway_resource._ops.id,
       aws_api_gateway_resource._silo_management.id,
       aws_api_gateway_method._silo_management.id,
       aws_api_gateway_integration._silo_management.id,

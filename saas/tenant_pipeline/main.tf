@@ -65,8 +65,7 @@ resource "aws_iam_role_policy" "tenant_pipeline_dynamodb" {
         "Action": [
             "cloudformation:*",
             "ssm:GetParameters",
-            "apigateway:GET",
-            "apigateway:POST"
+            "apigateway:*"
         ],
         "Resource": "*"
     }

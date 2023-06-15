@@ -16,6 +16,7 @@ data "aws_iam_policy_document" "this" {
 }
 
 resource "aws_ecr_repository_policy" "this" {
+  count      = var.private_registry_access ? 1 : 0
   repository = var.repository_name
   policy     = data.aws_iam_policy_document.this.json
 }

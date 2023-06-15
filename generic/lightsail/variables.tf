@@ -18,7 +18,7 @@ variable "node_number" {
 variable "repository_name" {
   type        = string
   description = "Name of the private ECR repo to download images."
-  default = ""
+  default     = ""
 }
 
 ## ECR

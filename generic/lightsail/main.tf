@@ -29,12 +29,6 @@ resource "aws_lightsail_container_service" "this" {
   scale       = var.node_number
   is_disabled = false
 
-  private_registry_access {
-    ecr_image_puller_role {
-      is_active = var.private_registry_access
-    }
-  }
-
   public_domain_names {
     certificate {
       certificate_name = var.certificate_name

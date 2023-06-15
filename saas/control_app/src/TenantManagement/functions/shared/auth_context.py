@@ -1,45 +1,24 @@
 # pylint: disable=too-many-locals
-
+from dataclasses import dataclass
 import re
+
 from TenantManagement.functions.shared.tenant import Tenant, Endpoint
 
 
+@dataclass
 class AuthContext:
-    _method_arns: list[str]
-    _is_authorized: bool
-
-    def __init__(self, method_arns: list[str], is_authorized: bool) -> None:
-        self._is_authorized = is_authorized
-        self._method_arns = method_arns
-
-    @property
-    def is_authorized(self) -> bool:
-        return self._is_authorized
-
-    @property
-    def method_arns(self) -> list[str]:
-        return self._method_arns
+    method_arns: list[str]
+    is_authorized: bool
 
 
+@dataclass
 class AuthorizedContext(AuthContext):
-    _plan_key: str
-
-    def __init__(self, plan_key: str, method_arns: list[str]) -> None:
-        self._plan_key = plan_key
-        super().__init__(method_arns, True)
-
-    @property
-    def plan_key(self):
-        return self._plan_key
-
-    @property
-    def method_arns(self) -> list[str]:
-        return super().method_arns
+    plan_key: str
 
 
+@dataclass
 class UnauthorizedContext(AuthContext):
-    def __init__(self, method_arns: list[str]) -> None:
-        super().__init__(method_arns, False)
+    pass
 
 
 def create_authorization_context(
@@ -80,8 +59,9 @@ def create_authorization_context(
                 auth_paths,
             )
             return AuthorizedContext(
+                is_authorized=True,
                 plan_key=tenant.plan_keys[endpoint_path],
                 method_arns=list(method_arns) + list(method_arns_wildcards),
             )
 
-    return UnauthorizedContext(method_arns=[method_arn])
+    return UnauthorizedContext(is_authorized=False, method_arns=[method_arn])

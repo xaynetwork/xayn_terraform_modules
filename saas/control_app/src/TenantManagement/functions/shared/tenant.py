@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 from enum import Enum
 from strenum import StrEnum
 from TenantManagement.functions.shared.tenant_utils import create_secure_string
@@ -50,21 +51,15 @@ class Endpoint(StrEnum):
         return None
 
 
+@dataclass(frozen=True)
 class AuthPathGroup(Enum):
     FRONT_OFFICE = [Endpoint.USERS, Endpoint.SEMANTIC_SEARCH]
     BACK_OFFICE = [Endpoint.DOCUMENTS, Endpoint.CANDIDATES]
 
-    def __eq__(self, other):
-        if self.__class__ is other.__class__:
-            return self.value == other.value
-        return NotImplemented
 
-
+@dataclass(frozen=True)
 class AuthKey:
-    _group: AuthPathGroup
-
-    def __init__(self, group: AuthPathGroup) -> None:
-        self._group = group
+    group: AuthPathGroup
 
     @staticmethod
     def from_dict(data: dict):
@@ -72,24 +67,17 @@ class AuthKey:
             raise SerializeException("No group in AuthKey dict")
         return AuthKey(AuthPathGroup[data["group"]])
 
-    @property
-    def group(self) -> AuthPathGroup:
-        return self._group
-
     def to_dict(self) -> dict:
         return {"group": self.group.name}
 
-    def __eq__(self, other):
-        if self.__class__ is other.__class__:
-            return self.to_dict() == other.to_dict()
-        return NotImplemented
 
-
+@dataclass(frozen=True)
 class Tenant:
-    _id: str
-    _auth_keys: dict[str, AuthKey]
-    _plan_keys: dict[Endpoint, str]
-    _deployment_state: DeploymentState
+    id: str
+    email: str
+    auth_keys: dict[str, AuthKey]
+    plan_keys: dict[Endpoint, str]
+    deployment_state: DeploymentState
 
     @staticmethod
     def create_default(email: str) -> Tenant:
@@ -131,57 +119,9 @@ class Tenant:
             deployment_state=state,
         )
 
-    # pylint: disable=invalid-name
-    # pylint: disable=redefined-builtin
-
-    def __init__(
-        self,
-        id: str,
-        auth_keys: dict[str, AuthKey],
-        plan_keys: dict[Endpoint, str],
-        email: str,
-        deployment_state: DeploymentState,
-    ):
-        self._id = id
-        self._auth_keys = auth_keys or {}
-        self._plan_keys = plan_keys or {}
-        self._email = email
-        self._deployment_state = deployment_state
-
-    @property
-    def id(self) -> str:
-        return self._id
-
-    @property
-    def email(self) -> str:
-        return self._email
-
-    @property
-    def auth_keys(self) -> dict[str, AuthKey]:
-        return self._auth_keys
-
-    @property
-    def plan_keys(self) -> dict[Endpoint, str]:
-        return self._plan_keys
-
-    @property
-    def deployment_state(self) -> DeploymentState:
-        return self._deployment_state
-
     def get_auth_keys(self, group: AuthPathGroup) -> list[str]:
         keys = []
-        for k, v in self._auth_keys.items():
+        for k, v in self.auth_keys.items():
             if v.group is group:
                 keys.append(k)
         return keys
-
-    def __eq__(self, other) -> bool:
-        """Overrides the default implementation"""
-        if isinstance(other, Tenant):
-            return (
-                self.id == other.id
-                and self.email == other.email
-                and self.auth_keys == other.auth_keys
-                and self.plan_keys == other.plan_keys
-            )
-        return NotImplemented

@@ -1,9 +1,10 @@
 from __future__ import annotations
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from enum import Enum
 from strenum import StrEnum
 from TenantManagement.functions.shared.tenant_utils import create_secure_string
 from TenantManagement.functions.shared import tenant_utils
+from TenantManagement.functions.shared.deployment_state import DeploymentState
 
 # Example Tenant
 # {
@@ -25,15 +26,8 @@ class SerializeException(Exception):
     pass
 
 
-class DeploymentState(StrEnum):
-    NEEDS_UPDATE = "NEEDS_UPDATE"
-    UPDATED_IN_PROGRESS = "UPDATED_IN_PROGRESS"
-    DEPLOYED = "DEPLOYED"
-    NEEDS_DELETION = "NEEDS_DELETION"
-    DELETION_IN_PROGRESS = "DELETION_IN_PROGRESS"
-    DELETED = "DELETED"
-    UPDATE_FAILED = "UPDATE_FAILED"
-    DELETION_FAILED = "DELETION_FAILED"
+class TenantStateException(Exception):
+    pass
 
 
 class Endpoint(StrEnum):
@@ -51,10 +45,15 @@ class Endpoint(StrEnum):
         return None
 
 
-@dataclass(frozen=True)
 class AuthPathGroup(Enum):
     FRONT_OFFICE = [Endpoint.USERS, Endpoint.SEMANTIC_SEARCH]
     BACK_OFFICE = [Endpoint.DOCUMENTS, Endpoint.CANDIDATES]
+
+    # Enum can not use @dataclass, so we need to implement equals by ourself
+    def __eq__(self, other):
+        if self.__class__ is other.__class__:
+            return self.value == other.value
+        return NotImplemented
 
 
 @dataclass(frozen=True)
@@ -125,3 +124,18 @@ class Tenant:
             if v.group is group:
                 keys.append(k)
         return keys
+
+    def set_to_be_deleted(self) -> Tenant:
+        """Sets the tenant to be deleted (NEEDS_DELETION) and revokes the auth_keys, so that the tenant looses access.
+        This might not have an immediate effect due to auth caching."""
+        return replace(self.change_state(DeploymentState.NEEDS_DELETION), auth_keys={})
+
+    def change_state(self, new_state: DeploymentState) -> Tenant:
+        if new_state not in (
+            DeploymentState.NEEDS_UPDATE,
+            DeploymentState.NEEDS_DELETION,
+        ):
+            raise TenantStateException(
+                f"DeploymentStates can only be set to NEEDS_UPDATE or NEEDS_DELETION by the provisioning, and not {new_state}"
+            )
+        return replace(self, deployment_state=new_state)

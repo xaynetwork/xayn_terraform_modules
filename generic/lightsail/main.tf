@@ -1,5 +1,6 @@
 # ECR Settings
 data "aws_iam_policy_document" "this" {
+  count      = var.private_registry_access ? 1 : 0
   statement {
     effect = "Allow"
 

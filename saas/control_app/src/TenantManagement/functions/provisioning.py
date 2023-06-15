@@ -18,6 +18,7 @@ from TenantManagement.functions.shared.discovery_engine_repository import (
     HttpDiscoveryEngineRepository,
     DiscoveryEngineException,
 )
+from TenantManagement.functions.shared.deployment_state import DeploymentState
 
 
 EMAIL_REGEX = re.compile(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
@@ -69,6 +70,29 @@ def handle_signup(
     return build_response(f"User created ({email}).", status_code=204)
 
 
+def handle_delete(
+    email: str, db_repo: DbRepository, discovery_repo: DiscoveryEngineRepository
+) -> dict:
+    if not EMAIL_REGEX.match(email):
+        return build_response("Email address is not valid", 400)
+
+    tenant = db_repo.get_tenant_by_email(email)
+
+    if tenant is None:
+        return build_response(f"User with ({email}) does not exist.", status_code=400)
+
+    if tenant.deployment_state is not DeploymentState.DEPLOYED:
+        return build_response(
+            f"User with ({email}) is in an invalid state ({tenant.deployment_state}), can not be deleted.",
+            status_code=400,
+        )
+
+    db_repo.update_tenant(tenant.set_to_be_deleted())
+    discovery_repo.delete_tenant(tenant.id)
+
+    return build_response(f"User will be deleted ({email}).", status_code=204)
+
+
 def handle(
     event, repo: DbRepository, discovery_repo: DiscoveryEngineRepository
 ) -> dict:
@@ -81,6 +105,11 @@ def handle(
         email = assert_event_key(body, "email")
         assert email
         return handle_signup(email, repo, discovery_repo)
+
+    if path == "/delete" and http_method == "POST":
+        email = assert_event_key(body, "email")
+        assert email
+        return handle_delete(email, repo, discovery_repo)
 
     return build_response(
         f'Unsupported path ("{path}")  or method ("{http_method}").', 400

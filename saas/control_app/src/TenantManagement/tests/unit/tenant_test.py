@@ -1,7 +1,9 @@
 from dataclasses import FrozenInstanceError
 from unittest import TestCase
 from TenantManagement.functions.shared.tenant import AuthPathGroup, AuthKey, Tenant
+from TenantManagement.functions.shared.deployment_state import DeploymentState
 from TenantManagement.tests.unit.fakes import fake_tenant
+from TenantManagement.functions.shared.tenant import TenantStateException
 
 
 class TenantTestCase(TestCase):
@@ -31,4 +33,30 @@ class TenantTestCase(TestCase):
         assert AuthPathGroup["BACK_OFFICE"] == AuthPathGroup.BACK_OFFICE
 
     def test_auth_path_group_dataclasses_are_not_equal(self):
-        assert AuthPathGroup.FRONT_OFFICE == AuthPathGroup.BACK_OFFICE
+        assert AuthPathGroup.FRONT_OFFICE != AuthPathGroup.BACK_OFFICE
+
+    def test_setting_a_new_state_creates_a_new_tenant_that_is_equal_but_not_the_same(
+        self,
+    ):
+        tenant = Tenant.create_default("a@b.com")
+        tenant2 = tenant.change_state(DeploymentState.NEEDS_UPDATE)
+        assert tenant2 == tenant
+        assert tenant2 is not tenant
+
+    def test_setting_a_new_state_sets_the_new_state(self):
+        tenant = Tenant.create_default("a@b.com")
+        tenant2 = tenant.change_state(DeploymentState.NEEDS_DELETION)
+        assert tenant2.deployment_state != tenant.deployment_state
+        assert tenant2.deployment_state is DeploymentState.NEEDS_DELETION
+
+    def test_setting_an_invalid_state_will_raise_an_exception(self):
+        tenant = Tenant.create_default("a@b.com")
+        self.assertRaises(
+            TenantStateException, tenant.change_state, DeploymentState.DEPLOYED
+        )
+
+    def test_setting_a_tenant_to_be_deleted_also_revokes_auth_keys(self):
+        tenant = Tenant.create_default("a@b.com")
+        tenant2 = tenant.set_to_be_deleted()
+        assert tenant2.deployment_state is DeploymentState.NEEDS_DELETION
+        assert not tenant2.auth_keys

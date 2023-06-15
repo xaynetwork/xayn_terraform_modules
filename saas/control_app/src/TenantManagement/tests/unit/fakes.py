@@ -38,7 +38,7 @@ def fake_tenant_db(tenant=None):
     return FakeDbRepository("", "", {tenant["id"]: Tenant.from_dict(tenant)})
 
 
-def fake_no_tenant_db():
+def fake_no_tenant_db() -> DbRepository:
     return FakeDbRepository("", "", {})
 
 

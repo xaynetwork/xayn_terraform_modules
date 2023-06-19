@@ -2,7 +2,7 @@ import { Context } from './handler'
 import 'source-map-support/register';
 
 import { AttributeValue, DynamoDBClient, GetItemCommand, UpdateItemCommand } from '@aws-sdk/client-dynamodb';
-import { CloudFormationClient, waitUntilStackCreateComplete, waitUntilStackDeleteComplete, waitUntilStackUpdateComplete, DeleteStackCommand, CreateStackCommand, ListStacksCommand, UpdateStackCommand, StackStatus, DescribeStacksCommand } from '@aws-sdk/client-cloudformation';
+import { CloudFormationClient, waitUntilStackCreateComplete, waitUntilStackDeleteComplete, waitUntilStackUpdateComplete, DeleteStackCommand, CreateStackCommand, ListStacksCommand, UpdateStackCommand, StackStatus } from '@aws-sdk/client-cloudformation';
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 import { WaiterState } from '@aws-sdk/util-waiter';
 import { readFileSync } from 'fs';
@@ -75,7 +75,10 @@ export class DeploymentRepository {
 
     async createOrUpdateTenant(item: Record<string, AttributeValue>) {
 
+        // The nullability of those lines is checked and it is save to assume that those will not fail
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const tenantId = item.id.S!;
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const apiKeyValue = item.plan_keys.M!.documents.S!
 
         await this.setDeploymentState(DeploymentState.UPDATED_IN_PROGRESS, tenantId);
@@ -111,7 +114,11 @@ export class DeploymentRepository {
     }
 
     async deleteTenant(item: Record<string, AttributeValue>) {
+
+        // The nullability of those lines is checked and it is save to assume that those will not fail
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const tenantId = item.id.S!;
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const apiKeyValue = item.plan_keys.M!.documents.S!
 
         await this.setDeploymentState(DeploymentState.DELETION_IN_PROGRESS, tenantId);
@@ -145,14 +152,13 @@ export class DeploymentRepository {
         const stacks = listResponse.StackSummaries?.filter(f => f.StackName == stackName) ?? [];
         const waiterConfig = { client, maxWaitTime: 200, maxDelay: 2, minDelay: 1 }
 
-        var updateResponse;
         if (stacks.length > 0) {
             // destroy
             await client.send(new DeleteStackCommand({
                 StackName: stackName,
             }))
 
-            updateResponse = await waitUntilStackDeleteComplete(waiterConfig, { StackName: stackName })
+            const updateResponse = await waitUntilStackDeleteComplete(waiterConfig, { StackName: stackName })
             if (updateResponse.state == WaiterState.SUCCESS) {
                 return true;
             } else {
@@ -180,7 +186,7 @@ export class DeploymentRepository {
             return false
         }
 
-        var updateResponse;
+        let updateResponse;
         if (stacksRolledBacked.length > 0) {
             await client.send(new DeleteStackCommand({
                 StackName: stackName
@@ -198,8 +204,8 @@ export class DeploymentRepository {
                     TemplateBody: stackBody,
                 }))
                 updateResponse = await waitUntilStackUpdateComplete(waiterConfig, { StackName: stackName })
-            } catch (e: any) {
-                if (e?.message == 'No updates are to be performed.') {
+            } catch (e) {
+                if (e instanceof Error && e.message == 'No updates are to be performed.') {
                     return true;
                 }
 

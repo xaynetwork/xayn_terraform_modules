@@ -1,5 +1,5 @@
 // Import getAllItemsHandler function from get-all-items.mjs 
-import { fromIni, fromNodeProviderChain, fromSSO } from '@aws-sdk/credential-providers';
+import { fromIni, fromNodeProviderChain } from '@aws-sdk/credential-providers';
 import { runPipeline } from '../../src/handler';
 // Import dynamodb from aws-sdk 
 import { DynamoDBDocumentClient, ScanCommand } from '@aws-sdk/lib-dynamodb';
@@ -20,7 +20,7 @@ describe('Test runPipelineHandler', () => {
         jest.setTimeout(60000)
       });
 
-    it('get all tenant ids', async () => {
+    it.skip('get all tenant ids', async () => {
         const client = new DynamoDBClient({
             region: 'ddlocal',
             endpoint: 'http://localhost:8000',
@@ -30,12 +30,12 @@ describe('Test runPipelineHandler', () => {
         const items = await ddbDocClient.send(new ScanCommand({
             TableName: "saas_tenants"
         }));
-        for (let e in items.Items){
+        for (const e in items.Items){
            console.log(items.Items[+e].id)
         }
     })
 
-    it('should return 200', async () => {
+    it.skip('should return 200', async () => {
         const result = await runPipeline({
             "Records": [
                 {

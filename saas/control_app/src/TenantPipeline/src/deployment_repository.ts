@@ -1,7 +1,7 @@
 import { Context } from './handler'
 import 'source-map-support/register';
 
-import { AttributeValue, DynamoDBClient, GetItemCommand, UpdateItemCommand } from '@aws-sdk/client-dynamodb';
+import { AttributeValue, DynamoDBClient, GetItemCommand, UpdateItemCommand, DeleteItemCommand } from '@aws-sdk/client-dynamodb';
 import { CloudFormationClient, waitUntilStackCreateComplete, waitUntilStackDeleteComplete, waitUntilStackUpdateComplete, DeleteStackCommand, CreateStackCommand, ListStacksCommand, UpdateStackCommand, StackStatus } from '@aws-sdk/client-cloudformation';
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 import { WaiterState } from '@aws-sdk/util-waiter';
@@ -137,8 +137,11 @@ export class DeploymentRepository {
 
         try {
             const res = await this.destroyStack(cloudformation, stackName)
-            await this.setDeploymentState(res ? DeploymentState.DELETED : DeploymentState.DELETION_FAILED, tenantId);
-
+            if (res) {
+                await this.deleteItem(tenantId);
+            } else {
+                await this.setDeploymentState(DeploymentState.DELETION_FAILED, tenantId);
+            }
         } catch (e) {
             await this.setDeploymentState(DeploymentState.DELETION_FAILED, tenantId);
             throw e;
@@ -240,6 +243,18 @@ export class DeploymentRepository {
                 ":deployment_state": { "S": state },
             },
             UpdateExpression: "SET deployment_state = :deployment_state",
+        }))
+    }
+
+    private async deleteItem(id: string) {
+        const ddbDocClient = this.createDynamoDbClient();
+        await ddbDocClient.send(new DeleteItemCommand({
+            TableName: this.context.tableName,
+            Key: {
+                id: {
+                    "S": id
+                }
+            },
         }))
     }
 }

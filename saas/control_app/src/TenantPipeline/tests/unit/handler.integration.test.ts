@@ -18,7 +18,7 @@ describe('Test runPipelineHandler', () => {
     beforeEach(() => {
         // ddbMock.reset();
         jest.setTimeout(60000)
-      });
+    });
 
     it.skip('get all tenant ids', async () => {
         const client = new DynamoDBClient({
@@ -30,8 +30,8 @@ describe('Test runPipelineHandler', () => {
         const items = await ddbDocClient.send(new ScanCommand({
             TableName: "saas_tenants"
         }));
-        for (const e in items.Items){
-           console.log(items.Items[+e].id)
+        for (const e in items.Items) {
+            console.log(items.Items[+e].id)
         }
     })
 
@@ -39,23 +39,23 @@ describe('Test runPipelineHandler', () => {
         const result = await runPipeline({
             "Records": [
                 {
-                    "eventID": "7de3041dd709b024af6f29e4fa13d34c",
-                    "eventName": "INSERT",
-                    "eventVersion": "1.1",
-                    "eventSource": "aws:dynamodb",
-                    "awsRegion": "region",
+                    // "eventID": "7de3041dd709b024af6f29e4fa13d34c",
+                    // "eventName": "INSERT",
+                    // "eventVersion": "1.1",
+                    // "eventSource": "aws:dynamodb",
+                    // "awsRegion": "region",
                     "dynamodb": {
-                        "ApproximateCreationDateTime": 1479499740,
+                        // "ApproximateCreationDateTime": 1479499740,
                         "Keys": {
                             "id": {
                                 "S": "52003cd4-eb78-4b88-aa83-9c6a5dc711d5"
                             }
                         },
-                        "SequenceNumber": "13021600000000001596893679",
-                        "SizeBytes": 112,
-                        "StreamViewType": "NEW_IMAGE"
+                        // "SequenceNumber": "13021600000000001596893679",
+                        // "SizeBytes": 112,
+                        // "StreamViewType": "NEW_IMAGE"
                     },
-                    "eventSourceARN": "arn:aws:dynamodb:region:account ID:table/BarkTable/stream/2016-11-16T20:42:48.104"
+                    // "eventSourceARN": "arn:aws:dynamodb:region:account ID:table/BarkTable/stream/2016-11-16T20:42:48.104"
                 }
             ]
 

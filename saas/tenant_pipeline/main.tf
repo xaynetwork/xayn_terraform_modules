@@ -46,7 +46,8 @@ resource "aws_iam_role_policy" "tenant_pipeline_dynamodb" {
             "dynamodb:Query",
             "dynamodb:Update*",
             "dynamodb:PutItem",
-            "dynamodb:Scan"
+            "dynamodb:Scan",
+            "dynamodb:DeleteItem"
         ],
         "Resource": "${var.dynamodb_table_arn}"
     },

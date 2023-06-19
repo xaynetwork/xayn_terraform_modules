@@ -64,7 +64,7 @@ data "aws_iam_policy_document" "user_port_forward_remote" {
 }
 
 resource "aws_iam_policy" "session_manager_user" {
-  name   = "SessionManagerForUser"
+  name   = "${var.prefix}SessionManagerForUser"
   policy = data.aws_iam_policy_document.user_port_forward_remote.json
   tags   = var.tags
 }

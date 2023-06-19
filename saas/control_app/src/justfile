@@ -24,6 +24,31 @@ py-test-debug:
 py-install:
   python3 -m pip install -r ./TenantManagement/requirements.txt
 
+ts-install:
+  #!/bin/bash
+  cd TenantPipeline
+  npm install 
+
+ts-lint:
+  #!/bin/bash
+  cd TenantPipeline
+  npx eslint .
+
+ts-format:
+  #!/bin/bash
+  cd TenantPipeline
+  npx tsfmt -r
+
+ts-format-check:
+  #!/bin/bash
+  cd TenantPipeline
+  npx tsfmt --verify
+
+ts-test:
+  #!/bin/bash
+  cd TenantPipeline
+  npx jest
+
 dynamodb-create-table:
   # TODO use JSON schema
   AWS_ACCESS_KEY_ID=X AWS_SECRET_ACCESS_KEY=X aws dynamodb create-table --endpoint-url http://localhost:8000 \

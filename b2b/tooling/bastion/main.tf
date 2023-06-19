@@ -10,6 +10,7 @@ module "ssm" {
 module "ssm_user_policy" {
   source = "../ssm_user_policy"
 
+  prefix      = var.prefix
   kms_key_arn = module.ssm.kms_key_arn
   tags        = var.tags
 }

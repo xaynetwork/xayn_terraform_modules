@@ -3,6 +3,12 @@ variable "name" {
   type        = string
 }
 
+variable "prefix" {
+  description = "Name Prefix for the bastion policy"
+  type        = string
+  default     = ""
+}
+
 variable "vpc_id" {
   description = "The ID of the VPC"
   type        = string

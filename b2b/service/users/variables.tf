@@ -96,6 +96,12 @@ variable "max_cois" {
   default     = "5"
 }
 
+variable "max_documents" {
+  description = "The max number number of documents to return."
+  type        = string
+  default     = "100"
+}
+
 ## alb
 variable "alb_listener_arn" {
   description = "ARN of the ALB listener"

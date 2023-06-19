@@ -97,7 +97,7 @@ variable "max_cois" {
 }
 
 variable "max_documents" {
-  description = "The max number number of documents to return."
+  description = "The max number of documents to return for the semantic search query."
   type        = string
   default     = "100"
 }

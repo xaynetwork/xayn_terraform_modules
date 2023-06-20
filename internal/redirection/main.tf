@@ -91,7 +91,7 @@ resource "aws_cloudfront_distribution" "cdn" {
 
 resource "aws_route53_record" "redirect" {
   zone_id = var.hosted_zone_id
-  name    = local.domain_name
+  name    = var.apex_domain != "" ? "" : local.domain_name
   type    = "A"
 
   alias {
@@ -103,7 +103,7 @@ resource "aws_route53_record" "redirect" {
 
 resource "aws_route53_record" "redirect_www" {
   zone_id = var.hosted_zone_id
-  name    = "www.${local.domain_name}"
+  name    = var.apex_domain != "" ? "www" : "www.${local.domain_name}"
   type    = "A"
 
   alias {

@@ -91,7 +91,7 @@ resource "aws_cloudfront_distribution" "cdn" {
 resource "aws_route53_record" "redirect" {
   zone_id = var.hosted_zone_id
   name    = var.domain_name
-  type    = "A"
+  type    = "CNAME"
 
   alias {
     name                   = aws_cloudfront_distribution.cdn.domain_name
@@ -103,7 +103,7 @@ resource "aws_route53_record" "redirect" {
 resource "aws_route53_record" "redirect_www" {
   zone_id = var.hosted_zone_id
   name    = "www.${var.domain_name}"
-  type    = "A"
+  type    = "CNAME"
 
   alias {
     name                   = aws_cloudfront_distribution.cdn.domain_name

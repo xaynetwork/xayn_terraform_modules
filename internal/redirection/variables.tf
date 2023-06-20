@@ -13,6 +13,12 @@ variable "host_name" {
   type        = string
 }
 
+variable "apex_domain" {
+  description = "Name of apex if the root level is the one being redirected"
+  type        = string
+  default     = ""
+}
+
 variable "tags" {
   description = "Map of tags for the deployment"
   type        = map(string)

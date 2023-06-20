@@ -1,9 +1,10 @@
 locals {
-  origin_id = "redirect-${var.domain_name}"
+  domain_name = var.apex_domain != "" ? var.apex_domain : var.domain_name
+  origin_id   = var.apex_domain != "" ? "redirect-${var.apex_domain}" : "redirect-${var.domain_name}"
 }
 
 resource "aws_s3_bucket" "redirect" {
-  bucket = var.domain_name
+  bucket = local.domain_name
 
   tags = var.tags
 }
@@ -23,11 +24,11 @@ module "acm" {
   source  = "terraform-aws-modules/acm/aws"
   version = "4.3.1"
 
-  domain_name = var.domain_name
+  domain_name = local.domain_name
   zone_id     = var.hosted_zone_id
 
   subject_alternative_names = [
-    "www.${var.domain_name}"
+    "www.${local.domain_name}"
   ]
 
   wait_for_validation = true
@@ -69,7 +70,7 @@ resource "aws_cloudfront_distribution" "cdn" {
     }
   }
 
-  aliases = [var.domain_name, "www.${var.domain_name}"]
+  aliases = [local.domain_name, "www.${local.domain_name}"]
 
   price_class = "PriceClass_100"
 
@@ -90,7 +91,7 @@ resource "aws_cloudfront_distribution" "cdn" {
 
 resource "aws_route53_record" "redirect" {
   zone_id = var.hosted_zone_id
-  name    = var.domain_name
+  name    = local.domain_name
   type    = "CNAME"
 
   alias {
@@ -102,7 +103,7 @@ resource "aws_route53_record" "redirect" {
 
 resource "aws_route53_record" "redirect_www" {
   zone_id = var.hosted_zone_id
-  name    = "www.${var.domain_name}"
+  name    = "www.${local.domain_name}"
   type    = "CNAME"
 
   alias {

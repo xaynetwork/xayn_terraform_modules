@@ -165,7 +165,8 @@ resource "aws_api_gateway_integration" "candidates" {
 #########
 
 resource "aws_api_gateway_deployment" "tenant" {
-  depends_on  = [aws_api_gateway_method.proxy, aws_api_gateway_method.documents, aws_api_gateway_method.documents_proxy, aws_api_gateway_method.candidates, aws_api_gateway_method.options_cors]
+  depends_on = [aws_api_gateway_method.proxy, aws_api_gateway_method.documents, aws_api_gateway_method.documents_proxy, aws_api_gateway_method.candidates, //aws_api_gateway_method.options_cors
+  ]
   rest_api_id = aws_api_gateway_rest_api.tenant.id
 
   triggers = {
@@ -190,8 +191,12 @@ resource "aws_api_gateway_deployment" "tenant" {
       var.usage_plan_api_key_id,
       var.usage_plan_quota_settings,
       var.usage_plan_throttle_settings,
-      aws_api_gateway_method.options_cors.id,
-      aws_api_gateway_integration.options_cors.id
+      # aws_api_gateway_method.options_cors_proxy.id,
+      # aws_api_gateway_integration.options_cors_proxy.id,
+      # aws_api_gateway_method.options_cors_documents.id,
+      # aws_api_gateway_integration.options_cors_documents.id,
+      # aws_api_gateway_method.options_cors_documents_proxy.id,
+      # aws_api_gateway_integration.options_cors_documents_proxy.id,
     ]))
   }
 
@@ -261,29 +266,97 @@ resource "aws_api_gateway_usage_plan_key" "api_key" {
 # don't require authentication for OPTIONS (preflight) requests. The requests
 # are performed by the browser therefore it can't contain our api token
 # the request is handled by the backend
-resource "aws_api_gateway_method" "options_cors" {
-  rest_api_id        = aws_api_gateway_rest_api.tenant.id
-  resource_id        = aws_api_gateway_resource.proxy.id
-  http_method        = "OPTIONS"
-  authorization      = "NONE"
-  request_parameters = { "method.request.path.proxy" = true }
-}
+# resource "aws_api_gateway_method" "options_cors" {
+#   rest_api_id        = aws_api_gateway_rest_api.tenant.id
+#   resource_id        = aws_api_gateway_resource.proxy.id
+#   http_method        = "OPTIONS"
+#   authorization      = "NONE"
+#   request_parameters = { "method.request.path.proxy" = true }
+# }
 
-resource "aws_api_gateway_integration" "options_cors" {
-  rest_api_id             = aws_api_gateway_rest_api.tenant.id
-  resource_id             = aws_api_gateway_resource.proxy.id
-  http_method             = aws_api_gateway_method.options_cors.http_method
-  type                    = "HTTP_PROXY"
-  integration_http_method = "ANY"
-  uri                     = "http://${var.nlb_dns_name}/{proxy}"
-  passthrough_behavior    = "WHEN_NO_MATCH"
-  connection_type         = "VPC_LINK"
-  connection_id           = var.nlb_vpc_link_id
-  request_parameters = {
-    "integration.request.path.proxy" : "method.request.path.proxy"
-    "integration.request.header.X-Tenant-Id" = "'${var.tenant}'"
-  }
-}
+# resource "aws_api_gateway_integration" "options_cors" {
+#   rest_api_id             = aws_api_gateway_rest_api.tenant.id
+#   resource_id             = aws_api_gateway_resource.proxy.id
+#   http_method             = aws_api_gateway_method.options_cors.http_method
+#   type                    = "HTTP_PROXY"
+#   integration_http_method = "ANY"
+#   uri                     = "http://${var.nlb_dns_name}/{proxy}"
+#   passthrough_behavior    = "WHEN_NO_MATCH"
+#   connection_type         = "VPC_LINK"
+#   connection_id           = var.nlb_vpc_link_id
+#   request_parameters = {
+#     "integration.request.path.proxy" : "method.request.path.proxy"
+#     "integration.request.header.X-Tenant-Id" = "'${var.tenant}'"
+#   }
+# }
+
+
+# resource "aws_api_gateway_method" "options_cors_proxy" {
+#   rest_api_id        = aws_api_gateway_rest_api.tenant.id
+#   resource_id        = aws_api_gateway_resource.proxy.id
+#   http_method        = "OPTIONS"
+#   authorization      = "NONE"
+#   request_parameters = { "method.request.path.proxy" = true }
+# }
+
+# resource "aws_api_gateway_integration" "options_cors_proxy" {
+#   rest_api_id             = aws_api_gateway_rest_api.tenant.id
+#   resource_id             = aws_api_gateway_resource.proxy.id
+#   http_method             = aws_api_gateway_method.options_cors_proxy.http_method
+#   type                    = "HTTP_PROXY"
+#   integration_http_method = "ANY"
+#   uri                     = "http://${var.nlb_dns_name}/{proxy}"
+#   passthrough_behavior    = "WHEN_NO_MATCH"
+#   connection_type         = "VPC_LINK"
+#   connection_id           = var.nlb_vpc_link_id
+#   request_parameters = {
+#     "integration.request.path.proxy" : "method.request.path.proxy",
+#     "integration.request.header.X-Tenant-Id" = "'${var.tenant}'"
+#   }
+# }
+
+# resource "aws_api_gateway_method" "options_cors_documents" {
+#   rest_api_id   = aws_api_gateway_rest_api.tenant.id
+#   resource_id   = aws_api_gateway_resource.documents.id
+#   http_method   = "OPTIONS"
+#   authorization = "NONE"
+# }
+
+# resource "aws_api_gateway_integration" "options_cors_documents" {
+#   rest_api_id             = aws_api_gateway_rest_api.tenant.id
+#   resource_id             = aws_api_gateway_resource.documents.id
+#   http_method             = aws_api_gateway_method.options_cors_documents.http_method
+#   type                    = "HTTP_PROXY"
+#   integration_http_method = "ANY"
+#   uri                     = "http://${var.nlb_dns_name}/documents"
+#   passthrough_behavior    = "WHEN_NO_MATCH"
+#   connection_type         = "VPC_LINK"
+#   connection_id           = var.nlb_vpc_link_id
+# }
+
+# resource "aws_api_gateway_method" "options_cors_documents_proxy" {
+#   rest_api_id        = aws_api_gateway_rest_api.tenant.id
+#   resource_id        = aws_api_gateway_resource.documents_proxy.id
+#   http_method        = "OPTIONS"
+#   authorization      = "NONE"
+#   request_parameters = { "method.request.path.proxy" = true }
+# }
+
+# resource "aws_api_gateway_integration" "options_cors_documents_proxy" {
+#   rest_api_id             = aws_api_gateway_rest_api.tenant.id
+#   resource_id             = aws_api_gateway_resource.documents_proxy.id
+#   http_method             = aws_api_gateway_method.options_cors_documents_proxy.http_method
+#   type                    = "HTTP_PROXY"
+#   integration_http_method = "ANY"
+#   uri                     = "http://${var.nlb_dns_name}/documents/{proxy}"
+#   passthrough_behavior    = "WHEN_NO_MATCH"
+#   connection_type         = "VPC_LINK"
+#   connection_id           = var.nlb_vpc_link_id
+#   request_parameters = {
+#     "integration.request.path.proxy" : "method.request.path.proxy",
+#     "integration.request.header.X-Tenant-Id" = "'${var.tenant}'"
+#   }
+# }
 
 # aws waf
 resource "aws_wafv2_web_acl_association" "api_gateway" {

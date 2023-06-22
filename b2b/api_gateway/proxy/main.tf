@@ -265,31 +265,6 @@ resource "aws_api_gateway_usage_plan_key" "api_key" {
 # don't require authentication for OPTIONS (preflight) requests. The requests
 # are performed by the browser therefore it can't contain our api token
 # the request is handled by the backend
-# resource "aws_api_gateway_method" "options_cors" {
-#   rest_api_id        = aws_api_gateway_rest_api.tenant.id
-#   resource_id        = aws_api_gateway_resource.proxy.id
-#   http_method        = "OPTIONS"
-#   authorization      = "NONE"
-#   request_parameters = { "method.request.path.proxy" = true }
-# }
-
-# resource "aws_api_gateway_integration" "options_cors" {
-#   rest_api_id             = aws_api_gateway_rest_api.tenant.id
-#   resource_id             = aws_api_gateway_resource.proxy.id
-#   http_method             = aws_api_gateway_method.options_cors.http_method
-#   type                    = "HTTP_PROXY"
-#   integration_http_method = "ANY"
-#   uri                     = "http://${var.nlb_dns_name}/{proxy}"
-#   passthrough_behavior    = "WHEN_NO_MATCH"
-#   connection_type         = "VPC_LINK"
-#   connection_id           = var.nlb_vpc_link_id
-#   request_parameters = {
-#     "integration.request.path.proxy" : "method.request.path.proxy"
-#     "integration.request.header.X-Tenant-Id" = "'${var.tenant}'"
-#   }
-# }
-
-
 resource "aws_api_gateway_method" "options_cors_proxy" {
   rest_api_id        = aws_api_gateway_rest_api.tenant.id
   resource_id        = aws_api_gateway_resource.proxy.id

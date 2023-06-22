@@ -30,7 +30,7 @@ resource "aws_api_gateway_stage" "tenant" {
     for_each = var.enable_access_logs ? [1] : []
     content {
       destination_arn = aws_cloudwatch_log_group.access_logs[0].arn
-      format          = var.access_logs_format
+      format          = jsonencode(var.access_logs_format)
     }
   }
 }

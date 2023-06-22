@@ -90,19 +90,47 @@ variable "alarm_latency_by_method" {
 }
 
 variable "request_parameters" {
-  description = "Request Parameters that can manipuate the request or the Headers being send to the service"
+  description = "Request Parameters that can manipulate the request or the Headers being send to the service"
   type        = map(string)
   default = {
     "integration.request.header.X-Xayn-Tenant-Id" = "context.authorizer.principalId"
   }
-  # default = {
-  #   "integration.request.header.X-Tenant-Id" = "'${var.tenant}'"
-  # }
 }
 
-variable "provisiong_lambda_role" {
+variable "provisioning_lambda_role" {
   description = "The role / principal that can call the internal _silo_management_api"
   type        = string
+}
+
+variable "enable_access_logs" {
+  description = "Enable API access logs"
+  type        = bool
+  default     = false
+}
+
+variable "access_logs_format" {
+  description = "API access log format setting"
+  type        = map(string)
+  default = {
+    "requestId"                     = "$context.requestId",
+    "waf-error"                     = "$context.waf.error",
+    "waf-status"                    = "$context.waf.status",
+    "waf-latency"                   = "$context.waf.latency",
+    "waf-response"                  = "$context.wafResponseCode",
+    "authenticate-error"            = "$context.authenticate.error",
+    "authenticate-status"           = "$context.authenticate.status",
+    "authenticate-latency"          = "$context.authenticate.latency",
+    "authorize-error"               = "$context.authorize.error",
+    "authorize-status"              = "$context.authorize.status",
+    "authorize-latency"             = "$context.authorize.latency",
+    "integration-error"             = "$context.integration.error",
+    "integration-status"            = "$context.integration.status",
+    "integration-latency"           = "$context.integration.latency",
+    "integration-requestId"         = "$context.integration.requestId",
+    "integration-integrationStatus" = "$context.integration.integrationStatus",
+    "response-latency"              = "$context.responseLatency",
+    "status"                        = "$context.status"
+  }
 }
 
 variable "tags" {

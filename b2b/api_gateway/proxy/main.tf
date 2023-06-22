@@ -14,10 +14,25 @@ resource "aws_api_gateway_rest_api" "tenant" {
   tags = var.tags
 }
 
+resource "aws_cloudwatch_log_group" "access_logs" {
+  count             = var.enable_access_logs ? 1 : 0
+  name              = "API-Gateway-Access-Logs_${aws_api_gateway_rest_api.tenant.id}/${var.stage_name}"
+  retention_in_days = var.log_retention_in_days
+  tags              = var.tags
+}
+
 resource "aws_api_gateway_stage" "tenant" {
   deployment_id = aws_api_gateway_deployment.tenant.id
   rest_api_id   = aws_api_gateway_rest_api.tenant.id
   stage_name    = var.stage_name
+
+  dynamic "access_log_settings" {
+    for_each = var.enable_access_logs ? [1] : []
+    content {
+      destination_arn = aws_cloudwatch_log_group.access_logs[0].arn
+      format          = var.access_logs_format
+    }
+  }
 }
 
 resource "aws_api_gateway_authorizer" "lambda_authorizer" {

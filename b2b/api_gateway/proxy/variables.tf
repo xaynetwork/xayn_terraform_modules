@@ -80,6 +80,18 @@ variable "usage_plan_throttle_settings" {
   }
 }
 
+variable "enable_access_logs" {
+  description = "Enable API access logs"
+  type        = bool
+  default     = false
+}
+
+variable "access_logs_format" {
+  description = "API access log format setting"
+  type        = string
+  default     = "{\"requestId\":\"$context.requestId\",\"waf-error\":\"$context.waf.error\",\"waf-status\":\"$context.waf.status\",\"waf-latency\":\"$context.waf.latency\",\"waf-response\":\"$context.wafResponseCode\",\"authenticate-error\":\"$context.authenticate.error\",\"authenticate-status\":\"$context.authenticate.status\",\"authenticate-latency\":\"$context.authenticate.latency\",\"authorize-error\":\"$context.authorize.error\",\"authorize-status\":\"$context.authorize.status\",\"authorize-latency\":\"$context.authorize.latency\",\"integration-error\":\"$context.integration.error\",\"integration-status\":\"$context.integration.status\",\"integration-latency\":\"$context.integration.latency\",\"integration-requestId\":\"$context.integration.requestId\",\"integration-integrationStatus\":\"$context.integration.integrationStatus\",\"response-latency\":\"$context.responseLatency\",\"status\":\"$context.status\"}"
+}
+
 variable "metrics_enabled_api" {
   description = "Whether to enable dimensions for metrics in the API Gateway"
   type        = bool

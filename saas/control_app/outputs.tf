@@ -8,6 +8,11 @@ output "authentication_arn" {
   value       = module.authentication_function.arn
 }
 
+output "provisioning_arn" {
+  description = "ARN of the the `provisioning` lambda"
+  value       = module.provisioning_function.arn
+}
+
 output "provisioning_role_arn" {
   description = "ARN of the role of the `provisioning` lambda"
   value       = module.role_prov.arn

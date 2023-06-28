@@ -17,8 +17,3 @@ output "rest_api_stage_name" {
   description = "The name of the rest api stage"
   value       = aws_api_gateway_stage.api.stage_name
 }
-
-output "rest_api_arn" {
-  description = "The ARN of the rest api stage"
-  value       = aws_api_gateway_rest_api.api.arn
-}

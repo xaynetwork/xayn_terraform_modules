@@ -14,7 +14,7 @@ exports.handler = async (event) => {
   //  0: restId
   //  1: stage
   //  2: method
-  //  3..path.size: resource segements
+  //  3..path.size: resource segments
   const apiGatewayArnTmp = tmp[5].split('/');
   var resource = '/'; // root resource
   if (apiGatewayArnTmp[3]) {
@@ -26,8 +26,7 @@ exports.handler = async (event) => {
     "${api_key_users}": ["/users", "/semantic_search"],
   }
 
-
-  if (apiToken in allowMap && allowMap[apiToken].includes(resource)) {
+  if (apiToken in allowMap) {
     const restId = apiGatewayArnTmp[0];
     const stage = apiGatewayArnTmp[1];
     const method = '*'; //apiGatewayArnTmp[2];

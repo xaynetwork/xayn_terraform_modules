@@ -347,6 +347,32 @@ resource "aws_wafv2_web_acl_association" "api_gateway" {
   web_acl_arn  = var.web_acl_arn
 }
 
+# Domain Configuration
+
+resource "aws_api_gateway_domain_name" "domain" {
+  certificate_arn = var.certificate_arn
+  domain_name     = var.domain_name
+}
+
+resource "aws_api_gateway_base_path_mapping" "this" {
+  api_id      = aws_api_gateway_rest_api.api.id
+  stage_name  = aws_api_gateway_stage.api.stage_name
+  domain_name = aws_api_gateway_domain_name.domain.domain_name
+}
+
+resource "aws_route53_record" "api_record" {
+  provider = aws.organization-account
+  name     = aws_api_gateway_domain_name.domain.domain_name
+  type     = "A"
+  zone_id  = var.zone_id
+
+  alias {
+    evaluate_target_health = true
+    name                   = aws_api_gateway_domain_name.domain.cloudfront_domain_name
+    zone_id                = aws_api_gateway_domain_name.domain.cloudfront_zone_id
+  }
+}
+
 # CloudWatch alarms
 data "aws_caller_identity" "current" {}
 module "alarms" {

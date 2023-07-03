@@ -3,7 +3,7 @@ variable "domain_name" {
   type        = string
 }
 
-variable "zone_id" {
-  description = "Route 53 Zone ID where to validate the certificate"
+variable "zone_name" {
+  description = "Name of the zone where to create the records"
   type        = string
 }

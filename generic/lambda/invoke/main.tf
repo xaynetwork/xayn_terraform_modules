@@ -9,7 +9,7 @@ locals {
 resource "shell_script" "invoke_lambda" {
   lifecycle_commands {
     create = local.program_create
-    delete = var.skip_delete ? "${path.module}/scripts/fake_delete.sh" : local.program_delete
+    delete = local.program_delete
     update = "${path.module}/scripts/update.sh"
   }
 }

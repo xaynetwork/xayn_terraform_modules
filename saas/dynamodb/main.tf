@@ -12,10 +12,11 @@ module "dynamodb_table" {
   #   0001   | { auth-keys: [...],  name: "John Doe"}
   #   0002   | {...}    
 
-  hash_key         = "id"
-  billing_mode     = "PAY_PER_REQUEST"
-  stream_enabled   = true
-  stream_view_type = "KEYS_ONLY"
+  hash_key                       = "id"
+  billing_mode                   = "PAY_PER_REQUEST"
+  stream_enabled                 = true
+  stream_view_type               = "KEYS_ONLY"
+  point_in_time_recovery_enabled = var.enable_pit
 
   attributes = [
     {

@@ -1,7 +1,6 @@
 locals {
   container_name = "bo"
   service_name   = "${local.container_name}-${var.id}"
-  alb_rules      = [["/documents", "/documents/*", "/candidates", "/candidates/*", "/_ops/*"]]
 }
 
 module "service" {
@@ -149,6 +148,9 @@ resource "aws_lb_target_group" "service" {
   vpc_id      = var.vpc_id
   target_type = "ip"
 
+  load_balancing_algorithm_type = var.alb_algorithm_type
+  slow_start                    = var.alb_slow_start
+
   health_check {
     path = "/health"
   }
@@ -161,7 +163,7 @@ resource "aws_lb_target_group" "service" {
 }
 
 resource "aws_lb_listener_rule" "service" {
-  count        = try(length(local.alb_rules), 0)
+  count        = try(length(var.alb_rules), 0)
   listener_arn = var.alb_listener_arn
 
   action {
@@ -171,7 +173,7 @@ resource "aws_lb_listener_rule" "service" {
 
   condition {
     path_pattern {
-      values = local.alb_rules[count.index]
+      values = var.alb_rules[count.index]
     }
   }
 

@@ -16,7 +16,8 @@ module "alb" {
 
   drop_invalid_header_fields = var.drop_invalid_header_fields
 
-  http_tcp_listeners = var.http_tcp_listeners
+  http_tcp_listeners      = var.http_tcp_listeners
+  http_tcp_listener_rules = var.http_tcp_listener_rules
 
   tags = var.tags
 }

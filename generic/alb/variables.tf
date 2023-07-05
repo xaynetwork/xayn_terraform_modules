@@ -16,12 +16,6 @@ variable "subnets" {
   default     = null
 }
 
-variable "tags" {
-  description = "A map of tags to add to all resources"
-  type        = map(string)
-  default     = {}
-}
-
 variable "security_groups" {
   description = "The security groups to attach to the load balancer. e.g. [\"sg-edcd9784\",\"sg-edcd9785\"]"
   type        = list(string)
@@ -42,6 +36,12 @@ variable "security_group_rules" {
 
 variable "http_tcp_listeners" {
   description = "A list of maps describing the HTTP listeners or TCP ports for this ALB. Required key/values: port, protocol. Optional key/values: target_group_index (defaults to http_tcp_listeners[count.index])"
+  type        = any
+  default     = []
+}
+
+variable "http_tcp_listener_rules" {
+  description = "A list of maps describing the Listener Rules for this ALB. Required key/values: actions, conditions. Optional key/values: priority, http_tcp_listener_index (default to http_tcp_listeners[count.index])"
   type        = any
   default     = []
 }
@@ -67,5 +67,11 @@ variable "alarm_http_5xx_error" {
 variable "alarm_http_4xx_error" {
   description = "Alarm for ALB HTTP-4XX errors."
   type        = any
+  default     = {}
+}
+
+variable "tags" {
+  description = "A map of tags to add to all resources"
+  type        = map(string)
   default     = {}
 }

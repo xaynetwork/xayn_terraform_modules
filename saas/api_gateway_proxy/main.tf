@@ -17,7 +17,7 @@ resource "aws_cloudwatch_log_group" "access_logs" {
   tags              = var.tags
 }
 
-resource "aws_api_gateway_stage" "tenant" {
+resource "aws_api_gateway_stage" "api" {
   deployment_id = aws_api_gateway_deployment.api.id
   rest_api_id   = aws_api_gateway_rest_api.api.id
   stage_name    = var.stage_name
@@ -29,12 +29,6 @@ resource "aws_api_gateway_stage" "tenant" {
       format          = jsonencode(var.access_logs_format)
     }
   }
-}
-
-resource "aws_api_gateway_stage" "api" {
-  deployment_id = aws_api_gateway_deployment.api.id
-  rest_api_id   = aws_api_gateway_rest_api.api.id
-  stage_name    = var.stage_name
 }
 
 resource "aws_api_gateway_authorizer" "lambda_authorizer" {

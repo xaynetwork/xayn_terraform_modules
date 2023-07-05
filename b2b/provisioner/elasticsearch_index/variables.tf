@@ -28,12 +28,6 @@ variable "url_ssm_parameter_name" {
   type        = string
 }
 
-variable "skip_delete" {
-  description = "Set this to true to prevent the deletion of the real resource. It must be deleted manually. Can be overridden in the CLI."
-  type        = bool
-  default     = true
-}
-
 variable "aws_profile" {
   description = "AWS Profile with which the provisioner should be executed"
   type        = string
@@ -42,5 +36,5 @@ variable "aws_profile" {
 variable "embedding_dims" {
   description = " Number of vector dimensions"
   type        = number
-  default     = 128
+  default     = 384
 }

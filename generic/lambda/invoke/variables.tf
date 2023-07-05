@@ -18,9 +18,3 @@ variable "aws_profile" {
   description = "The AWS profile in which this function is executed"
   type        = string
 }
-
-variable "skip_delete" {
-  description = "Set this to true to prevent the deletion of the real resource. It must be deleted manually. Can be overridden in the CLI."
-  type        = bool
-  default     = true
-}

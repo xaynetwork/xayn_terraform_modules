@@ -8,7 +8,7 @@ data "aws_region" "current" {}
 
 data "aws_caller_identity" "current" {}
 
-data "external" "build_tenent_pipeline" {
+data "external" "build_tenant_pipeline" {
   program = ["bash", "-c", "${local.pipeline_path}/build.sh ${local.pipeline_path}"]
 }
 
@@ -21,7 +21,7 @@ module "tenant_pipeline_function" {
   runtime                           = "nodejs18.x"
   timeout                           = 900
   create_package                    = false
-  local_existing_package            = data.external.build_tenent_pipeline.result.output
+  local_existing_package            = data.external.build_tenant_pipeline.result.output
   cloudwatch_logs_retention_in_days = var.log_retention_in_days
 
   environment_variables = {

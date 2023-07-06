@@ -14,8 +14,9 @@ data "external" "build" {
 }
 
 module "authentication_function" {
-  source  = "terraform-aws-modules/lambda/aws"
-  version = "5.2.0"
+  depends_on = [data.external.build]
+  source     = "terraform-aws-modules/lambda/aws"
+  version    = "5.2.0"
 
   function_name                     = "authenticator"
   handler                           = "TenantManagement.functions.authenticator.lambda_handler"
@@ -68,8 +69,9 @@ module "authentication_function" {
 
 
 module "provisioning_function" {
-  source  = "terraform-aws-modules/lambda/aws"
-  version = "5.2.0"
+  depends_on = [data.external.build]
+  source     = "terraform-aws-modules/lambda/aws"
+  version    = "5.2.0"
 
   function_name                     = "provisioning"
   handler                           = "TenantManagement.functions.provisioning.lambda_handler"

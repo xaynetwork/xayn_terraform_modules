@@ -9,12 +9,10 @@ locals {
 
 data "aws_region" "current" {}
 
-# ### needs to have installed
-# ### https://github.com/timo-reymann/deterministic-zip
-# ### https://www.reddit.com/r/Terraform/comments/aupudn/building_deterministic_zips_to_minimize_lambda/
 data "external" "build" {
   program = ["bash", "-c", "${local.app_path}/build.sh \"${local.function_path}\" \"${local.function_build_path}\" \"${local.dest_dir_name}\" \"${local.function_zip_filename}\" Function &> /tmp/temp.log && echo '{ \"output\": \"${local.output_path}\" }'"]
 }
+
 module "authentication_function" {
   source  = "terraform-aws-modules/lambda/aws"
   version = "5.2.0"

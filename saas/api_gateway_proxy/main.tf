@@ -2,7 +2,7 @@ resource "aws_api_gateway_rest_api" "api" {
   name                         = var.name
   description                  = "API for ${var.name}"
   api_key_source               = "AUTHORIZER"
-  disable_execute_api_endpoint = true
+  disable_execute_api_endpoint = var.domain_name != null ? true : false
 
   endpoint_configuration {
     types = ["REGIONAL"]

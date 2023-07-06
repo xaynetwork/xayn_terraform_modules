@@ -1,7 +1,8 @@
 resource "aws_api_gateway_rest_api" "api" {
-  name           = var.name
-  description    = "API for ${var.name}"
-  api_key_source = "AUTHORIZER"
+  name                         = var.name
+  description                  = "API for ${var.name}"
+  api_key_source               = "AUTHORIZER"
+  disable_execute_api_endpoint = true
 
   endpoint_configuration {
     types = ["REGIONAL"]
@@ -352,6 +353,7 @@ resource "aws_wafv2_web_acl_association" "api_gateway" {
 resource "aws_api_gateway_domain_name" "domain" {
   certificate_arn = var.certificate_arn
   domain_name     = var.domain_name
+  security_policy = "TLS_1_2"
 }
 
 resource "aws_api_gateway_base_path_mapping" "this" {

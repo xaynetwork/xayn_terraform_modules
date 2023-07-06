@@ -351,18 +351,21 @@ resource "aws_wafv2_web_acl_association" "api_gateway" {
 # Domain Configuration
 
 resource "aws_api_gateway_domain_name" "domain" {
+  count           = var.domain_name != null ? 1 : 0
   certificate_arn = var.certificate_arn
   domain_name     = var.domain_name
   security_policy = "TLS_1_2"
 }
 
 resource "aws_api_gateway_base_path_mapping" "this" {
+  count       = var.domain_name != null ? 1 : 0
   api_id      = aws_api_gateway_rest_api.api.id
   stage_name  = aws_api_gateway_stage.api.stage_name
   domain_name = aws_api_gateway_domain_name.domain.domain_name
 }
 
 resource "aws_route53_record" "api_record" {
+  count    = var.domain_name != null ? 1 : 0
   provider = aws.organization-account
   name     = aws_api_gateway_domain_name.domain.domain_name
   type     = "A"

@@ -1,7 +1,8 @@
 resource "aws_api_gateway_rest_api" "api" {
-  name           = var.name
-  description    = "API for ${var.name}"
-  api_key_source = "AUTHORIZER"
+  name                         = var.name
+  description                  = "API for ${var.name}"
+  api_key_source               = "AUTHORIZER"
+  disable_execute_api_endpoint = var.domain_name != null ? true : false
 
   endpoint_configuration {
     types = ["REGIONAL"]
@@ -237,7 +238,8 @@ resource "aws_api_gateway_deployment" "api" {
       aws_api_gateway_method.options_cors_documents_proxy.id,
       aws_api_gateway_integration.options_cors_documents_proxy.id,
       data.aws_iam_policy_document._silo_management.json,
-      aws_api_gateway_rest_api_policy._silo_management.id
+      aws_api_gateway_rest_api_policy._silo_management.id,
+      aws_api_gateway_rest_api.api.disable_execute_api_endpoint
     ]))
   }
 
@@ -346,6 +348,36 @@ resource "aws_wafv2_web_acl_association" "api_gateway" {
   count        = var.web_acl_arn != null ? 1 : 0
   resource_arn = aws_api_gateway_stage.api.arn
   web_acl_arn  = var.web_acl_arn
+}
+
+# Domain Configuration
+
+resource "aws_api_gateway_domain_name" "domain" {
+  count           = var.domain_name != null ? 1 : 0
+  certificate_arn = var.certificate_arn
+  domain_name     = var.domain_name
+  security_policy = "TLS_1_2"
+}
+
+resource "aws_api_gateway_base_path_mapping" "this" {
+  count       = var.domain_name != null ? 1 : 0
+  api_id      = aws_api_gateway_rest_api.api.id
+  stage_name  = aws_api_gateway_stage.api.stage_name
+  domain_name = aws_api_gateway_domain_name.domain.domain_name
+}
+
+resource "aws_route53_record" "api_record" {
+  count    = var.domain_name != null ? 1 : 0
+  provider = aws.organization-account
+  name     = aws_api_gateway_domain_name.domain.domain_name
+  type     = "A"
+  zone_id  = var.zone_id
+
+  alias {
+    evaluate_target_health = true
+    name                   = aws_api_gateway_domain_name.domain.cloudfront_domain_name
+    zone_id                = aws_api_gateway_domain_name.domain.cloudfront_zone_id
+  }
 }
 
 # CloudWatch alarms

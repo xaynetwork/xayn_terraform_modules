@@ -133,6 +133,22 @@ variable "access_logs_format" {
   }
 }
 
+# Domain Configuration
+variable "domain_name" {
+  description = "The domain name for the API Gateway"
+  type        = string
+}
+
+variable "certificate_arn" {
+  description = "The ARN of the ACM certificate validated"
+  type        = string
+}
+
+variable "zone_id" {
+  description = "Domain zone ID for where the record is going to be created"
+  type        = string
+}
+
 variable "tags" {
   description = "Map of tags for the deployment"
   type        = map(string)

@@ -17,3 +17,14 @@ output "rest_api_stage_name" {
   description = "The name of the rest api stage"
   value       = aws_api_gateway_stage.api.stage_name
 }
+
+# Domain Configuration
+output "api_cloudfront_domain_name" {
+  description = "The Cloudfront Domain Name from the API"
+  value       = try(aws_api_gateway_domain_name.domain.cloudfront_domain_name, null)
+}
+
+output "api_cloudfront_zone_id" {
+  description = "The Cloudfront zone ID from the API"
+  value       = try(aws_api_gateway_domain_name.domain.cloudfront_zone_id, null)
+}

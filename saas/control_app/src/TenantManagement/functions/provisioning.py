@@ -126,7 +126,7 @@ def lambda_handler(event: dict, _context) -> dict:
     db_repo = AwsDbRepository(
         endpoint_url=db_endpoint, table_name=db_table, region=region
     )
-    infra_repo = HttpDiscoveryEngineRepository(endpoint=host, region=region)
+    infra_repo = HttpDiscoveryEngineRepository(api_host=host, region=region)
     try:
         return handle(event, db_repo, infra_repo)
     except (

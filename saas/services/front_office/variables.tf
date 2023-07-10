@@ -51,6 +51,28 @@ variable "alb_security_group_id" {
   type        = string
 }
 
+variable "alb_algorithm_type" {
+  description = "Determines how the load balancer selects targets when routing requests. The value is round_robin or least_outstanding_requests."
+  type        = string
+  default     = "round_robin"
+
+  validation {
+    condition     = contains(["round_robin", "least_outstanding_requests"], var.alb_algorithm_type)
+    error_message = "Only round_robin or least_outstanding_requests are allowed"
+  }
+}
+
+variable "alb_slow_start" {
+  description = "Amount time for targets to warm up before the load balancer sends them a full share of requests. The range is 30-900 seconds or 0 to disable. The default value is 0 seconds."
+  type        = number
+  default     = 0
+}
+
+variable "alb_rules" {
+  description = "List of path pattern rules. One rule can have up to 5 path patterns."
+  type        = list(list(string))
+}
+
 ## container
 variable "cpu_architecture" {
   description = "CPU architecture"

@@ -19,17 +19,19 @@ class DiscoveryEngineRepository:
 
 class HttpDiscoveryEngineRepository(DiscoveryEngineRepository):
     _region: str
-    _endpoint: str
+    _api_host: str
 
-    def __init__(self, region: str, endpoint: str) -> None:
-        self._endpoint = endpoint
+    def __init__(self, region: str, api_host: str) -> None:
+        self._api_host = api_host
         self._region = region
 
     def create_tenant(self, tenant_id: str) -> bool:
         data = self.create_operation("CreateTenant", tenant_id)
-        auth = get_auth(region=self._region, host=self._endpoint)
+        # use the base url without a potential stage name
+        host = self._api_host.split("/")[0]
+        auth = get_auth(region=self._region, host=host)
         response = requests.post(
-            url=f"https://{self._endpoint}/default/{_SILO_MANAGEMENT_ENDPOINT}",
+            url=f"https://{self._api_host}/{_SILO_MANAGEMENT_ENDPOINT}",
             timeout=1000,
             json=data,
             auth=auth,
@@ -43,9 +45,11 @@ class HttpDiscoveryEngineRepository(DiscoveryEngineRepository):
 
     def delete_tenant(self, tenant_id: str):
         data = self.create_operation("DeleteTenant", tenant_id)
-        auth = get_auth(region=self._region, host=self._endpoint)
+        # use the base url without a potential stage name
+        host = self._api_host.split("/")[0]
+        auth = get_auth(region=self._region, host=host)
         response = requests.post(
-            url=f"https://{self._endpoint}/default/{_SILO_MANAGEMENT_ENDPOINT}",
+            url=f"https://{self._api_host}/{_SILO_MANAGEMENT_ENDPOINT}",
             timeout=1000,
             json=data,
             auth=auth,

@@ -8,21 +8,33 @@ data "aws_region" "current" {}
 
 data "aws_caller_identity" "current" {}
 
-data "external" "build_tenent_pipeline" {
+data "external" "build_tenant_pipeline" {
   program = ["bash", "-c", "${local.pipeline_path}/build.sh ${local.pipeline_path}"]
 }
 
-module "role_pipeline" {
-  source = "../../generic/lambda/role"
-  path   = "/saas/tenant_pipeline/"
-  prefix = "AppSaasTenantPipeline"
-  tags   = var.tags
-}
+module "tenant_pipeline_function" {
+  source  = "terraform-aws-modules/lambda/aws"
+  version = "5.2.0"
 
-resource "aws_iam_role_policy" "tenant_pipeline_dynamodb" {
-  name   = "tenant-pipeline-dynamodb-policy"
-  role   = module.role_pipeline.id
-  policy = <<EOF
+  function_name                     = local.function_name_pipeline
+  handler                           = "dist/handler.runPipelineHandler"
+  runtime                           = "nodejs18.x"
+  timeout                           = 900
+  create_package                    = false
+  local_existing_package            = data.external.build_tenant_pipeline.result.output
+  cloudwatch_logs_retention_in_days = var.log_retention_in_days
+
+  environment_variables = {
+    REGION         = data.aws_region.current.name
+    DB_TABLE       = var.dynamodb_table_name
+    API_ID         = var.apigateway_api_id
+    API_STAGE_NAME = var.apigateway_api_stage_name
+    ACCOUNT_ID     = data.aws_caller_identity.current.account_id
+  }
+
+  attach_policy_jsons = true
+  policy_jsons = [
+    <<-EOT
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -72,33 +84,16 @@ resource "aws_iam_role_policy" "tenant_pipeline_dynamodb" {
     }
   ]
 }
-EOF
-}
+    EOT
+  ]
+  number_of_policy_jsons = 1
 
-module "tenant_pipeline_function" {
-  source = "../../generic/lambda/function"
-
-  function_name         = local.function_name_pipeline
-  handler               = "dist/handler.runPipelineHandler"
-  runtime               = "nodejs18.x"
-  timeout               = 900
-  source_code_hash      = filebase64sha256(data.external.build_tenent_pipeline.result.output)
-  output_path           = data.external.build_tenent_pipeline.result.output
-  lambda_role_arn       = module.role_pipeline.arn
-  log_retention_in_days = var.log_retention_in_days
-  tags                  = var.tags
-
-  environment_variables = {
-    REGION         = data.aws_region.current.name
-    DB_TABLE       = var.dynamodb_table_name
-    API_ID         = var.apigateway_api_id
-    API_STAGE_NAME = var.apigateway_api_stage_name
-    ACCOUNT_ID     = data.aws_caller_identity.current.account_id
+  event_source_mapping = {
+    dynamodb = {
+      event_source_arn  = var.dynamodb_stream_arn
+      starting_position = "LATEST"
+    }
   }
-}
 
-resource "aws_lambda_event_source_mapping" "dynamodb_to_pipeline" {
-  event_source_arn  = var.dynamodb_stream_arn
-  function_name     = local.function_name_pipeline
-  starting_position = "LATEST"
+  tags = var.tags
 }

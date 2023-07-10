@@ -237,7 +237,8 @@ resource "aws_api_gateway_deployment" "api" {
       aws_api_gateway_integration.options_cors_documents.id,
       aws_api_gateway_method.options_cors_documents_proxy.id,
       aws_api_gateway_integration.options_cors_documents_proxy.id,
-      aws_api_gateway_rest_api_policy._silo_management.id,
+      data.aws_iam_policy_document._silo_management.json,
+      aws_api_gateway_rest_api_policy._silo_management.id
       aws_api_gateway_rest_api.api.disable_execute_api_endpoint
     ]))
   }

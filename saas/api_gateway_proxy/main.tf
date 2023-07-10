@@ -363,20 +363,20 @@ resource "aws_api_gateway_base_path_mapping" "this" {
   count       = var.domain_name != null ? 1 : 0
   api_id      = aws_api_gateway_rest_api.api.id
   stage_name  = aws_api_gateway_stage.api.stage_name
-  domain_name = aws_api_gateway_domain_name.domain.domain_name
+  domain_name = aws_api_gateway_domain_name.domain[count.index].domain_name
 }
 
 resource "aws_route53_record" "api_record" {
   count    = var.domain_name != null ? 1 : 0
   provider = aws.organization-account
-  name     = aws_api_gateway_domain_name.domain.domain_name
+  name     = aws_api_gateway_domain_name.domain[count.index].domain_name
   type     = "A"
   zone_id  = var.zone_id
 
   alias {
     evaluate_target_health = true
-    name                   = aws_api_gateway_domain_name.domain.cloudfront_domain_name
-    zone_id                = aws_api_gateway_domain_name.domain.cloudfront_zone_id
+    name                   = aws_api_gateway_domain_name.domain[count.index].cloudfront_domain_name
+    zone_id                = aws_api_gateway_domain_name.domain[count.index].cloudfront_zone_id
   }
 }
 

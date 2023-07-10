@@ -18,7 +18,7 @@ resource "aws_sagemaker_model" "this" {
   execution_role_arn = aws_iam_role.this.arn
 
   dynamic "primary_container" {
-    for_each = length(var.primary_container) > 0 ? [var.primary_container] : []
+    for_each = [var.primary_container]
 
     content {
       image              = try(primary_container.value.image, null)
@@ -27,7 +27,21 @@ resource "aws_sagemaker_model" "this" {
       model_package_name = try(primary_container.value.model_package_name, null)
       container_hostname = try(primary_container.value.container_hostname, null)
       environment        = try(primary_container.value.environment, null)
-      image_config       = try(primary_container.value.image_config, null)
+
+      dynamic "image_config" {
+        for_each = try([primary_container.value.image_config], [])
+
+        content {
+          repository_access_mode = image_config.value.repository_access_mode
+          dynamic "repository_auth_config" {
+            for_each = try([image_config.value.repository_auth_config], [])
+
+            content {
+              repository_credentials_provider_arn = repository_auth_config.value.repository_credentials_provider_arn
+            }
+          }
+        }
+      }
     }
   }
 
@@ -35,10 +49,8 @@ resource "aws_sagemaker_model" "this" {
     for_each = length(var.vpc_config) > 0 ? [var.vpc_config] : []
 
     content {
-      security_group_ids = try(vpc_config.value.security_group_ids, null)
-      subnets            = try(vpc_config.subnets.mode, null)
-      vpc_id             = try(vpc_config.value.vpc_id, null)
-
+      security_group_ids = vpc_config.value.security_group_ids
+      subnets            = vpc_config.value.subnets
     }
   }
 

@@ -4,6 +4,11 @@ variable "endpoint_config_name" {
   default     = null
 }
 
+variable "endpoint_config_production_variant" {
+  description = "A ProductionVariant object."
+  type        = any
+}
+
 variable "endpoint_name" {
   description = "The name of the endpoint. If omitted, the name will be `<model_name>-endpoint`."
   type        = string
@@ -24,7 +29,6 @@ variable "model_name" {
 variable "model_primary_container" {
   description = "The primary docker image containing inference code that is used when the model is deployed for predictions."
   type        = any
-  default     = {}
 }
 
 variable "model_enable_network_isolation" {

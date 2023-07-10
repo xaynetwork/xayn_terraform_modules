@@ -7,7 +7,6 @@ variable "name" {
 variable "primary_container" {
   description = "The primary docker image containing inference code that is used when the model is deployed for predictions."
   type        = any
-  default     = {}
 }
 
 variable "enable_network_isolation" {

@@ -1,28 +1,3 @@
-# ECR Settings
-data "aws_iam_policy_document" "this" {
-  count = var.private_registry_access ? 1 : 0
-  statement {
-    effect = "Allow"
-
-    principals {
-      type        = "AWS"
-      identifiers = [aws_lightsail_container_service.this.private_registry_access[0].ecr_image_puller_role[0].principal_arn]
-    }
-
-    actions = [
-      "ecr:BatchGetImage",
-      "ecr:GetDownloadUrlForLayer",
-    ]
-  }
-}
-
-resource "aws_ecr_repository_policy" "this" {
-  count      = var.private_registry_access ? 1 : 0
-  repository = var.repository_name
-  policy     = data.aws_iam_policy_document.this[0].json
-}
-
-# Lightsail Configuration
 resource "aws_lightsail_container_service" "this" {
   name        = var.service_name
   power       = var.power
@@ -44,35 +19,6 @@ resource "aws_lightsail_container_service" "this" {
       ]
     }
   }
-}
-
-resource "aws_lightsail_container_service_deployment_version" "this" {
-  container {
-    container_name = var.service_name
-    image          = var.container_image
-
-    command = var.container_command
-
-    environment = var.environmental_variables
-
-    ports = var.ports
-  }
-
-  public_endpoint {
-    container_name = var.service_name
-    container_port = keys(var.ports)[0]
-
-    health_check {
-      healthy_threshold   = 2
-      unhealthy_threshold = 2
-      timeout_seconds     = 2
-      interval_seconds    = 5
-      path                = var.health_check_path
-      success_codes       = var.health_success_codes
-    }
-  }
-
-  service_name = aws_lightsail_container_service.this.name
 }
 
 # Domain settings

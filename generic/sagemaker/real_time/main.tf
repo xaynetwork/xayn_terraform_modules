@@ -5,7 +5,17 @@ module "model" {
   primary_container        = var.model_primary_container
   enable_network_isolation = var.model_enable_network_isolation
   vpc_config               = var.model_vpc_config
-  exec_iam_role_policies   = var.model_exec_iam_role_policies
+
+  role_name        = var.model_role_name
+  role_description = var.model_role_description
+  policy_name      = var.model_policy_name
+  policy_jsons     = var.model_policy_jsons
+
+  create_security_group          = var.create_model_security_group
+  security_group_name            = var.model_security_group_name
+  security_group_use_name_prefix = var.model_security_group_use_name_prefix
+  security_group_description     = var.model_security_group_description
+  security_group_rules           = var.model_security_group_rules
 
   tags = var.tags
 }

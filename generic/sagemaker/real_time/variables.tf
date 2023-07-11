@@ -43,9 +43,55 @@ variable "model_vpc_config" {
   default     = {}
 }
 
-variable "model_exec_iam_role_policies" {
-  description = "Map of IAM role policy ARNs to attach to the IAM role"
-  type        = map(string)
+variable "model_role_name" {
+  description = "Name of IAM role to use for Sagemaker"
+  type        = string
+}
+
+variable "model_role_description" {
+  description = "Description of IAM role to use for Sagemaker"
+  type        = string
+  default     = null
+}
+
+variable "model_policy_name" {
+  description = "IAM policy name."
+  type        = string
+}
+
+variable "model_policy_jsons" {
+  description = "An additional policy document as JSON to attach to the Sagemaker role"
+  type        = list(any)
+  default     = []
+}
+
+variable "create_model_security_group" {
+  description = "Determines if a security group is created"
+  type        = bool
+  default     = true
+}
+
+variable "model_security_group_name" {
+  description = "Name to use on security group created"
+  type        = string
+  default     = null
+}
+
+variable "model_security_group_use_name_prefix" {
+  description = "Determines whether the security group name (`security_group_name`) is used as a prefix"
+  type        = bool
+  default     = true
+}
+
+variable "model_security_group_description" {
+  description = "Description of the security group created"
+  type        = string
+  default     = null
+}
+
+variable "model_security_group_rules" {
+  description = "Security group rules to add to the security group created"
+  type        = any
   default     = {}
 }
 

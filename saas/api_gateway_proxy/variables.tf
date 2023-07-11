@@ -137,16 +137,19 @@ variable "access_logs_format" {
 variable "domain_name" {
   description = "The domain name for the API Gateway"
   type        = string
+  default     = null
 }
 
 variable "certificate_arn" {
   description = "The ARN of the ACM certificate validated"
   type        = string
+  default     = null
 }
 
 variable "zone_id" {
   description = "Domain zone ID for where the record is going to be created"
   type        = string
+  default     = null
 }
 
 variable "tags" {

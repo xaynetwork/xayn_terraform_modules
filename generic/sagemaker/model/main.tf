@@ -13,6 +13,13 @@ resource "aws_iam_role" "this" {
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
 
+resource "aws_iam_role_policy_attachment" "this" {
+  for_each = { for k, v in var.exec_iam_role_policies : k => v }
+
+  role       = aws_iam_role.this.name
+  policy_arn = each.value
+}
+
 resource "aws_sagemaker_model" "this" {
   name               = var.name
   execution_role_arn = aws_iam_role.this.arn

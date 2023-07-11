@@ -21,6 +21,12 @@ variable "vpc_config" {
   default     = {}
 }
 
+variable "exec_iam_role_policies" {
+  description = "Map of IAM role policy ARNs to attach to the IAM role"
+  type        = map(string)
+  default     = {}
+}
+
 variable "tags" {
   description = "Custom tags to set on the underlining resources."
   type        = map(string)

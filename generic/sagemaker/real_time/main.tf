@@ -5,6 +5,7 @@ module "model" {
   primary_container        = var.model_primary_container
   enable_network_isolation = var.model_enable_network_isolation
   vpc_config               = var.model_vpc_config
+  exec_iam_role_policies   = var.model_exec_iam_role_policies
 
   tags = var.tags
 }

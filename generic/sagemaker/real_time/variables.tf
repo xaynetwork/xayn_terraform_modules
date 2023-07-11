@@ -43,6 +43,12 @@ variable "model_vpc_config" {
   default     = {}
 }
 
+variable "model_exec_iam_role_policies" {
+  description = "Map of IAM role policy ARNs to attach to the IAM role"
+  type        = map(string)
+  default     = {}
+}
+
 variable "enable_autoscaling" {
   description = "Determines whether to enable autoscaling for the endpoint."
   type        = bool

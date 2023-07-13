@@ -3,18 +3,6 @@ variable "service_name" {
   type        = string
 }
 
-variable "private_registry_access" {
-  description = "Describes a request to configure an Amazon Lightsail container service to access private container image repositories"
-  type        = bool
-  default     = false
-}
-
-variable "ecr_role" {
-  description = " The name for the container service."
-  type        = string
-  default     = null
-}
-
 ## Container data
 variable "container_image" {
   description = " The name of the container image."

@@ -149,6 +149,18 @@ variable "max_body_size" {
   default     = 4194304
 }
 
+variable "max_snippet_size" {
+  description = "The max size for snippet"
+  type        = number
+  default     = 2048
+}
+
+variable "max_properties_size" {
+  description = "The max size for properties"
+  type        = number
+  default     = 2560
+}
+
 # target scaling options
 variable "scale_target_value" {
   description = "The target to keep the CPU utilization at"

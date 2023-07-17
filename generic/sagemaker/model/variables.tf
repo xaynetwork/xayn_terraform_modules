@@ -1,9 +1,3 @@
-variable "name" {
-  description = "The name of the model (must be unique). If omitted, Terraform will assign a random, unique name."
-  type        = string
-  default     = null
-}
-
 variable "primary_container" {
   description = "The primary docker image containing inference code that is used when the model is deployed for predictions."
   type        = any

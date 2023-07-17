@@ -7,7 +7,6 @@ locals {
 module "model" {
   source = "../model"
 
-  name                     = var.model_name
   primary_container        = var.model_primary_container
   enable_network_isolation = var.model_enable_network_isolation
   vpc_config               = var.model_vpc_config
@@ -250,7 +249,7 @@ module "endpoint_url" {
 
   create = var.create_ssm_parm
 
-  name        = "/sagemaker/${var.model_name}/endpoint"
+  name        = "/sagemaker/${var.model_name}/endpoint_url"
   description = "URL of the sagemaker endpoint."
   value       = local.endpoint_url
   tags        = var.tags

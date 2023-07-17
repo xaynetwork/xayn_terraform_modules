@@ -28,7 +28,7 @@ variable "endpoint_deployment_config" {
 }
 
 variable "model_name" {
-  description = "The name of the model (must be unique). If omitted, Terraform will assign a random, unique name."
+  description = "The name of the model (must be unique)."
   type        = string
 }
 

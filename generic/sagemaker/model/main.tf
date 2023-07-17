@@ -7,7 +7,7 @@ resource "aws_sagemaker_model" "this" {
     aws_iam_role_policy_attachment.vpc_access
   ]
 
-  name               = var.name
+  # name               = var.name
   execution_role_arn = aws_iam_role.this.arn
 
   dynamic "primary_container" {
@@ -50,6 +50,10 @@ resource "aws_sagemaker_model" "this" {
   enable_network_isolation = var.enable_network_isolation
 
   tags = var.tags
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 locals {

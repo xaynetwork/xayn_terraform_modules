@@ -51,13 +51,13 @@ def test_auth_should_return_allow_for_any_url_that_starts_with_semantic_search()
     assert data["policyDocument"]["Statement"][0]["Effect"] == "Allow"
 
 
-def test_auth_should_deny_endpoints_that_dont_exist():
+def test_auth_should_allow_endpoints_that_dont_exist_when_the_api_key_is_correct():
     data = authenticator.handle(
         apigw_event(TENANT_ID, FRONT_OFFICE_KEY, "personalized_documents"),
         fake_tenant_db(),
     )
 
-    assert data["policyDocument"]["Statement"][0]["Effect"] == "Deny"
+    assert data["policyDocument"]["Statement"][0]["Effect"] == "Allow"
 
 
 def test_frontoffice_allow_should_contain_users_and_semantic_search():
@@ -94,20 +94,12 @@ def test_allow_should_contain_the_userid_as_pricipal():
     assert data["principalId"] == TENANT_ID
 
 
-def test_auth_should_return_deny_when_path_is_root():
+def test_auth_should_return_allow_when_path_is_root_and_the_api_key_is_correct():
     data = authenticator.handle(
         apigw_event(TENANT_ID, FRONT_OFFICE_KEY, ""), fake_tenant_db()
     )
 
-    assert data["policyDocument"]["Statement"][0]["Effect"] == "Deny"
-
-
-def test_deny_should_not_contain_the_userid_as_pricipal():
-    data = authenticator.handle(
-        apigw_event(TENANT_ID, FRONT_OFFICE_KEY, "documents"), fake_tenant_db()
-    )
-
-    assert data["principalId"] == ""
+    assert data["policyDocument"]["Statement"][0]["Effect"] == "Allow"
 
 
 def test_auth_should_return_deny_when_tenant_does_not_exist():
@@ -118,16 +110,23 @@ def test_auth_should_return_deny_when_tenant_does_not_exist():
     assert data["policyDocument"]["Statement"][0]["Effect"] == "Deny"
 
 
-def test_auth_should_return_deny_when_tenant_exist_but_wrong_endpoint_is_used():
+def test_auth_should_return_allow_when_tenant_exist_and_the_auth_key_is_correct_even_when_the_resource_does_not_match():
     data = authenticator.handle(
         apigw_event(TENANT_ID, FRONT_OFFICE_KEY, "documents"), fake_tenant_db()
     )
 
-    assert data["policyDocument"]["Statement"][0]["Effect"] == "Deny"
+    assert data["policyDocument"]["Statement"][0]["Effect"] == "Allow"
+
+
+def test_auth_when_request_allowed_but_for_other_resource():
+    event = apigw_event(TENANT_ID, FRONT_OFFICE_KEY, "documents")
+    data = authenticator.handle(event, fake_tenant_db())
+
+    assert len(data["policyDocument"]["Statement"][0]["Resource"]) == 4
 
 
 def test_auth_when_request_denied_only_return_the_same_resource():
-    event = apigw_event(TENANT_ID, FRONT_OFFICE_KEY, "documents")
+    event = apigw_event(TENANT_ID, "not a valid key", "documents")
     data = authenticator.handle(event, fake_tenant_db())
 
     assert data["policyDocument"]["Statement"][0]["Resource"] == [event["methodArn"]]

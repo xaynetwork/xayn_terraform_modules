@@ -76,6 +76,11 @@ resource "aws_security_group" "this" {
   lifecycle {
     create_before_destroy = true
   }
+
+  timeouts {
+    # https://stackoverflow.com/questions/52416454/sagemaker-model-cloudformation-stack-deletion
+    delete = "30m"
+  }
 }
 
 resource "aws_security_group_rule" "this" {

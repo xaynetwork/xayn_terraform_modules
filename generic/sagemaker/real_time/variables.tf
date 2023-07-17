@@ -1,5 +1,5 @@
 variable "endpoint_config_name" {
-  description = "The name of the endpoint configuration. If omitted, the name will be `<model_name>-endpoint-config`."
+  description = "The name of the endpoint configuration. If omitted, the name will be `<model_name>-endpoint-config-<random_id>`."
   type        = string
   default     = null
 }
@@ -7,6 +7,12 @@ variable "endpoint_config_name" {
 variable "endpoint_config_production_variant" {
   description = "A ProductionVariant object."
   type        = any
+}
+
+variable "create_endpoint" {
+  description = "Determines if an endpoint is created."
+  type        = bool
+  default     = true
 }
 
 variable "endpoint_name" {
@@ -141,6 +147,12 @@ variable "autoscaling_scheduled_actions" {
   description = "Map of autoscaling scheduled actions to create for the endpoint."
   type        = any
   default     = {}
+}
+
+variable "create_ssm_parm" {
+  description = "Determines if a ssm parameter is created in which the endpoint URL is stored."
+  type        = bool
+  default     = false
 }
 
 variable "tags" {

@@ -29,7 +29,8 @@ module "model" {
 }
 
 resource "aws_sagemaker_endpoint_configuration" "this" {
-  name = var.endpoint_config_name != null ? var.endpoint_config_name : "${var.model_name}-config"
+  # we don't want to set the name https://github.com/hashicorp/terraform-provider-aws/issues/21811
+  name_prefix = var.endpoint_config_name != null ? var.endpoint_config_name : "${var.model_name}-config-"
 
   dynamic "production_variants" {
     for_each = [var.endpoint_config_production_variant]
@@ -71,9 +72,15 @@ resource "aws_sagemaker_endpoint_configuration" "this" {
   kms_key_arn = module.kms.key_arn
 
   tags = var.tags
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_sagemaker_endpoint" "this" {
+  count = var.create_endpoint ? 1 : 0
+
   name                 = var.endpoint_name != null ? var.endpoint_name : "${var.model_name}-endpoint"
   endpoint_config_name = aws_sagemaker_endpoint_configuration.this.name
 
@@ -136,11 +143,12 @@ resource "aws_sagemaker_endpoint" "this" {
 }
 
 resource "aws_appautoscaling_target" "this" {
-  count = local.enable_autoscaling ? 1 : 0
+  depends_on = [aws_sagemaker_endpoint.this]
+  count      = local.enable_autoscaling ? 1 : 0
 
   max_capacity       = max(var.autoscaling_max_capacity, try(var.endpoint_config_production_variant.initial_instance_count, 0))
   min_capacity       = min(var.autoscaling_min_capacity, try(var.endpoint_config_production_variant.initial_instance_count, 0))
-  resource_id        = "endpoint/${aws_sagemaker_endpoint.this.name}/variant/${local.variant_name}"
+  resource_id        = "endpoint/${aws_sagemaker_endpoint.this[0].name}/variant/${local.variant_name}"
   scalable_dimension = "sagemaker:variant:DesiredInstanceCount"
   service_namespace  = "sagemaker"
 }
@@ -228,4 +236,22 @@ module "kms" {
   key_usage               = "ENCRYPT_DECRYPT"
 
   tags = var.tags
+}
+
+data "aws_region" "current" {}
+
+locals {
+  endpoint_url = "https://runtime.sagemaker.${data.aws_region.current.name}.amazonaws.com/endpoints/${aws_sagemaker_endpoint.this[0].name}/invocations"
+}
+
+module "endpoint_url" {
+  source  = "terraform-aws-modules/ssm-parameter/aws"
+  version = "1.1.0"
+
+  create = var.create_ssm_parm
+
+  name        = "/sagemaker/${var.model_name}/endpoint"
+  description = "URL of the sagemaker endpoint."
+  value       = local.endpoint_url
+  tags        = var.tags
 }

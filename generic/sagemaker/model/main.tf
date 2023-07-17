@@ -82,10 +82,12 @@ resource "aws_security_group" "this" {
     create_before_destroy = true
   }
 
-  timeouts {
-    # https://stackoverflow.com/questions/52416454/sagemaker-model-cloudformation-stack-deletion
-    delete = "30m"
-  }
+  # https://stackoverflow.com/questions/52416454/sagemaker-model-cloudformation-stack-deletion
+  # deleting the eni can takes a very long time more than a day. increasing the timeout doesn't 
+  # solve the problem
+  # timeouts {
+  #   delete = "15m"
+  # }
 }
 
 resource "aws_security_group_rule" "this" {

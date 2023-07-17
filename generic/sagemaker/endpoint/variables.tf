@@ -117,28 +117,67 @@ variable "enable_autoscaling" {
   default     = false
 }
 
-variable "autoscaling_min_capacity" {
-  description = "Minimum number of tasks to run in your endpoint."
-  type        = number
-  default     = 1
-}
-
-variable "autoscaling_max_capacity" {
-  description = "Maximum number of tasks to run in your endpoint."
-  type        = number
-  default     = 10
+variable "autoscaling_capacity" {
+  description = "Map of minimum and maximum number of tasks to run in your endpoint. Minimum defaults to 1. Maximum defaults to 10."
+  type        = any
+  default     = {}
+  # example
+  # {
+  #   main = {
+  #     min = 2
+  #     max = 5
+  #   }
+  # }
 }
 
 variable "autoscaling_policies" {
   description = "Map of autoscaling policies to create for production variants of the endpoint."
   type        = any
   default     = {}
+  # example
+  # {
+  #   variant1 = [{
+  #     name = "invocations"
+  #     target_tracking_scaling_policy_configuration = {
+  #       predefined_metric_specification = {
+  #         predefined_metric_type = "SageMakerVariantInvocationsPerInstance"
+  #       }
+  #     }
+  #   }],
+  #   variant2 = [{
+  #     name = "invocations"
+  #     target_tracking_scaling_policy_configuration = {
+  #       predefined_metric_specification = {
+  #         predefined_metric_type = "SageMakerVariantInvocationsPerInstance"
+  #       }
+  #     }
+  #   }]
+  # }
 }
 
 variable "autoscaling_scheduled_actions" {
   description = "Map of autoscaling scheduled actions to create for production variants of the endpoint."
   type        = any
   default     = {}
+  # example
+  # {
+  #   variant1 = [
+  #     {
+  #       name         = "up"
+  #       schedule     = "cron(35 15 * * ? *)"
+  #       min_capacity = 2
+  #       max_capacity = 10
+  #       timezone     = "Europe/Berlin"
+  #     }],
+  #   variant2 = [
+  #     {
+  #       name         = "up"
+  #       schedule     = "cron(35 15 * * ? *)"
+  #       min_capacity = 2
+  #       max_capacity = 10
+  #       timezone     = "Europe/Berlin"
+  #     }]
+  # }
 }
 
 variable "create_ssm_parm" {

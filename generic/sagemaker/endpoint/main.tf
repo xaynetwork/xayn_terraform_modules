@@ -146,8 +146,8 @@ resource "aws_appautoscaling_target" "this" {
 
   depends_on = [aws_sagemaker_endpoint.this]
 
-  max_capacity       = max(var.autoscaling_max_capacity, try(var.endpoint_config_production_variants[each.key].initial_instance_count, 0))
-  min_capacity       = min(var.autoscaling_min_capacity, try(var.endpoint_config_production_variants[each.key].initial_instance_count, 0))
+  max_capacity       = max(try(var.autoscaling_capacity[each.value.variant_name].max, 10), try(var.endpoint_config_production_variants[each.key].initial_instance_count, 0))
+  min_capacity       = min(try(var.autoscaling_capacity[each.value.variant_name].min, 1), try(var.endpoint_config_production_variants[each.key].initial_instance_count, 0))
   resource_id        = "endpoint/${aws_sagemaker_endpoint.this[0].name}/variant/${var.endpoint_config_production_variants[each.key].variant_name}"
   scalable_dimension = "sagemaker:variant:DesiredInstanceCount"
   service_namespace  = "sagemaker"

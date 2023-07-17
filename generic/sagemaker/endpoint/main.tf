@@ -1,5 +1,5 @@
 locals {
-  enable_autoscaling = var.enable_autoscaling && try(var.endpoint_config_production_variant.serverless_config, null) == null
+  enable_autoscaling = var.enable_autoscaling && var.create_endpoint && try(var.endpoint_config_production_variant.serverless_config, null) == null
   # if autoscaling is enabled, variant_name need to be set because it is required in the resource_id
   variant_name = local.enable_autoscaling ? var.endpoint_config_production_variant.variant_name : try(var.endpoint_config_production_variant.variant_name, null)
 }
@@ -240,14 +240,14 @@ module "kms" {
 data "aws_region" "current" {}
 
 locals {
-  endpoint_url = "https://runtime.sagemaker.${data.aws_region.current.name}.amazonaws.com/endpoints/${aws_sagemaker_endpoint.this[0].name}/invocations"
+  endpoint_url = try(aws_sagemaker_endpoint.this[0].name, null) != null ? "https://runtime.sagemaker.${data.aws_region.current.name}.amazonaws.com/endpoints/${aws_sagemaker_endpoint.this[0].name}/invocations" : null
 }
 
 module "endpoint_url" {
   source  = "terraform-aws-modules/ssm-parameter/aws"
   version = "1.1.0"
 
-  create = var.create_ssm_parm
+  create = var.create_ssm_parm && var.create_endpoint
 
   name        = "/sagemaker/${var.model_name}/endpoint_url"
   description = "URL of the sagemaker endpoint."

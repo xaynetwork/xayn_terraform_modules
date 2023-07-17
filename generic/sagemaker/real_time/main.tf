@@ -1,3 +1,9 @@
+locals {
+  enable_autoscaling = var.enable_autoscaling && try(var.endpoint_config_production_variant.value.serverless_config, null) == null
+  # if autoscaling is enabled, variant_name need to be set because it is required in the resource_id
+  variant_name = local.enable_autoscaling ? var.endpoint_config_production_variant.value.variant_name : try(production_variants.value.variant_name, null)
+}
+
 module "model" {
   source = "../model"
 
@@ -10,25 +16,14 @@ module "model" {
   role_description = var.model_role_description
   policy_name      = var.model_policy_name
   policy_jsons     = var.model_policy_jsons
+  model_buckets    = var.model_model_buckets
+  ecr_repositories = var.model_ecr_repositories
 
   create_security_group          = var.create_model_security_group
   security_group_name            = var.model_security_group_name
   security_group_use_name_prefix = var.model_security_group_use_name_prefix
   security_group_description     = var.model_security_group_description
   security_group_rules           = var.model_security_group_rules
-
-  tags = var.tags
-}
-
-module "kms" {
-  source  = "terraform-aws-modules/kms/aws"
-  version = "1.5.0"
-
-  deletion_window_in_days = 7
-  description             = "KMS for SageMaker. It is used to encrypt data on the storage volume attached to the ML compute instance that hosts the endpoint."
-  enable_key_rotation     = false
-  is_enabled              = true
-  key_usage               = "ENCRYPT_DECRYPT"
 
   tags = var.tags
 }
@@ -68,7 +63,7 @@ resource "aws_sagemaker_endpoint_configuration" "this" {
         }
       }
 
-      variant_name      = try(production_variants.value.variant_name, null)
+      variant_name      = local.variant_name
       volume_size_in_gb = try(production_variants.value.volume_size_in_gb, null)
     }
   }
@@ -140,16 +135,12 @@ resource "aws_sagemaker_endpoint" "this" {
   tags = var.tags
 }
 
-locals {
-  enable_autoscaling = var.enable_autoscaling && try(var.endpoint_config_production_variant.value.serverless_config, null) == null
-}
-
 resource "aws_appautoscaling_target" "this" {
   count = local.enable_autoscaling ? 1 : 0
 
   max_capacity       = max(var.autoscaling_max_capacity, try(var.endpoint_config_production_variant.value.initial_instance_count, 0))
   min_capacity       = min(var.autoscaling_min_capacity, try(var.endpoint_config_production_variant.value.initial_instance_count, 0))
-  resource_id        = "endpoint/${aws_sagemaker_endpoint.this.name}/variant/${var.endpoint_config_production_variant.value.variant_name}"
+  resource_id        = "endpoint/${aws_sagemaker_endpoint.this.name}/variant/${local.variant_name}"
   scalable_dimension = "sagemaker:variant:DesiredInstanceCount"
   service_namespace  = "sagemaker"
 }
@@ -224,4 +215,17 @@ resource "aws_appautoscaling_scheduled_action" "this" {
   start_time = try(each.value.start_time, null)
   end_time   = try(each.value.end_time, null)
   timezone   = try(each.value.timezone, null)
+}
+
+module "kms" {
+  source  = "terraform-aws-modules/kms/aws"
+  version = "1.5.0"
+
+  deletion_window_in_days = 7
+  description             = "KMS for SageMaker. It is used to encrypt data on the storage volume attached to the ML compute instance that hosts the endpoint."
+  enable_key_rotation     = false
+  is_enabled              = true
+  key_usage               = "ENCRYPT_DECRYPT"
+
+  tags = var.tags
 }

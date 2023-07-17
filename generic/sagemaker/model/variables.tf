@@ -43,6 +43,16 @@ variable "policy_jsons" {
   default     = []
 }
 
+variable "model_buckets" {
+  description = "List of S3 bucket names that Sagemaker should be given access to."
+  type        = list(string)
+}
+
+variable "ecr_repositories" {
+  description = "List of ECR repository arns that Sagemaker should be given access to."
+  type        = list(string)
+}
+
 variable "create_security_group" {
   description = "Determines if a security group is created"
   type        = bool

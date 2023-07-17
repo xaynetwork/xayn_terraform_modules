@@ -65,6 +65,16 @@ variable "model_policy_jsons" {
   default     = []
 }
 
+variable "model_model_buckets" {
+  description = "List of S3 bucket names that Sagemaker should be given access to."
+  type        = list(string)
+}
+
+variable "model_ecr_repositories" {
+  description = "List of ECR repository arns that Sagemaker should be given access to."
+  type        = list(string)
+}
+
 variable "create_model_security_group" {
   description = "Determines if a security group is created"
   type        = bool
@@ -98,7 +108,7 @@ variable "model_security_group_rules" {
 variable "enable_autoscaling" {
   description = "Determines whether to enable autoscaling for the endpoint."
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "autoscaling_min_capacity" {

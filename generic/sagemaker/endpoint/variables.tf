@@ -4,8 +4,8 @@ variable "endpoint_config_name" {
   default     = null
 }
 
-variable "endpoint_config_production_variant" {
-  description = "A ProductionVariant object."
+variable "endpoint_config_production_variants" {
+  description = "Map of production variants to create."
   type        = any
 }
 
@@ -130,21 +130,13 @@ variable "autoscaling_max_capacity" {
 }
 
 variable "autoscaling_policies" {
-  description = "Map of autoscaling policies to create for the endpoint."
+  description = "Map of autoscaling policies to create for production variants of the endpoint."
   type        = any
-  default = {
-    invocations = {
-      target_tracking_scaling_policy_configuration = {
-        predefined_metric_specification = {
-          predefined_metric_type = "SageMakerVariantInvocationsPerInstance"
-        }
-      }
-    }
-  }
+  default     = {}
 }
 
 variable "autoscaling_scheduled_actions" {
-  description = "Map of autoscaling scheduled actions to create for the endpoint."
+  description = "Map of autoscaling scheduled actions to create for production variants of the endpoint."
   type        = any
   default     = {}
 }

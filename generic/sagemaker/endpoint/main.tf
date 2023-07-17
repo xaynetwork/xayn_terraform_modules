@@ -1,9 +1,3 @@
-locals {
-  enable_autoscaling = var.enable_autoscaling && var.create_endpoint && try(var.endpoint_config_production_variant.serverless_config, null) == null
-  # if autoscaling is enabled, variant_name need to be set because it is required in the resource_id
-  variant_name = local.enable_autoscaling ? var.endpoint_config_production_variant.variant_name : try(var.endpoint_config_production_variant.variant_name, null)
-}
-
 module "model" {
   source = "../model"
 
@@ -33,7 +27,7 @@ resource "aws_sagemaker_endpoint_configuration" "this" {
   name_prefix = var.endpoint_config_name != null ? var.endpoint_config_name : "${var.model_name}-config-"
 
   dynamic "production_variants" {
-    for_each = [var.endpoint_config_production_variant]
+    for_each = var.endpoint_config_production_variants
 
     content {
       container_startup_health_check_timeout_in_seconds = try(production_variants.value.container_startup_health_check_timeout_in_seconds, null)
@@ -55,7 +49,7 @@ resource "aws_sagemaker_endpoint_configuration" "this" {
       model_name                             = module.model.name
 
       dynamic "serverless_config" {
-        for_each = try([var.endpoint_config_production_variant.value.serverless_config], [])
+        for_each = try([production_variants.value.serverless_config], [])
 
         content {
           max_concurrency         = serverless_config.value.max_concurrency
@@ -64,7 +58,7 @@ resource "aws_sagemaker_endpoint_configuration" "this" {
         }
       }
 
-      variant_name      = local.variant_name
+      variant_name      = try(production_variants.value.variant_name, null)
       volume_size_in_gb = try(production_variants.value.volume_size_in_gb, null)
     }
   }
@@ -142,25 +136,37 @@ resource "aws_sagemaker_endpoint" "this" {
   tags = var.tags
 }
 
-resource "aws_appautoscaling_target" "this" {
-  depends_on = [aws_sagemaker_endpoint.this]
-  count      = local.enable_autoscaling ? 1 : 0
+locals {
+  enable_autoscaling = var.enable_autoscaling && var.create_endpoint
+}
 
-  max_capacity       = max(var.autoscaling_max_capacity, try(var.endpoint_config_production_variant.initial_instance_count, 0))
-  min_capacity       = min(var.autoscaling_min_capacity, try(var.endpoint_config_production_variant.initial_instance_count, 0))
-  resource_id        = "endpoint/${aws_sagemaker_endpoint.this[0].name}/variant/${local.variant_name}"
+resource "aws_appautoscaling_target" "this" {
+  # if autoscaling is enabled, variant_name need to be set because it is required in the resource_id
+  for_each = { for k, v in var.endpoint_config_production_variants : k => v if local.enable_autoscaling && try(v.variant_name, null) != null && try(v.serverless_config, null) == null }
+
+  depends_on = [aws_sagemaker_endpoint.this]
+
+  max_capacity       = max(var.autoscaling_max_capacity, try(var.endpoint_config_production_variants[each.key].initial_instance_count, 0))
+  min_capacity       = min(var.autoscaling_min_capacity, try(var.endpoint_config_production_variants[each.key].initial_instance_count, 0))
+  resource_id        = "endpoint/${aws_sagemaker_endpoint.this[0].name}/variant/${var.endpoint_config_production_variants[each.key].variant_name}"
   scalable_dimension = "sagemaker:variant:DesiredInstanceCount"
   service_namespace  = "sagemaker"
 }
 
-resource "aws_appautoscaling_policy" "this" {
-  for_each = { for k, v in var.autoscaling_policies : k => v if local.enable_autoscaling }
+locals {
+  autoscaling_targets           = { for k, v in aws_appautoscaling_target.this : split("endpoint/${aws_sagemaker_endpoint.this[0].name}/variant/", v.resource_id)[1] => v }
+  autoscaling_policies          = flatten([for k, l in var.autoscaling_policies : [for e in l : merge(e, { variant_name = k })]])
+  autoscaling_scheduled_actions = flatten([for k, l in var.autoscaling_scheduled_actions : [for e in l : merge(e, { variant_name = k })]])
+}
 
-  name               = try(each.value.name, each.key)
+resource "aws_appautoscaling_policy" "this" {
+  for_each = { for e in local.autoscaling_policies : "${e.variant_name}-${e.name}" => e if contains(keys(local.autoscaling_targets), e.variant_name) }
+
+  name               = each.value.name
   policy_type        = "TargetTrackingScaling"
-  resource_id        = aws_appautoscaling_target.this[0].resource_id
-  scalable_dimension = aws_appautoscaling_target.this[0].scalable_dimension
-  service_namespace  = aws_appautoscaling_target.this[0].service_namespace
+  resource_id        = local.autoscaling_targets[each.value.variant_name].resource_id
+  scalable_dimension = local.autoscaling_targets[each.value.variant_name].scalable_dimension
+  service_namespace  = local.autoscaling_targets[each.value.variant_name].service_namespace
 
 
   dynamic "target_tracking_scaling_policy_configuration" {
@@ -207,7 +213,7 @@ resource "aws_appautoscaling_policy" "this" {
 }
 
 resource "aws_appautoscaling_scheduled_action" "this" {
-  for_each = { for k, v in var.autoscaling_scheduled_actions : k => v if local.enable_autoscaling }
+  for_each = { for e in local.autoscaling_scheduled_actions : "${e.variant_name}-${e.name}" => e if contains(keys(local.autoscaling_targets), e.variant_name) }
 
   name               = try(each.value.name, each.key)
   service_namespace  = aws_appautoscaling_target.this[0].service_namespace

@@ -1,9 +1,9 @@
 resource "aws_sagemaker_model" "this" {
   depends_on = [
     aws_iam_role_policy_attachment.additional_jsons,
-    aws_iam_role_policy_attachment.aws_iam_policy.cloudwatch,
-    aws_iam_role_policy_attachment.aws_iam_policy.s3,
-    aws_iam_role_policy_attachment.aws_iam_policy.ecr,
+    aws_iam_role_policy_attachment.cloudwatch,
+    aws_iam_role_policy_attachment.s3,
+    aws_iam_role_policy_attachment.ecr,
     aws_iam_role_policy_attachment.vpc_access
   ]
 
@@ -129,7 +129,6 @@ resource "aws_iam_role_policy_attachment" "additional_jsons" {
 
 # cloudwatch permissions
 # https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-roles.html#sagemaker-roles-createmodel-perms
-
 resource "aws_iam_policy" "cloudwatch" {
   name        = "${var.policy_name}-cloudwatch"
   description = "Allow Sagemaker to create alarms, events, metrics and log groups."
@@ -195,15 +194,15 @@ resource "aws_iam_policy" "ecr" {
     Statement = [
       {
         Action = [
-            "ecr:BatchCheckLayerAvailability",
-            "ecr:GetDownloadUrlForLayer",
-            "ecr:BatchGetImage"
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:BatchGetImage"
         ]
         Effect   = "Allow"
-        Resource = var.ecr_repositorie
+        Resource = var.ecr_repositories
       },
       {
-        Action = ["ecr:GetAuthorizationToken"]
+        Action   = ["ecr:GetAuthorizationToken"]
         Effect   = "Allow"
         Resource = "*"
       }

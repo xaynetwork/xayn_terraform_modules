@@ -1,7 +1,7 @@
 locals {
-  enable_autoscaling = var.enable_autoscaling && try(var.endpoint_config_production_variant.value.serverless_config, null) == null
+  enable_autoscaling = var.enable_autoscaling && try(var.endpoint_config_production_variant.serverless_config, null) == null
   # if autoscaling is enabled, variant_name need to be set because it is required in the resource_id
-  variant_name = local.enable_autoscaling ? var.endpoint_config_production_variant.value.variant_name : try(production_variants.value.variant_name, null)
+  variant_name = local.enable_autoscaling ? var.endpoint_config_production_variant.variant_name : try(var.endpoint_config_production_variant.variant_name, null)
 }
 
 module "model" {
@@ -138,8 +138,8 @@ resource "aws_sagemaker_endpoint" "this" {
 resource "aws_appautoscaling_target" "this" {
   count = local.enable_autoscaling ? 1 : 0
 
-  max_capacity       = max(var.autoscaling_max_capacity, try(var.endpoint_config_production_variant.value.initial_instance_count, 0))
-  min_capacity       = min(var.autoscaling_min_capacity, try(var.endpoint_config_production_variant.value.initial_instance_count, 0))
+  max_capacity       = max(var.autoscaling_max_capacity, try(var.endpoint_config_production_variant.initial_instance_count, 0))
+  min_capacity       = min(var.autoscaling_min_capacity, try(var.endpoint_config_production_variant.initial_instance_count, 0))
   resource_id        = "endpoint/${aws_sagemaker_endpoint.this.name}/variant/${local.variant_name}"
   scalable_dimension = "sagemaker:variant:DesiredInstanceCount"
   service_namespace  = "sagemaker"

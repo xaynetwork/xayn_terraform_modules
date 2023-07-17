@@ -49,19 +49,26 @@ def create_authorization_context(
         paths_group = tenant.auth_keys[auth_key].group
         auth_paths = paths_group.value
         endpoint_path = Endpoint.find_endpoint(path)
-        if endpoint_path in auth_paths:
-            method_arns = map(
-                lambda x: f"{arn_prefix}:{aws}:{arn_method}:{region}:{account}:{api_id}/{api_version}/{method}/{x}",
-                auth_paths,
-            )
-            method_arns_wildcards = map(
-                lambda x: f"{arn_prefix}:{aws}:{arn_method}:{region}:{account}:{api_id}/{api_version}/{method}/{x}/*",
-                auth_paths,
-            )
-            return AuthorizedContext(
-                is_authorized=True,
-                plan_key=tenant.plan_keys[endpoint_path],
-                method_arns=list(method_arns) + list(method_arns_wildcards),
-            )
+
+        # Always provide a plan key when the auth_key is correct
+        plan_key = (
+            tenant.plan_keys[endpoint_path]
+            if endpoint_path is not None
+            else tenant.plan_keys[auth_paths[0]]
+        )
+
+        method_arns = map(
+            lambda x: f"{arn_prefix}:{aws}:{arn_method}:{region}:{account}:{api_id}/{api_version}/{method}/{x}",
+            auth_paths,
+        )
+        method_arns_wildcards = map(
+            lambda x: f"{arn_prefix}:{aws}:{arn_method}:{region}:{account}:{api_id}/{api_version}/{method}/{x}/*",
+            auth_paths,
+        )
+        return AuthorizedContext(
+            is_authorized=True,
+            plan_key=plan_key,
+            method_arns=list(method_arns) + list(method_arns_wildcards),
+        )
 
     return UnauthorizedContext(is_authorized=False, method_arns=[method_arn])

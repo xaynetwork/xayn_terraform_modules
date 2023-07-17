@@ -28,7 +28,8 @@ module "model" {
 }
 
 resource "aws_sagemaker_endpoint_configuration" "this" {
-  # we don't want to set the name https://github.com/hashicorp/terraform-provider-aws/issues/21811
+  # we cannot set a name here because updating the endpoint config creates a new config with the same name and this will result in a conflict
+  # https://github.com/hashicorp/terraform-provider-aws/issues/21811
   name_prefix = var.endpoint_config_name != null ? var.endpoint_config_name : "${var.model_name}-config-"
 
   dynamic "production_variants" {

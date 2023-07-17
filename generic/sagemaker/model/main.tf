@@ -7,7 +7,8 @@ resource "aws_sagemaker_model" "this" {
     aws_iam_role_policy_attachment.vpc_access
   ]
 
-  # name               = var.name
+  # we cannot set a name here because updating the model config creates a new config with the same name and this will result in a conflict
+  # https://github.com/hashicorp/terraform-provider-aws/issues/21811
   execution_role_arn = aws_iam_role.this.arn
 
   dynamic "primary_container" {

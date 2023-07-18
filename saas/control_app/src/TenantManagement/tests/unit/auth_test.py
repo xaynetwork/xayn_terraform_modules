@@ -132,6 +132,17 @@ def test_auth_when_request_denied_only_return_the_same_resource():
     assert data["policyDocument"]["Statement"][0]["Resource"] == [event["methodArn"]]
 
 
+def test_auth_when_token_is_not_encoded_should_not_fail():
+    event = {
+        "type": "TOKEN",
+        "methodArn": f"{ARN}documents",
+        "authorizationToken": "4IowSp6R9dPE8Jg3RcHh",
+    }
+    data = authenticator.handle(event, fake_tenant_db())
+
+    assert data["policyDocument"]["Statement"][0]["Effect"] == "Deny"
+
+
 @pytest.mark.skip(reason="Integration test")
 def test_e2e_check_auth():
     boto3.setup_default_session(profile_name="AdministratorAccess-917039226361")

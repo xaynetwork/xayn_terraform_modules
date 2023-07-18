@@ -18,7 +18,7 @@ def try_decode_auth_key(encoded_auth_key: str) -> tuple[str | None, str | None]:
             return (_id, key)
 
         return (None, None)
-    except binascii.Error:
+    except (binascii.Error, UnicodeDecodeError):
         return (None, None)
 
 

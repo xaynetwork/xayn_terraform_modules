@@ -61,6 +61,14 @@ data "aws_iam_policy_document" "user_port_forward_remote" {
     ]
     resources = [var.kms_key_arn]
   }
+
+  statement {
+    sid = "InvokeSagemakerEndpoint"
+    actions = [
+      "sagemaker:InvokeEndpoint"
+    ]
+    resources = ["*"]
+  }
 }
 
 resource "aws_iam_policy" "session_manager_user" {

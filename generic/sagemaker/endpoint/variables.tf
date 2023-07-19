@@ -7,6 +7,18 @@ variable "endpoint_config_name" {
 variable "endpoint_config_production_variants" {
   description = "Map of production variants to create."
   type        = any
+  # example
+  # [{
+  # initial_instance_count = 1
+  # instance_type          = "ml.c6g.large"
+  # variant_name           = "variant1"
+  # enable_ssm_access      = true
+  # },
+  # {
+  # initial_instance_count = 2
+  # instance_type          = "ml.c6g.2xlarge"
+  # variant_name           = "variant2"
+  # }]
 }
 
 variable "create_endpoint" {
@@ -47,6 +59,10 @@ variable "model_vpc_config" {
   description = "Specifies the VPC that you want your model to connect to. VpcConfig is used in hosting services and in batch transform."
   type        = any
   default     = {}
+  # example
+  # {
+  #   subnets = []
+  # }
 }
 
 variable "model_role_name" {

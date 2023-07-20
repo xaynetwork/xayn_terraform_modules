@@ -100,6 +100,7 @@ module "service" {
     XAYN_WEB_API__NET__CLIENT_REQUEST_TIMEOUT               = var.request_timeout
     XAYN_WEB_API__LOGGING__LEVEL                            = var.logging_level
     XAYN_WEB_API__EMBEDDING__TOKEN_SIZE                     = var.token_size
+    XAYN_WEB_API__TENANTS__ENABLE_DEV                       = var.enable_dev_options
   }
   secrets = {
     XAYN_WEB_API__STORAGE__ELASTIC__PASSWORD  = var.elasticsearch_password_ssm_parameter_arn

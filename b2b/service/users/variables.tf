@@ -196,6 +196,12 @@ variable "token_size" {
   type        = string
 }
 
+variable "enable_dev_options" {
+  description = "Determines if dev options are enabled."
+  type        = bool
+  default     = false
+}
+
 variable "tags" {
   description = "Custom tags to set on the underlining resources"
   type        = map(string)

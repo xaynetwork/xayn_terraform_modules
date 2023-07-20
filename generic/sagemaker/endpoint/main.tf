@@ -235,6 +235,8 @@ module "kms" {
   source  = "terraform-aws-modules/kms/aws"
   version = "1.5.0"
 
+  create = var.create_kms
+
   deletion_window_in_days = 7
   description             = "KMS for SageMaker. It is used to encrypt data on the storage volume attached to the ML compute instance that hosts the endpoint."
   enable_key_rotation     = false

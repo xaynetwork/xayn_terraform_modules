@@ -99,6 +99,7 @@ module "service" {
     XAYN_WEB_API__EMBEDDING__TOKEN_SIZE               = var.token_size
     XAYN_WEB_API__INGESTION__MAX_SNIPPET_SIZE         = var.max_snippet_size
     XAYN_WEB_API__INGESTION__MAX_PROPERTIES_SIZE      = var.max_properties_size
+    XAYN_WEB_API__TENANTS__ENABLE_DEV                 = var.enable_dev_options
   }
   secrets = {
     XAYN_WEB_API__STORAGE__ELASTIC__PASSWORD  = var.elasticsearch_password_ssm_parameter_arn

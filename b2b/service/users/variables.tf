@@ -102,6 +102,12 @@ variable "max_documents" {
   default     = "100"
 }
 
+variable "max_candidates" {
+  description = "The max number of candidates to consider for the semantic search query."
+  type        = string
+  default     = "100"
+}
+
 ## alb
 variable "alb_listener_arn" {
   description = "ARN of the ALB listener"

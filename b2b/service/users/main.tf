@@ -18,6 +18,25 @@ module "secret_policy" {
   tags               = var.tags
 }
 
+data "aws_iam_policy_document" "sagemaker" {
+  statement {
+    effect    = "Allow"
+    actions   = ["sagemaker:InvokeEndpoint"]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "sagemaker" {
+  name        = "${title(var.tenant)}UsersEcsSagemakerPolicy"
+  description = "A policy to allow ecs to invoke sagemaker"
+  policy      = data.aws_iam_policy_document.sagemaker.json
+}
+
+resource "aws_iam_role_policy_attachment" "sagemaker" {
+  role       = module.task_role.name
+  policy_arn = aws_iam_policy.sagemaker.arn
+}
+
 module "security_group" {
   source = "git::https://github.com/terraform-aws-modules/terraform-aws-security-group?ref=v4.16.0"
 
@@ -102,6 +121,7 @@ module "service" {
     XAYN_WEB_API__LOGGING__LEVEL                            = var.logging_level
     XAYN_WEB_API__EMBEDDING__TOKEN_SIZE                     = var.token_size
     XAYN_WEB_API__TENANTS__ENABLE_DEV                       = var.enable_dev_options
+    XAYN_WEB_API__NET__SAGEMAKER_ENDPOINT                   = var.sagemaker_endpoint
   }
   secrets = {
     XAYN_WEB_API__STORAGE__ELASTIC__PASSWORD  = var.elasticsearch_password_ssm_parameter_arn

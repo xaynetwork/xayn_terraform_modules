@@ -7,6 +7,25 @@ module "task_role" {
   tags        = var.tags
 }
 
+data "aws_iam_policy_document" "sagemaker" {
+  statement {
+    effect    = "Allow"
+    actions   = ["sagemaker:InvokeEndpoint"]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "sagemaker" {
+  name        = "${title(var.tenant)}DocumentEcsSagemakerPolicy"
+  description = "A policy to allow ecs to invoke sagemaker"
+  policy      = data.aws_iam_policy_document.sagemaker.json
+}
+
+resource "aws_iam_role_policy_attachment" "sagemaker" {
+  role       = module.task_role.name
+  policy_arn = aws_iam_policy.sagemaker.arn
+}
+
 module "secret_policy" {
   source = "../../../generic/service/secret_policy"
 
@@ -100,6 +119,7 @@ module "service" {
     XAYN_WEB_API__INGESTION__MAX_SNIPPET_SIZE         = var.max_snippet_size
     XAYN_WEB_API__INGESTION__MAX_PROPERTIES_SIZE      = var.max_properties_size
     XAYN_WEB_API__TENANTS__ENABLE_DEV                 = var.enable_dev_options
+    XAYN_WEB_API__NET__SAGEMAKER_ENDPOINT             = var.sagemaker_endpoint
   }
   secrets = {
     XAYN_WEB_API__STORAGE__ELASTIC__PASSWORD  = var.elasticsearch_password_ssm_parameter_arn

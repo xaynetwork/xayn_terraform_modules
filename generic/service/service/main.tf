@@ -31,6 +31,7 @@ resource "aws_ecs_task_definition" "this" {
   cpu                      = var.container_cpu
   memory                   = var.container_memory
   execution_role_arn       = var.task_execution_role_arn
+  task_role_arn            = var.task_role_arn
 
   container_definitions = templatefile("${path.module}/definition.json.tpl",
     {

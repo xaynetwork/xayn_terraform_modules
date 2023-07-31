@@ -7,6 +7,27 @@ module "task_role" {
   tags        = var.tags
 }
 
+resource "aws_iam_role" "sagemaker" {
+  name               = "${title(var.tenant)}DocumentsEcsTaskRole"
+  description        = "Allows the ECS Task to access sagemaker"
+  path               = "/${var.tenant}/"
+  assume_role_policy = data.aws_iam_policy_document.sagemaker_role.json
+  tags               = var.tags
+}
+
+data "aws_iam_policy_document" "sagemaker_role" {
+  statement {
+    sid     = "${title(var.tenant)}DocumentsEcsTaskRole"
+    effect  = "Allow"
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["ecs-tasks.amazonaws.com"]
+    }
+  }
+}
+
 data "aws_iam_policy_document" "sagemaker" {
   statement {
     effect    = "Allow"
@@ -16,14 +37,13 @@ data "aws_iam_policy_document" "sagemaker" {
 }
 
 resource "aws_iam_policy" "sagemaker" {
-  name        = "${title(var.tenant)}DocumentEcsSagemakerPolicy"
-  description = "A policy to allow ecs to invoke sagemaker"
-  policy      = data.aws_iam_policy_document.sagemaker.json
+  name   = "${title(var.tenant)}DocumentsEcsTaskPolicy"
+  policy = data.aws_iam_policy_document.sagemaker.json
 }
 
 resource "aws_iam_role_policy_attachment" "sagemaker" {
-  role       = module.task_role.name
   policy_arn = aws_iam_policy.sagemaker.arn
+  role       = aws_iam_role.sagemaker.name
 }
 
 module "secret_policy" {
@@ -103,6 +123,7 @@ module "service" {
   container_port          = var.container_port
   desired_count           = var.desired_count
   task_execution_role_arn = module.task_role.arn
+  task_role_arn           = aws_iam_role.sagemaker.arn
   environment = {
     XAYN_WEB_API__NET__BIND_TO                        = "0.0.0.0:${var.container_port}"
     XAYN_WEB_API__NET__MAX_BODY_SIZE                  = var.max_body_size

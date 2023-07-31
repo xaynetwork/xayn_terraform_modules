@@ -15,8 +15,21 @@ variable "log_retention_in_days" {
   default     = 7
 }
 
+variable "api_key_value_users" {
+  description = "Specifies the value of the API KEY for the front-office."
+  type        = string
+  default     = null
+}
+
+variable "api_key_value_documents" {
+  description = "Specifies the value of the API KEY for the back-office."
+  type        = string
+  default     = null
+}
+
 variable "tags" {
   description = "Custom tags to set on the underlining resources"
   type        = map(string)
   default     = {}
 }
+

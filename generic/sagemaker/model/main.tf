@@ -172,6 +172,8 @@ resource "aws_iam_role_policy_attachment" "cloudwatch" {
 }
 
 resource "aws_iam_policy" "s3" {
+  count = length(var.model_buckets) != 0 ? 1 : 0
+
   name        = "${var.policy_name}-s3"
   description = "Allow Sagemaker to list and get S3 objects."
 
@@ -193,8 +195,10 @@ resource "aws_iam_policy" "s3" {
 }
 
 resource "aws_iam_role_policy_attachment" "s3" {
+  count = length(var.model_buckets) != 0 ? 1 : 0
+
   role       = aws_iam_role.this.name
-  policy_arn = aws_iam_policy.s3.arn
+  policy_arn = aws_iam_policy.s3[0].arn
 }
 
 resource "aws_iam_policy" "ecr" {

@@ -40,6 +40,7 @@ variable "policy_jsons" {
 variable "model_buckets" {
   description = "List of S3 bucket names that Sagemaker should be given access to."
   type        = list(string)
+  default     = []
 }
 
 variable "ecr_repositories" {

@@ -14,12 +14,14 @@ resource "aws_api_gateway_api_key" "ext_users" {
   name        = "${var.tenant}_ext_users"
   tags        = var.tags
   description = "The external api key for /users."
+  value       = var.api_key_value_users
 }
 
 resource "aws_api_gateway_api_key" "ext_documents" {
   name        = "${var.tenant}_ext_documents"
   tags        = var.tags
   description = "The external api key for /documents."
+  value       = var.api_key_value_documents
 }
 
 resource "local_sensitive_file" "authentication_code" {

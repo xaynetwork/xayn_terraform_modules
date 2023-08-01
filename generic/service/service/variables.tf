@@ -63,7 +63,7 @@ variable "alb" {
 variable "task_execution_role_arn" {
   description = "ARN of the task execution role"
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "task_role_arn" {

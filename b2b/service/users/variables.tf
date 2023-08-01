@@ -208,11 +208,6 @@ variable "enable_dev_options" {
   default     = false
 }
 
-variable "sagemaker_endpoint" {
-  description = "The endpoint name of the sagemaker embedding service"
-  type        = string
-}
-
 variable "tags" {
   description = "Custom tags to set on the underlining resources"
   type        = map(string)

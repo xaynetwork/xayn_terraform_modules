@@ -161,6 +161,12 @@ variable "max_properties_size" {
   default     = 2560
 }
 
+variable "max_properties_string_size" {
+  description = "The max size for string properties"
+  type        = number
+  default     = 2048
+}
+
 # target scaling options
 variable "scale_target_value" {
   description = "The target to keep the CPU utilization at"

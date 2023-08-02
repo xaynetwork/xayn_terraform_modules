@@ -7,6 +7,45 @@ module "task_role" {
   tags        = var.tags
 }
 
+resource "aws_iam_role" "sagemaker" {
+  name               = "${title(var.tenant)}DocumentsEcsTaskRole"
+  description        = "Allows the ECS Task to access sagemaker"
+  path               = "/${var.tenant}/"
+  assume_role_policy = data.aws_iam_policy_document.sagemaker_role.json
+  tags               = var.tags
+}
+
+data "aws_iam_policy_document" "sagemaker_role" {
+  statement {
+    sid     = "${title(var.tenant)}DocumentsEcsTaskRole"
+    effect  = "Allow"
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["ecs-tasks.amazonaws.com"]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "sagemaker" {
+  statement {
+    effect    = "Allow"
+    actions   = ["sagemaker:InvokeEndpoint"]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "sagemaker" {
+  name   = "${title(var.tenant)}DocumentsEcsTaskPolicy"
+  policy = data.aws_iam_policy_document.sagemaker.json
+}
+
+resource "aws_iam_role_policy_attachment" "sagemaker" {
+  policy_arn = aws_iam_policy.sagemaker.arn
+  role       = aws_iam_role.sagemaker.name
+}
+
 module "secret_policy" {
   source = "../../../generic/service/secret_policy"
 
@@ -84,6 +123,7 @@ module "service" {
   container_port          = var.container_port
   desired_count           = var.desired_count
   task_execution_role_arn = module.task_role.arn
+  task_role_arn           = aws_iam_role.sagemaker.arn
   environment = {
     XAYN_WEB_API__NET__BIND_TO                          = "0.0.0.0:${var.container_port}"
     XAYN_WEB_API__STORAGE__ELASTIC__URL                 = var.elasticsearch_url
@@ -96,6 +136,7 @@ module "service" {
     XAYN_WEB_API__NET__CLIENT_REQUEST_TIMEOUT           = var.request_timeout
     XAYN_WEB_API__LOGGING__LEVEL                        = var.logging_level
     XAYN_WEB_API__EMBEDDING__TOKEN_SIZE                 = var.token_size
+    XAYN_WEB_API__EMBEDDING__SAGEMAKER_ENDPOINT_NAME    = var.sagemaker_endpoint
     XAYN_WEB_API__INGESTION__MAX_SNIPPET_SIZE           = var.max_snippet_size
     XAYN_WEB_API__INGESTION__MAX_PROPERTIES_SIZE        = var.max_properties_size
     XAYN_WEB_API__INGESTION__MAX_PROPERTIES_STRING_SIZE = var.max_properties_string_size

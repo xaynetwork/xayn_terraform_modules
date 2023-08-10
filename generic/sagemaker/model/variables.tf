@@ -43,6 +43,12 @@ variable "model_buckets" {
   default     = []
 }
 
+variable "multi_model_mode" {
+  description = "If this container runs in multi or single model mode."
+  type        = bool
+  default     = false
+}
+
 variable "ecr_repositories" {
   description = "List of ECR repository arns that Sagemaker should be given access to."
   type        = list(string)

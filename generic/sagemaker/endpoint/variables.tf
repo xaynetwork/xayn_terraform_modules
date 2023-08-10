@@ -39,6 +39,12 @@ variable "endpoint_deployment_config" {
   default     = {}
 }
 
+variable "model_multi_model_mode" {
+  description = "If this endpoint runs in multi or single model mode."
+  type        = bool
+  default     = false
+}
+
 variable "model_name" {
   description = "The name of the model (must be unique)."
   type        = string

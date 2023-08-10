@@ -11,6 +11,7 @@ module "model" {
   policy_jsons     = var.model_policy_jsons
   model_buckets    = var.model_model_buckets
   ecr_repositories = var.model_ecr_repositories
+  multi_model_mode = var.model_multi_model_mode
 
   create_security_group          = var.create_model_security_group
   security_group_name            = var.model_security_group_name

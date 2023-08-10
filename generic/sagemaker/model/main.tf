@@ -16,7 +16,7 @@ resource "aws_sagemaker_model" "this" {
 
     content {
       image              = try(primary_container.value.image, null)
-      mode               = "SingleModel"
+      mode               = var.multi_model_mode ? "MultiModel" : "SingleModel"
       model_data_url     = try(primary_container.value.model_data_url, null)
       model_package_name = try(primary_container.value.model_package_name, null)
       container_hostname = try(primary_container.value.container_hostname, null)

@@ -84,7 +84,7 @@ module "service" {
   container_port          = var.container_port
   desired_count           = var.desired_count
   task_execution_role_arn = module.task_role.arn
-  environment = {
+  environment = merge({
     XAYN_WEB_API__NET__BIND_TO                              = "0.0.0.0:${var.container_port}"
     XAYN_WEB_API__NET__MAX_BODY_SIZE                        = var.max_body_size
     XAYN_WEB_API__STORAGE__ELASTIC__URL                     = var.elasticsearch_url
@@ -102,9 +102,12 @@ module "service" {
     XAYN_WEB_API__LOGGING__LEVEL                            = var.logging_level
     XAYN_WEB_API__EMBEDDING__TOKEN_SIZE                     = var.token_size
     XAYN_WEB_API__TENANTS__ENABLE_DEV                       = var.enable_dev_options
-    XAYN_WEB_API__EMBEDDING__SAGEMAKER_ENDPOINT_NAME  = var.sagemaker_endpoint
-    XAYN_WEB_API__EMBEDDING__SAGEMAKER_MODEL          = var.sagemaker_model
-  }
+    }, var.sagemaker_endpoint == null ? {} : {
+    XAYN_WEB_API__EMBEDDING__SAGEMAKER_ENDPOINT_NAME = var.sagemaker_endpoint
+    }, var.sagemaker_model == null ? {} : {
+    XAYN_WEB_API__EMBEDDING__SAGEMAKER_MODEL = var.sagemaker_model
+  })
+
   secrets = {
     XAYN_WEB_API__STORAGE__ELASTIC__PASSWORD  = var.elasticsearch_password_ssm_parameter_arn
     XAYN_WEB_API__STORAGE__POSTGRES__PASSWORD = var.postgres_password_ssm_parameter_arn

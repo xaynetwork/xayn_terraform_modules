@@ -208,6 +208,18 @@ variable "enable_dev_options" {
   default     = false
 }
 
+variable "sagemaker_endpoint" {
+  description = "The sagemaker endpoint that will be used with this container."
+  type = string
+  default = null
+}
+
+variable "sagemaker_model" {
+  description = "The sagemaker model that should be loaded from a multimodel sagemaker endpoint."
+  type = string
+  default = null
+}
+
 variable "tags" {
   description = "Custom tags to set on the underlining resources"
   type        = map(string)

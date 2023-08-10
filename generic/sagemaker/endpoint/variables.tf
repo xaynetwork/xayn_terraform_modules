@@ -96,7 +96,6 @@ variable "model_policy_jsons" {
 variable "model_model_buckets" {
   description = "List of S3 bucket names that Sagemaker should be given access to."
   type        = list(string)
-  default     = []
 }
 
 variable "model_ecr_repositories" {
@@ -207,12 +206,6 @@ variable "create_ssm_parm" {
   description = "Determines if a ssm parameter is created in which the endpoint URL is stored."
   type        = bool
   default     = false
-}
-
-variable "create_kms" {
-  description = "Determines if a kms key is created in which is used to encrypt data on the storage volume attached to the ML compute instance that hosts the endpoint."
-  type        = bool
-  default     = true
 }
 
 variable "tags" {

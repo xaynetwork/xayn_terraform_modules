@@ -5,7 +5,7 @@ locals {
 
 module "service" {
   source  = "terraform-aws-modules/ecs/aws//modules/service"
-  version = "5.2.0"
+  version = "5.2.1"
 
   create = var.create
 
@@ -133,6 +133,14 @@ module "service" {
   }
 
   task_exec_ssm_param_arns = [var.elasticsearch_password_ssm_parameter_arn, var.postgres_password_ssm_parameter_arn]
+
+  create_iam_role          = var.create_iam_role
+  iam_role_arn             = var.iam_role_arn
+  iam_role_name            = var.iam_role_name
+  iam_role_use_name_prefix = var.iam_role_use_name_prefix
+  iam_role_path            = var.iam_role_path
+  iam_role_description     = var.iam_role_description
+  iam_role_statements      = var.iam_role_statements
 
   tags = var.tags
 }

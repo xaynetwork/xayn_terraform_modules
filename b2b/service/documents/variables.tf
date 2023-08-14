@@ -215,8 +215,21 @@ variable "enable_dev_options" {
 }
 
 variable "sagemaker_endpoint" {
-  description = "The endpoint name of the sagemaker embedding service"
+  description = "The name of the sagemaker endpoint."
   type        = string
+  default     = null
+}
+
+variable "sagemaker_target_model" {
+  description = "The name of the target model."
+  type        = string
+  default     = null
+}
+
+variable "sagemaker_max_retries" {
+  description = "The number of additional request retry attempts after the initial request has failed."
+  type        = number
+  default     = null
 }
 
 variable "tags" {

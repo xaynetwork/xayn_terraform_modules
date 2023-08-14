@@ -173,12 +173,6 @@ variable "scheduled_scaling" {
   default = []
 }
 
-variable "max_body_size" {
-  description = "The max size for bodies"
-  type        = number
-  default     = 4194304
-}
-
 variable "log_retention_in_days" {
   description = "Specifies the number of days you want to retain log events of the container"
   type        = number

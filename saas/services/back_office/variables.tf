@@ -165,12 +165,6 @@ variable "postgres_password_ssm_parameter_arn" {
   type        = string
 }
 
-variable "max_http_body_size" {
-  description = "The max size of the HTTP body"
-  type        = number
-  default     = 4194304
-}
-
 # The keep-alive default is 61. So the service timeout is higher than the ALB timeout
 variable "keep_alive" {
   description = "Keep alive timeout for services in seconds"

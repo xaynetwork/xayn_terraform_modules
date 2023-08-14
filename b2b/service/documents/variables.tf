@@ -143,12 +143,6 @@ variable "max_count" {
   default     = 4
 }
 
-variable "max_body_size" {
-  description = "The max size for bodies"
-  type        = number
-  default     = 4194304
-}
-
 variable "max_snippet_size" {
   description = "The max size for snippet"
   type        = number

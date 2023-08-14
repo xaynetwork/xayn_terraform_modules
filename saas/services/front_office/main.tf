@@ -67,10 +67,6 @@ module "service" {
         {
           name  = "XAYN_WEB_API__NET__KEEP_ALIVE"
           value = var.keep_alive
-        },
-        {
-          name  = "XAYN_WEB_API__NET__MAX_BODY_SIZE"
-          value = var.max_http_body_size
         }
       ])
 

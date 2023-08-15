@@ -203,21 +203,16 @@ variable "enable_dev_options" {
 }
 
 variable "sagemaker_endpoint" {
-  description = "The name of the sagemaker endpoint."
-  type        = string
-  default     = null
-}
-
-variable "sagemaker_target_model" {
-  description = "The name of the target model."
-  type        = string
-  default     = null
-}
-
-variable "sagemaker_max_retries" {
-  description = "The number of additional request retry attempts after the initial request has failed."
-  type        = number
-  default     = null
+  description = "The name of the sagemaker endpoint config."
+  type        = any
+  default     = {}
+  # example
+  # {
+  # name                 = "name"
+  # model_embedding_size = 384
+  # target_model         = "model.tar.gz" or null
+  # max_retries          = 1 or null
+  # }
 }
 
 variable "tags" {

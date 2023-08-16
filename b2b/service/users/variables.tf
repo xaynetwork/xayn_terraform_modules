@@ -202,6 +202,19 @@ variable "enable_dev_options" {
   default     = false
 }
 
+variable "sagemaker_endpoint" {
+  description = "The name of the sagemaker endpoint config."
+  type        = any
+  default     = {}
+  # example
+  # {
+  # name                 = "name"
+  # model_embedding_size = 384
+  # target_model         = "model.tar.gz" or null
+  # max_retries          = 1 or null
+  # }
+}
+
 variable "tags" {
   description = "Custom tags to set on the underlining resources"
   type        = map(string)

@@ -1,3 +1,72 @@
+data "aws_region" "current" {}
+data "aws_partition" "current" {}
+data "aws_caller_identity" "current" {}
+
+locals {
+  create_task_role = length(var.sagemaker_endpoint) > 0 ? true : false
+  account_id       = data.aws_caller_identity.current.account_id
+  partition        = data.aws_partition.current.partition
+  region           = data.aws_region.current.name
+}
+
+resource "null_resource" "validate" {
+  triggers = {
+    input = timestamp()
+  }
+
+  lifecycle {
+    postcondition {
+      condition     = (local.create_task_role && try(var.sagemaker_endpoint.name, null) != null && try(var.sagemaker_endpoint.model_embedding_size, null) != null) || !local.create_task_role
+      error_message = "In combination with sagemaker, the model embedding size need to be specified."
+    }
+  }
+}
+
+data "aws_iam_policy_document" "ecs_service_role" {
+  count = local.create_task_role ? 1 : 0
+  statement {
+    sid     = "${title(var.tenant)}DocumentsEcsTaskRole"
+    effect  = "Allow"
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["ecs-tasks.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role" "sagemaker" {
+  count = local.create_task_role ? 1 : 0
+
+  name               = "${title(var.tenant)}DocumentsEcsTaskRole"
+  description        = "Allows the ECS Task to access sagemaker"
+  path               = "/${var.tenant}/"
+  assume_role_policy = data.aws_iam_policy_document.ecs_service_role[0].json
+  tags               = var.tags
+}
+
+data "aws_iam_policy_document" "sagemaker_invocation" {
+  count = local.create_task_role ? 1 : 0
+  statement {
+    effect    = "Allow"
+    actions   = ["sagemaker:InvokeEndpoint"]
+    resources = ["arn:${local.partition}:sagemaker:${local.region}:${local.account_id}:endpoint/${var.sagemaker_endpoint.name}"]
+  }
+}
+
+resource "aws_iam_policy" "sagemaker" {
+  count  = local.create_task_role ? 1 : 0
+  name   = "${title(var.tenant)}DocumentsEcsTaskPolicy"
+  policy = data.aws_iam_policy_document.sagemaker_invocation[0].json
+}
+
+resource "aws_iam_role_policy_attachment" "sagemaker" {
+  count      = local.create_task_role ? 1 : 0
+  policy_arn = aws_iam_policy.sagemaker[0].arn
+  role       = aws_iam_role.sagemaker[0].name
+}
+
 module "task_role" {
   source = "../../../generic/service/role"
 
@@ -19,7 +88,8 @@ module "secret_policy" {
 }
 
 module "security_group" {
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-security-group?ref=v4.16.0"
+  depends_on = [null_resource.validate]
+  source     = "git::https://github.com/terraform-aws-modules/terraform-aws-security-group?ref=v4.16.0"
 
   name        = "${var.tenant}-documents-api-sg"
   description = "Allow from ALB inbound traffic, Allow all egress traffic (Docker)"
@@ -84,7 +154,8 @@ module "service" {
   container_port          = var.container_port
   desired_count           = var.desired_count
   task_execution_role_arn = module.task_role.arn
-  environment = {
+  task_role_arn           = local.create_task_role ? aws_iam_role.sagemaker[0].arn : null
+  environment = merge({
     XAYN_WEB_API__NET__BIND_TO                          = "0.0.0.0:${var.container_port}"
     XAYN_WEB_API__STORAGE__ELASTIC__URL                 = var.elasticsearch_url
     XAYN_WEB_API__STORAGE__ELASTIC__INDEX_NAME          = var.elasticsearch_index
@@ -95,12 +166,22 @@ module "service" {
     XAYN_WEB_API__NET__KEEP_ALIVE                       = var.keep_alive
     XAYN_WEB_API__NET__CLIENT_REQUEST_TIMEOUT           = var.request_timeout
     XAYN_WEB_API__LOGGING__LEVEL                        = var.logging_level
-    XAYN_WEB_API__EMBEDDING__TOKEN_SIZE                 = var.token_size
     XAYN_WEB_API__INGESTION__MAX_SNIPPET_SIZE           = var.max_snippet_size
     XAYN_WEB_API__INGESTION__MAX_PROPERTIES_SIZE        = var.max_properties_size
     XAYN_WEB_API__INGESTION__MAX_PROPERTIES_STRING_SIZE = var.max_properties_string_size
     XAYN_WEB_API__TENANTS__ENABLE_DEV                   = var.enable_dev_options
-  }
+    }, local.create_task_role ? {
+    XAYN_WEB_API__EMBEDDING__TYPE           = "sagemaker",
+    XAYN_WEB_API__EMBEDDING__ENDPOINT       = var.sagemaker_endpoint.name,
+    XAYN_WEB_API__EMBEDDING__EMBEDDING_SIZE = var.sagemaker_endpoint.model_embedding_size
+    } : {
+    XAYN_WEB_API__EMBEDDING__TYPE       = "pipeline",
+    XAYN_WEB_API__EMBEDDING__TOKEN_SIZE = var.token_size
+    },
+    local.create_task_role && try(var.sagemaker_endpoint.target_model, null) != null ? { XAYN_WEB_API__EMBEDDING__TARGET_MODEL = var.sagemaker_endpoint.target_model } : {},
+    local.create_task_role && try(var.sagemaker_endpoint.max_retries, null) != null ? { XAYN_WEB_API__EMBEDDING__RETRY_MAX_ATTEMPTS = var.sagemaker_endpoint.max_retries } : {}
+  )
+
   secrets = {
     XAYN_WEB_API__STORAGE__ELASTIC__PASSWORD  = var.elasticsearch_password_ssm_parameter_arn
     XAYN_WEB_API__STORAGE__POSTGRES__PASSWORD = var.postgres_password_ssm_parameter_arn
@@ -124,7 +205,6 @@ module "asg" {
 }
 
 # CloudWatch alarms
-data "aws_caller_identity" "current" {}
 module "alarms" {
   providers = {
     aws.monitoring-account = aws.monitoring-account

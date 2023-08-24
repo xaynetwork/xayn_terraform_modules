@@ -1,9 +1,9 @@
-variable "tenant" {
-  description = "Name of the tenant"
+variable "name" {
+  description = "Name of the service"
   type        = string
 
   validation {
-    condition     = can(regex("^[a-z0-9]{2,18}$", var.tenant))
+    condition     = can(regex("^[a-z0-9]{2,18}$", var.name))
     error_message = "Only alphanumeric characters are allowed in 'tenant', and must be 2-18 characters"
   }
 }

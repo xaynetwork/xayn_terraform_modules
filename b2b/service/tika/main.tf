@@ -11,9 +11,9 @@ locals {
 module "task_role" {
   source = "../../../generic/service/role"
 
-  description = "${var.tenant}'s task execution role for the tika API"
-  path        = "/${var.tenant}/"
-  prefix      = "${title(var.tenant)}TextExtractionAPI"
+  description = "${var.name}'s task execution role for the tika API"
+  path        = "/${var.name}/"
+  prefix      = "${title(var.name)}TextExtractionAPI"
   tags        = var.tags
 }
 
@@ -22,7 +22,7 @@ module "security_group" {
   depends_on = [null_resource.validate]
   source     = "git::https://github.com/terraform-aws-modules/terraform-aws-security-group?ref=v4.16.0"
 
-  name        = "${var.tenant}-documents-api-sg"
+  name        = "${var.name}-tika-api-sg"
   description = "Allow from ALB inbound traffic, Allow all egress traffic (Docker)"
   vpc_id      = var.vpc_id
 
@@ -49,7 +49,7 @@ module "security_group" {
 module "service" {
   source = "../../../generic/service/service"
 
-  name               = "${var.tenant}-tika-api"
+  name               = "${var.name}-tika-api"
   security_group_ids = [module.security_group.security_group_id]
 
   cluster_id = var.cluster_id

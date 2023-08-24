@@ -177,6 +177,35 @@ resource "aws_api_gateway_integration" "candidates" {
   timeout_milliseconds = 29000
 }
 
+#### private Text Extraction service _tika
+
+resource "aws_api_gateway_resource" "_tika" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  parent_id   = aws_api_gateway_rest_api.api.root_resource_id
+  path_part   = "_tika"
+}
+
+resource "aws_api_gateway_method" "_tika" {
+  rest_api_id      = aws_api_gateway_rest_api.api.id
+  resource_id      = aws_api_gateway_resource._tika.id
+  http_method      = "ANY"
+  authorization    = "AWS_IAM"
+  api_key_required = false
+}
+
+resource "aws_api_gateway_integration" "_tika" {
+  rest_api_id             = aws_api_gateway_rest_api.api.id
+  resource_id             = aws_api_gateway_resource._tika.id
+  http_method             = aws_api_gateway_method._tika.http_method
+  type                    = "HTTP_PROXY"
+  integration_http_method = "POST"
+  uri                     = "http://${var.nlb_dns_name}/_tika"
+  passthrough_behavior    = "WHEN_NO_MATCH"
+  connection_type         = "VPC_LINK"
+  connection_id           = var.nlb_vpc_link_id
+  timeout_milliseconds    = 29000
+}
+
 #########
 
 resource "aws_api_gateway_deployment" "tenant" {
@@ -201,6 +230,12 @@ resource "aws_api_gateway_deployment" "tenant" {
       aws_api_gateway_method.candidates.id,
       aws_api_gateway_integration.candidates.id,
       aws_api_gateway_integration.candidates.request_parameters,
+
+      aws_api_gateway_resource._tika.id,
+      aws_api_gateway_method._tika.id,
+      aws_api_gateway_integration._tika.id,
+      aws_api_gateway_integration._tika.request_parameters,
+
       var.enable_usage_plan,
       var.usage_plan_api_key_id,
       var.usage_plan_quota_settings,

@@ -3,7 +3,7 @@ data "aws_partition" "current" {}
 data "aws_caller_identity" "current" {}
 
 locals {
-  create_task_role = length(var.sagemaker_endpoint) > 0 ? true : false
+  create_task_role = length(var.sagemaker_endpoint) > 0 || var.tika_configuration.enabled ? true : false
   account_id       = data.aws_caller_identity.current.account_id
   partition        = data.aws_partition.current.partition
   region           = data.aws_region.current.name

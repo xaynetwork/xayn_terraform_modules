@@ -179,7 +179,12 @@ module "service" {
     XAYN_WEB_API__EMBEDDING__TOKEN_SIZE = var.token_size
     },
     local.create_task_role && try(var.sagemaker_endpoint.target_model, null) != null ? { XAYN_WEB_API__EMBEDDING__TARGET_MODEL = var.sagemaker_endpoint.target_model } : {},
-    local.create_task_role && try(var.sagemaker_endpoint.max_retries, null) != null ? { XAYN_WEB_API__EMBEDDING__RETRY_MAX_ATTEMPTS = var.sagemaker_endpoint.max_retries } : {}
+    local.create_task_role && try(var.sagemaker_endpoint.max_retries, null) != null ? { XAYN_WEB_API__EMBEDDING__RETRY_MAX_ATTEMPTS = var.sagemaker_endpoint.max_retries } : {},
+    var.tika_configuration.enabled ? {
+      XAYN_WEB_API__TEXT_EXTRACTOR__ENABLED="true"
+      XAYN_WEB_API__TEXT_EXTRACTOR__URL="http://localhost:9998/"
+      XAYN_WEB_API__TEXT_EXTRACTOR__ALLOWED_CONTENT_TYPE="[]"
+    } : {}
   )
 
   secrets = {

@@ -227,6 +227,21 @@ variable "sagemaker_endpoint" {
   # }
 }
 
+
+variable "tika_configuration" {
+  description = "A configuration for the tika text extreaction api."
+  type = object({
+    enabled                = bool
+    allowed_conentent_type = list(string)
+    endpoint               = string
+  })
+  default = {
+    allowed_conentent_type = []
+    enabled                = false
+    endpoint               = "http://aws/_tika"
+  }
+}
+
 variable "tags" {
   description = "Custom tags to set on the underlining resources"
   type        = map(string)

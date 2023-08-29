@@ -4,6 +4,6 @@ output "alarm_arns" {
 }
 
 output "execution_role_arn" {
-  description = "ARN of the role of the `provisioning` lambda"
-  value       = module.task_role.arn
+  description = "The role ARN of the task role that is used for outgoing requests like towards tika or sagemaker"
+  value       = aws_iam_role.task_role[0].arn
 }

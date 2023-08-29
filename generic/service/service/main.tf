@@ -126,6 +126,7 @@ resource "aws_lb_target_group" "service" {
   vpc_id      = var.vpc_id
   target_type = "ip"
 
+
   health_check {
     path = var.alb.health_path
   }

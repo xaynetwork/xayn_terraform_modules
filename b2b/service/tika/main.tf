@@ -3,9 +3,9 @@ data "aws_partition" "current" {}
 data "aws_caller_identity" "current" {}
 
 locals {
-  account_id       = data.aws_caller_identity.current.account_id
-  partition        = data.aws_partition.current.partition
-  region           = data.aws_region.current.name
+  account_id = data.aws_caller_identity.current.account_id
+  partition  = data.aws_partition.current.partition
+  region     = data.aws_region.current.name
 }
 
 module "task_role" {
@@ -13,14 +13,13 @@ module "task_role" {
 
   description = "${var.name}'s task execution role for the tika API"
   path        = "/${var.name}/"
-  prefix      = "${title(var.name)}TextExtractionAPI"
+  prefix      = "${title(var.name)}TikaAPI"
   tags        = var.tags
 }
 
 
 module "security_group" {
-  depends_on = [null_resource.validate]
-  source     = "git::https://github.com/terraform-aws-modules/terraform-aws-security-group?ref=v4.16.0"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-security-group?ref=v4.16.0"
 
   name        = "${var.name}-tika-api-sg"
   description = "Allow from ALB inbound traffic, Allow all egress traffic (Docker)"
@@ -57,11 +56,14 @@ module "service" {
   subnet_ids = var.subnet_ids
 
   alb = {
-    listener_arn  = var.alb_listener_arn
-    listener_port = var.alb_listener_port
+    listener_arn             = var.alb_listener_arn
+    listener_port            = var.alb_listener_port
+    health_path              = "/"
+    routing_header_condition = null
+
     rules = [
       {
-        routing_path_pattern = ["/_tika", "/_tika/*"]
+        routing_path_pattern = ["/rmeta", "/rmeta/*"]
       }
     ]
   }
@@ -73,9 +75,8 @@ module "service" {
   container_port          = var.container_port
   desired_count           = var.desired_count
   task_execution_role_arn = module.task_role.arn
-  task_role_arn           = local.create_task_role ? aws_iam_role.sagemaker[0].arn : null
-  environment = {}
-  log_retention_in_days = var.log_retention_in_days
+  environment             = {}
+  log_retention_in_days   = var.log_retention_in_days
 
   tags = var.tags
 }
@@ -110,40 +111,4 @@ module "alarms" {
   log_error = var.alarm_log_error
 
   tags = var.tags
-}
-
-# Resource Policies
-
-data "aws_iam_policy_document" "_tika" {
-  statement {
-    effect = "Allow"
-
-    principals {
-      type        = "*"
-      identifiers = ["*"]
-    }
-
-    actions   = ["execute-api:Invoke"]
-    resources = ["${aws_api_gateway_rest_api.api.execution_arn}/*/*/*"]
-  }
-  statement {
-    effect = "Deny"
-
-    principals {
-      type        = "*"
-      identifiers = ["*"]
-    }
-
-    actions   = ["execute-api:Invoke"]
-    resources = ["${aws_api_gateway_rest_api.api.execution_arn}/*/*/_tika/*"]
-    condition {
-      test     = "StringNotEquals"
-      variable = "aws:PrincipalArn"
-      values   = [var.tika_lambda_role]
-    }
-  }
-}
-resource "aws_api_gateway_rest_api_policy" "_silo_management" {
-  rest_api_id = aws_api_gateway_rest_api.api.id
-  policy      = data.aws_iam_policy_document._silo_management.json
 }

@@ -3,10 +3,11 @@ data "aws_partition" "current" {}
 data "aws_caller_identity" "current" {}
 
 locals {
-  create_task_role = length(var.sagemaker_endpoint) > 0 || var.tika_configuration.enabled ? true : false
-  account_id       = data.aws_caller_identity.current.account_id
-  partition        = data.aws_partition.current.partition
-  region           = data.aws_region.current.name
+  sagemaker_enabled = length(var.sagemaker_endpoint) > 0
+  create_task_role  = (local.sagemaker_enabled || var.tika_configuration.enabled) ? true : false
+  account_id        = data.aws_caller_identity.current.account_id
+  partition         = data.aws_partition.current.partition
+  region            = data.aws_region.current.name
 }
 
 resource "null_resource" "validate" {
@@ -16,7 +17,7 @@ resource "null_resource" "validate" {
 
   lifecycle {
     postcondition {
-      condition     = (local.create_task_role && try(var.sagemaker_endpoint.name, null) != null && try(var.sagemaker_endpoint.model_embedding_size, null) != null) || !local.create_task_role
+      condition     = !local.sagemaker_enabled || (try(var.sagemaker_endpoint.name, null) != null && try(var.sagemaker_endpoint.model_embedding_size, null) != null)
       error_message = "In combination with sagemaker, the model embedding size need to be specified."
     }
   }
@@ -36,18 +37,18 @@ data "aws_iam_policy_document" "ecs_service_role" {
   }
 }
 
-resource "aws_iam_role" "sagemaker" {
+resource "aws_iam_role" "task_role" {
   count = local.create_task_role ? 1 : 0
 
   name               = "${title(var.tenant)}DocumentsEcsTaskRole"
-  description        = "Allows the ECS Task to access sagemaker"
+  description        = "A task role for outgoing request for the Document Service: Like to Tika or Sagemaker."
   path               = "/${var.tenant}/"
   assume_role_policy = data.aws_iam_policy_document.ecs_service_role[0].json
   tags               = var.tags
 }
 
 data "aws_iam_policy_document" "sagemaker_invocation" {
-  count = local.create_task_role ? 1 : 0
+  count = local.sagemaker_enabled ? 1 : 0
   statement {
     effect    = "Allow"
     actions   = ["sagemaker:InvokeEndpoint"]
@@ -56,15 +57,15 @@ data "aws_iam_policy_document" "sagemaker_invocation" {
 }
 
 resource "aws_iam_policy" "sagemaker" {
-  count  = local.create_task_role ? 1 : 0
+  count  = local.sagemaker_enabled ? 1 : 0
   name   = "${title(var.tenant)}DocumentsEcsTaskPolicy"
   policy = data.aws_iam_policy_document.sagemaker_invocation[0].json
 }
 
 resource "aws_iam_role_policy_attachment" "sagemaker" {
-  count      = local.create_task_role ? 1 : 0
+  count      = local.sagemaker_enabled ? 1 : 0
   policy_arn = aws_iam_policy.sagemaker[0].arn
-  role       = aws_iam_role.sagemaker[0].name
+  role       = aws_iam_role.task_role[0].name
 }
 
 module "task_role" {
@@ -154,7 +155,7 @@ module "service" {
   container_port          = var.container_port
   desired_count           = var.desired_count
   task_execution_role_arn = module.task_role.arn
-  task_role_arn           = local.create_task_role ? aws_iam_role.sagemaker[0].arn : null
+  task_role_arn           = local.create_task_role ? aws_iam_role.task_role[0].arn : null
   environment = merge({
     XAYN_WEB_API__NET__BIND_TO                          = "0.0.0.0:${var.container_port}"
     XAYN_WEB_API__STORAGE__ELASTIC__URL                 = var.elasticsearch_url
@@ -170,7 +171,7 @@ module "service" {
     XAYN_WEB_API__INGESTION__MAX_PROPERTIES_SIZE        = var.max_properties_size
     XAYN_WEB_API__INGESTION__MAX_PROPERTIES_STRING_SIZE = var.max_properties_string_size
     XAYN_WEB_API__TENANTS__ENABLE_DEV                   = var.enable_dev_options
-    }, local.create_task_role ? {
+    }, local.sagemaker_enabled ? {
     XAYN_WEB_API__EMBEDDING__TYPE           = "sagemaker",
     XAYN_WEB_API__EMBEDDING__ENDPOINT       = var.sagemaker_endpoint.name,
     XAYN_WEB_API__EMBEDDING__EMBEDDING_SIZE = var.sagemaker_endpoint.model_embedding_size
@@ -178,13 +179,11 @@ module "service" {
     XAYN_WEB_API__EMBEDDING__TYPE       = "pipeline",
     XAYN_WEB_API__EMBEDDING__TOKEN_SIZE = var.token_size
     },
-    local.create_task_role && try(var.sagemaker_endpoint.target_model, null) != null ? { XAYN_WEB_API__EMBEDDING__TARGET_MODEL = var.sagemaker_endpoint.target_model } : {},
-    local.create_task_role && try(var.sagemaker_endpoint.max_retries, null) != null ? { XAYN_WEB_API__EMBEDDING__RETRY_MAX_ATTEMPTS = var.sagemaker_endpoint.max_retries } : {},
-    var.tika_configuration.enabled ? {
-      XAYN_WEB_API__TEXT_EXTRACTOR__ENABLED="true"
-      XAYN_WEB_API__TEXT_EXTRACTOR__URL="http://localhost:9998/"
-      XAYN_WEB_API__TEXT_EXTRACTOR__ALLOWED_CONTENT_TYPE="[]"
-    } : {}
+    local.sagemaker_enabled && try(var.sagemaker_endpoint.target_model, null) != null ? { XAYN_WEB_API__EMBEDDING__TARGET_MODEL = var.sagemaker_endpoint.target_model } : {},
+    local.sagemaker_enabled && try(var.sagemaker_endpoint.max_retries, null) != null ? { XAYN_WEB_API__EMBEDDING__RETRY_MAX_ATTEMPTS = var.sagemaker_endpoint.max_retries } : {},
+    var.tika_configuration.enabled ? { XAYN_WEB_API__TEXT_EXTRACTOR__ENABLED = var.tika_configuration.enabled } : {},
+    var.tika_configuration.enabled ? { XAYN_WEB_API__TEXT_EXTRACTOR__URL = var.tika_configuration.endpoint } : {},
+    var.tika_configuration.enabled ? { XAYN_WEB_API__TEXT_EXTRACTOR__ALLOWED_CONTENT_TYPE = jsonencode(var.tika_configuration.allowed_conentent_type) } : {}
   )
 
   secrets = {

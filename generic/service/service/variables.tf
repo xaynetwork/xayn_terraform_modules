@@ -45,10 +45,10 @@ variable "alb" {
     health_path   = string
     rules = list(object({
       routing_path_pattern = list(string)
-      routing_header_condition = object({
+      routing_header_condition = optional(object({
         name  = string
         value = string
-      })
+      }))
   })) })
   default = null
   validation {

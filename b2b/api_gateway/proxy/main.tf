@@ -177,35 +177,6 @@ resource "aws_api_gateway_integration" "candidates" {
   timeout_milliseconds = 29000
 }
 
-#### private Text Extraction service _tika
-
-resource "aws_api_gateway_resource" "_tika" {
-  rest_api_id = aws_api_gateway_rest_api.tenant.id
-  parent_id   = aws_api_gateway_rest_api.tenant.root_resource_id
-  path_part   = "rmeta"
-}
-
-resource "aws_api_gateway_method" "_tika" {
-  rest_api_id      = aws_api_gateway_rest_api.tenant.id
-  resource_id      = aws_api_gateway_resource._tika.id
-  http_method      = "ANY"
-  authorization    = "AWS_IAM"
-  api_key_required = false
-}
-
-resource "aws_api_gateway_integration" "_tika" {
-  rest_api_id             = aws_api_gateway_rest_api.tenant.id
-  resource_id             = aws_api_gateway_resource._tika.id
-  http_method             = aws_api_gateway_method._tika.http_method
-  type                    = "HTTP_PROXY"
-  integration_http_method = "POST"
-  uri                     = "http://${var.nlb_dns_name}/rmeta"
-  passthrough_behavior    = "WHEN_NO_MATCH"
-  connection_type         = "VPC_LINK"
-  connection_id           = var.nlb_vpc_link_id
-  timeout_milliseconds    = 29000
-}
-
 #########
 
 resource "aws_api_gateway_deployment" "tenant" {
@@ -230,10 +201,6 @@ resource "aws_api_gateway_deployment" "tenant" {
       aws_api_gateway_method.candidates.id,
       aws_api_gateway_integration.candidates.id,
       aws_api_gateway_integration.candidates.request_parameters,
-      aws_api_gateway_resource._tika.id,
-      aws_api_gateway_method._tika.id,
-      aws_api_gateway_integration._tika.id,
-      aws_api_gateway_integration._tika.request_parameters,
       var.enable_usage_plan,
       var.usage_plan_api_key_id,
       var.usage_plan_quota_settings,
@@ -407,41 +374,4 @@ module "alarms" {
   latency_by_method = var.alarm_latency_by_method
 
   tags = var.tags
-}
-
-
-# Resource Policies
-data "aws_iam_policy_document" "_tika" {
-  statement {
-    effect = "Allow"
-
-    principals {
-      type        = "*"
-      identifiers = ["*"]
-    }
-
-    actions   = ["execute-api:Invoke"]
-    resources = ["${aws_api_gateway_rest_api.tenant.execution_arn}/*/*/*"]
-  }
-  statement {
-    effect = "Deny"
-
-    principals {
-      type        = "*"
-      identifiers = ["*"]
-    }
-
-    actions   = ["execute-api:Invoke"]
-    resources = ["${aws_api_gateway_rest_api.tenant.execution_arn}/*/*/rmeta/*"]
-    condition {
-      test     = "StringNotEquals"
-      variable = "aws:PrincipalArn"
-      values   = [var.tika_lambda_role]
-    }
-  }
-}
-
-resource "aws_api_gateway_rest_api_policy" "_tika" {
-  rest_api_id = aws_api_gateway_rest_api.tenant.id
-  policy      = data.aws_iam_policy_document._tika.json
 }

@@ -156,11 +156,6 @@ variable "alarm_error_rate" {
   default     = {}
 }
 
-variable "tika_lambda_role" {
-  description = "The role / principal that can call the internal _tika api"
-  type        = string
-}
-
 variable "tags" {
   description = "Map of tags for the deployment"
   type        = map(string)

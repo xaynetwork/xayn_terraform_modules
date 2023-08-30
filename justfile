@@ -27,6 +27,6 @@ tflint:
     set -eux -o pipefail
     for dir in $(find . -type d -not -path */node_modules* -not -path '*/.*'); do
         if [ -d "$dir" ]; then
-            tflint $dir
+            tflint --chdir $dir
         fi
     done

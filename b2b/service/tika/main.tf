@@ -1,11 +1,7 @@
-data "aws_region" "current" {}
-data "aws_partition" "current" {}
 data "aws_caller_identity" "current" {}
 
 locals {
   account_id = data.aws_caller_identity.current.account_id
-  partition  = data.aws_partition.current.partition
-  region     = data.aws_region.current.name
 }
 
 module "task_role" {
@@ -100,8 +96,8 @@ module "alarms" {
   }
   source = "../../../generic/alarms/ecs_service"
 
-  account_id = data.aws_caller_identity.current.account_id
-  prefix     = "${data.aws_caller_identity.current.account_id}_"
+  account_id = local.account_id
+  prefix     = "${local.account_id}_"
 
   cluster_name   = var.cluster_name
   service_name   = module.service.name

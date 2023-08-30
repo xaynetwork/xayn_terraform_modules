@@ -5,5 +5,5 @@ output "alarm_arns" {
 
 output "execution_role_arn" {
   description = "The role ARN of the task role that is used for outgoing requests like towards tika or sagemaker"
-  value       = aws_iam_role.task_role[0].arn
+  value       = length(aws_iam_role.task_role) > 0 ? aws_iam_role.task_role[0].arn : null
 }

@@ -41,7 +41,7 @@ resource "aws_iam_role" "task_role" {
   count = local.create_task_role ? 1 : 0
 
   name               = "${title(var.tenant)}DocumentsEcsTaskRole"
-  description        = "A task role for outgoing request for the Document Service: Like to Tika or Sagemaker."
+  description        = "Allows the ECS Task to access sagemaker."
   path               = "/${var.tenant}/"
   assume_role_policy = data.aws_iam_policy_document.ecs_service_role[0].json
   tags               = var.tags

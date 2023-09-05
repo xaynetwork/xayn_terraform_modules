@@ -231,14 +231,16 @@ variable "sagemaker_endpoint" {
 variable "tika_configuration" {
   description = "A configuration for the tika text extreaction api."
   type = object({
-    enabled                = bool
-    allowed_conentent_type = list(string)
-    endpoint               = string
+    enabled            = bool
+    allowed_media_type = list(string)
+    endpoint           = string
+    extractor          = string
   })
   default = {
-    allowed_conentent_type = []
-    enabled                = false
-    endpoint               = "http://aws/_tika"
+    allowed_media_type = []
+    enabled            = false
+    endpoint           = "http://aws/_tika"
+    extractor          = "tika"
   }
 }
 

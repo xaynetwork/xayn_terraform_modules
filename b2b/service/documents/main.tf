@@ -184,7 +184,7 @@ module "service" {
     var.tika_configuration.enabled ? { XAYN_WEB_API__TEXT_EXTRACTOR__ENABLED = var.tika_configuration.enabled } : {},
     var.tika_configuration.enabled ? { XAYN_WEB_API__TEXT_EXTRACTOR__URL = var.tika_configuration.endpoint } : {},
     var.tika_configuration.enabled ? { XAYN_WEB_API__TEXT_EXTRACTOR__ALLOWED_MEDIA_TYPE = jsonencode(var.tika_configuration.allowed_media_type) } : {},
-    var.tika_configuration.enabled ? { XAYN_WEB_API__TEXT_EXTRACTOR__EXTRACTOR = jsonencode(var.tika_configuration.extractor) } : {}
+    var.tika_configuration.enabled ? { XAYN_WEB_API__TEXT_EXTRACTOR__EXTRACTOR = var.tika_configuration.extractor } : {}
   )
 
   secrets = {

@@ -208,6 +208,12 @@ variable "token_size" {
   type        = string
 }
 
+variable "max_document_batch_size" {
+  description = "The maximum number of documents in a single request."
+  type        = number
+  default     = 100
+}
+
 variable "enable_dev_options" {
   description = "Determines if dev options are enabled."
   type        = bool

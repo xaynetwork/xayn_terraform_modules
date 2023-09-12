@@ -170,6 +170,7 @@ module "service" {
     XAYN_WEB_API__INGESTION__MAX_SNIPPET_SIZE           = var.max_snippet_size
     XAYN_WEB_API__INGESTION__MAX_PROPERTIES_SIZE        = var.max_properties_size
     XAYN_WEB_API__INGESTION__MAX_PROPERTIES_STRING_SIZE = var.max_properties_string_size
+    XAYN_WEB_API__INGESTION__MAX_DOCUMENT_BATCH_SIZE    = var.max_document_batch_size
     XAYN_WEB_API__TENANTS__ENABLE_DEV                   = var.enable_dev_options
     }, local.sagemaker_enabled ? {
     XAYN_WEB_API__EMBEDDING__TYPE           = "sagemaker",

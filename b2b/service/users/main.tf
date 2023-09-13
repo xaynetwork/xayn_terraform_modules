@@ -167,6 +167,7 @@ module "service" {
     XAYN_WEB_API__PERSONALIZATION__DEFAULT_NUMBER_DOCUMENTS = 10
     XAYN_WEB_API__SEMANTIC_SEARCH__MAX_NUMBER_DOCUMENTS     = var.max_documents
     XAYN_WEB_API__SEMANTIC_SEARCH__MAX_NUMBER_CANDIDATES    = var.max_candidates
+    XAYN_WEB_API__SEMANTIC_SEARCH__MAX_QUERY_SIZE           = var.max_query_size
     XAYN_WEB_API__NET__KEEP_ALIVE                           = var.keep_alive
     XAYN_WEB_API__NET__CLIENT_REQUEST_TIMEOUT               = var.request_timeout
     XAYN_WEB_API__LOGGING__LEVEL                            = var.logging_level

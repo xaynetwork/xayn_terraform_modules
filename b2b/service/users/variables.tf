@@ -196,6 +196,12 @@ variable "token_size" {
   type        = string
 }
 
+variable "max_query_size" {
+  description = "Max number of bytes a query can have."
+  type        = number
+  default     = 512
+}
+
 variable "enable_dev_options" {
   description = "Determines if dev options are enabled."
   type        = bool

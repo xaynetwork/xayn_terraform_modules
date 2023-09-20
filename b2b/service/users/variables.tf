@@ -215,6 +215,12 @@ variable "sagemaker_endpoint" {
   # }
 }
 
+variable "health_check_grace_period_seconds" {
+  description = "Seconds to ignore failing load balancer health checks on newly instantiated tasks to prevent premature shutdown"
+  type        = number
+  default     = 30
+}
+
 variable "tags" {
   description = "Custom tags to set on the underlining resources"
   type        = map(string)

@@ -188,6 +188,8 @@ module "service" {
     XAYN_WEB_API__STORAGE__POSTGRES__PASSWORD = var.postgres_password_ssm_parameter_arn
   }
 
+  health_check_grace_period_seconds = var.health_check_grace_period_seconds
+
   log_retention_in_days = var.log_retention_in_days
 
   tags = var.tags

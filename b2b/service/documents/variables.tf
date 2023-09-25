@@ -233,9 +233,14 @@ variable "sagemaker_endpoint" {
   # }
 }
 
+variable "health_check_grace_period_seconds" {
+  description = "Seconds to ignore failing load balancer health checks on newly instantiated tasks to prevent premature shutdown"
+  type        = number
+  default     = 30
+}
 
 variable "tika_configuration" {
-  description = "A configuration for the tika text extreaction api."
+  description = "A configuration for the tika text extraction api."
   type = object({
     enabled            = bool
     allowed_media_type = list(string)

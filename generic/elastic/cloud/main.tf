@@ -40,10 +40,18 @@ resource "ec_deployment" "es_cluster" {
         max_size = "${var.hot_tier_memory_max}g"
       }
 
-      zone_count = var.zone_count
+      zone_count = var.hot_tier_zone_count
     }
+
     topology {
-      id = "ml"
+      id   = "ml"
+      size = "${var.ml_tier_memory}g"
+
+      autoscaling {
+        max_size = "${var.ml_tier_memory_max}g"
+      }
+
+      zone_count = var.ml_tier_zone_count
     }
 
     topology {
@@ -53,7 +61,8 @@ resource "ec_deployment" "es_cluster" {
 
   lifecycle {
     ignore_changes = [
-      elasticsearch[0].topology[2].size
+      elasticsearch[0].topology[2].size,
+      elasticsearch[0].topology[3].size
     ]
   }
 

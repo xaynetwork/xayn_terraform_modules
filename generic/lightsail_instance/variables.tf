@@ -34,3 +34,25 @@ variable "subdomain_name" {
   description = "The domain name for the app."
   type        = string
 }
+
+variable "aws_profile" {
+  description = "The aws profile used for this terraform call"
+  type        = string
+}
+
+variable "docker_container" {
+  description = "The docker container path name including tag"
+  type        = string
+}
+
+variable "docker_container_port" {
+  description = "The internal port of the running container application that should be exposed."
+  type        = string
+}
+
+variable "docker_container_envs" {
+  description = "Enviroment variables to pass to the container"
+  type        = map(string)
+  default = {
+  }
+}

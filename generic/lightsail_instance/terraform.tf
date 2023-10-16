@@ -6,5 +6,9 @@ terraform {
       source  = "hashicorp/aws"
       version = "4.50.0"
     }
+    shell = {
+      source  = "scottwinkler/shell"
+      version = "1.7.10"
+    }
   }
 }

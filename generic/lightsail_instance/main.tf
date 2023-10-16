@@ -1,6 +1,9 @@
 locals {
-  user_script = file("user_data.sh")
+  user_script          = file("${path.module}/scripts/user_data.sh")
+  docker_instance_name = "web-demo"
 }
+
+data "aws_region" "current" {}
 
 resource "aws_lightsail_instance" "this" {
   name              = var.service_name
@@ -21,4 +24,18 @@ resource "aws_route53_record" "custom_domain" {
   records = [aws_lightsail_instance.this.public_ip_address]
   ttl     = 300
   zone_id = data.aws_route53_zone.this.id
+}
+
+locals {
+  envs = join(" ", formatlist("%s=%s", keys(var.docker_container_envs), values(var.docker_container_envs)))
+  program_create = "${path.module}/scripts/update_docker.sh ${var.aws_profile} ${data.aws_region.current.name} ${var.service_name} ${local.docker_instance_name} ${var.docker_container} ${aws_lightsail_instance.this.public_ip_address} ${var.docker_container_port} ${local.envs} > docker_create.log && echo \"{\"result\": \"ok\"}\""
+  program_delete  = "${path.module}/scripts/delete_docker.sh  ${var.aws_profile} ${data.aws_region.current.name} ${var.service_name} ${local.docker_instance_name} ${aws_lightsail_instance.this.public_ip_address}"
+}
+
+resource "shell_script" "invoke_docker" {
+  lifecycle_commands {
+    create = local.program_create
+    delete = local.program_delete
+    update = local.program_create
+  }
 }

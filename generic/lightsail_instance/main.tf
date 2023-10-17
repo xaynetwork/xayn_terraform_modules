@@ -27,9 +27,10 @@ resource "aws_route53_record" "custom_domain" {
 }
 
 locals {
-  envs = join(" ", formatlist("%s=%s", keys(var.docker_container_envs), values(var.docker_container_envs)))
+  envs           = join(" ", formatlist("%s=%s", keys(var.docker_container_envs), values(var.docker_container_envs)))
   program_create = "${path.module}/scripts/update_docker.sh ${var.aws_profile} ${data.aws_region.current.name} ${var.service_name} ${local.docker_instance_name} ${var.docker_container} ${aws_lightsail_instance.this.public_ip_address} ${var.docker_container_port} ${local.envs} > docker_create.log && echo \"{\"result\": \"ok\"}\""
-  program_delete  = "${path.module}/scripts/delete_docker.sh  ${var.aws_profile} ${data.aws_region.current.name} ${var.service_name} ${local.docker_instance_name} ${aws_lightsail_instance.this.public_ip_address}"
+  program_delete = "${path.module}/scripts/delete_docker.sh  ${var.aws_profile} ${data.aws_region.current.name} ${var.service_name} ${local.docker_instance_name} ${aws_lightsail_instance.this.public_ip_address}"
+  program_read   = "${path.module}/scripts/read_docker.sh  ${var.aws_profile} ${data.aws_region.current.name} ${var.service_name} ${local.docker_instance_name} ${aws_lightsail_instance.this.public_ip_address}"
 }
 
 resource "shell_script" "invoke_docker" {
@@ -37,5 +38,11 @@ resource "shell_script" "invoke_docker" {
     create = local.program_create
     delete = local.program_delete
     update = local.program_create
+    read   = local.program_read
+  }
+
+  triggers = {
+    when_value_changed = "${var.docker_container} ${aws_lightsail_instance.this.public_ip_address} ${var.docker_container_port} ${local.envs}"
   }
 }
+

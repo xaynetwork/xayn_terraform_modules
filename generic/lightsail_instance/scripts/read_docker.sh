@@ -25,7 +25,7 @@ Host lightsail_instance
 EOT
 
 chmod 600 ssh_config
-ssh -o StrictHostKeyChecking=accept-new -F ssh_config lightsail_instance  "
-docker stop $APP_NAME || true
-docker rm $APP_NAME || true
-"
+STATUS=$(ssh -o StrictHostKeyChecking=accept-new -F ssh_config lightsail_instance  docker ps --format json)
+
+rm private_key ssh_config
+echo $STATUS | jq '{image:.Image, state:.State}'

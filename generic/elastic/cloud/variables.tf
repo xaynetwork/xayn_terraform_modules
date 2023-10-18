@@ -27,13 +27,13 @@ variable "hot_tier_memory_max" {
   default     = 15
 }
 
-variable "hot_tier_zone_count" {
+variable "zone_count" {
   description = "Specifies the number of zones for this deployment. (Valid 1, 2, 3)"
   type        = number
   default     = 2
 
   validation {
-    condition     = var.hot_tier_zone_count > 0 && var.hot_tier_zone_count < 4
+    condition     = var.zone_count > 0 && var.zone_count < 4
     error_message = "Valid values are 1, 2, 3"
   }
 }
@@ -42,29 +42,6 @@ variable "hot_tier_memory" {
   description = "Specifies the initial memory size (GB) of the elastic deployment"
   type        = number
   default     = 1
-}
-
-variable "ml_tier_memory" {
-  description = "Specifies the initial memory size (GB) of the elastic deployment"
-  type        = number
-  default     = 0
-}
-
-variable "ml_tier_memory_max" {
-  description = "Specifies maximum value of the memory resources (GB) for elastic to auto-scale"
-  type        = number
-  default     = 1
-}
-
-variable "ml_tier_zone_count" {
-  description = "Specifies the number of zones for this deployment. (Valid 1, 2, 3)"
-  type        = number
-  default     = 1
-
-  validation {
-    condition     = var.ml_tier_zone_count > 0 && var.ml_tier_zone_count < 4
-    error_message = "Valid values are 1 - 3"
-  }
 }
 
 variable "vpce_id" {

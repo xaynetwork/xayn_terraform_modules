@@ -45,4 +45,3 @@ resource "shell_script" "invoke_docker" {
     when_value_changed = "${var.docker_container} ${aws_lightsail_instance.this.public_ip_address} ${var.docker_container_port} ${local.envs}"
   }
 }
-

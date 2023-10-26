@@ -23,7 +23,7 @@ exports.handler = async (event) => {
 
   const allowMap = {
     "${api_key_documents}": ["/documents","/candidates"],
-    "${api_key_users}": ["/users", "/semantic_search"],
+    "${api_key_users}": ["/users", "/semantic_search", "/recommendations"],
   }
 
   if (apiToken in allowMap) {

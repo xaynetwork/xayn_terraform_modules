@@ -138,7 +138,7 @@ module "service" {
         }
       },
       {
-        routing_path_pattern = ["/semantic_search", "/semantic_search/*"]
+        routing_path_pattern = ["/semantic_search", "/semantic_search/*", "/recommendations", "/recommendations/*"]
         routing_header_condition = {
           name  = "X-Tenant-Id"
           value = var.tenant

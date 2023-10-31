@@ -1,1 +1,4 @@
-requests
+boto3
+# xayn_infra_lib @ git+https://github.com/xaynetwork/xayn_terraform_modules@ET-5099-sagemaker-integration#subdirectory=shared/python
+aws-lambda-powertools
+aws-lambda-powertools[parser]

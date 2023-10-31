@@ -1,0 +1,83 @@
+{
+    "resource": "/rag",
+    "path": "/rag",
+    "httpMethod": "POST",
+    "headers": {
+        "authorizationToken": "dummykey",
+        "Content-Type": "application/json",
+        "Host": "localhost",
+        "User-Agent": "HTTPie",
+        "X-Amzn-Trace-Id": "Root=1-653f6c11-5420dd7767882a1903108f3f",
+        "X-Forwarded-For": "127.0.0.1",
+        "X-Forwarded-Port": "443",
+        "X-Forwarded-Proto": "https"
+    },
+    "multiValueHeaders": {
+        "authorizationToken": [
+            "dummykey"
+        ],
+        "Content-Type": [
+            "application/json"
+        ],
+        "Host": [
+            "localhost"
+        ],
+        "User-Agent": [
+            "HTTPie"
+        ],
+        "X-Amzn-Trace-Id": [
+            "Root=1-653f6c11-5420dd7767882a1903108f3f"
+        ],
+        "X-Forwarded-For": [
+            "127.0.0.1"
+        ],
+        "X-Forwarded-Port": [
+            "443"
+        ],
+        "X-Forwarded-Proto": [
+            "https"
+        ]
+    },
+    "queryStringParameters": null,
+    "multiValueQueryStringParameters": null,
+    "pathParameters": null,
+    "stageVariables": null,
+    "requestContext": {
+        "resourceId": "123456",
+        "authorizer": {
+            "principalId": "xayn",
+            "integrationLatency": 372
+        },
+        "resourcePath": "/rag",
+        "httpMethod": "POST",
+        "extendedRequestId": "Nm3SzHwsFiAEAHA=",
+        "requestTime": "30/Oct/2023:08:40:49 +0000",
+        "path": "/default/rag",
+        "accountId": "917039226361",
+        "protocol": "HTTP/1.1",
+        "stage": "default",
+        "domainPrefix": "123456",
+        "requestTimeEpoch": 1698655249678,
+        "requestId": "9fe94a27-1007-4527-8620-ebcb3b945813",
+        "identity": {
+            "cognitoIdentityPoolId": null,
+            "cognitoIdentityId": null,
+            "principalOrgId": null,
+            "apiKey": "dummykey",
+            "cognitoAuthenticationType": null,
+            "userArn": null,
+            "apiKeyId": "123456",
+            "userAgent": "HTTPie",
+            "accountId": null,
+            "caller": null,
+            "sourceIp": "127.0.0.1",
+            "accessKey": null,
+            "cognitoAuthenticationProvider": null,
+            "user": null
+        },
+        "domainName": "localhost",
+        "apiId": "123456"
+    },
+    "body": "{\"question\": \"bla\"}",
+    "isBase64Encoded": false
+}

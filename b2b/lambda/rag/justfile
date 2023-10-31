@@ -1,0 +1,42 @@
+set fallback
+
+aws_profile := env_var_or_default('AWS_PROFILE', 'AdministratorAccess-917039226361')
+aws_region := env_var_or_default('AWS_REGION', 'eu-central-1')
+aws_config_file := env_var_or_default('AWS_CONFIG_FILE', '~/.aws/config')
+aws_shared_credentials_file := env_var_or_default('AWS_SHARED_CREDENTIALS_FILE', '~/.aws/credentials')
+
+default:
+    @{{just_executable()}} --list
+
+sam-build:
+  #!/usr/bin/env -S bash -eu -o pipefail
+  cd tf-resources
+  AWS_PROFILE={{aws_profile}} \
+  AWS_REGION={{aws_region}} \
+  AWS_CONFIG_FILE={{aws_config_file}} \
+  AWS_SHARED_CREDENTIALS_FILE={{aws_shared_credentials_file}} \
+  TF_CLI_ARGS_plan="-var-file=local.tfvars" \
+  TF_CLI_ARGS_apply="-var-file=local.tfvars" \
+  sam build --hook-name terraform --terraform-project-root-path ../
+
+sam-local-invoke:
+  #!/usr/bin/env -S bash -eu -o pipefail
+  cd tf-resources
+  sam local invoke --hook-name terraform -e ../events/event.json
+
+sam-start-lambda:
+  #!/usr/bin/env -S bash -eu -o pipefail
+  cd tf-resources
+  sam local start-lambda --hook-name terraform --profile {{aws_profile}}
+
+# Calls a lambda via local lambda server by using the aws cli.
+# You can start a local lambda server via `just sam-start-lambda`
+lambda-invoke function_name:
+  #!/usr/bin/env -S bash -eu -o pipefail
+  aws lambda invoke \
+    --function-name "{{function_name}}" \
+    --endpoint-url "http://127.0.0.1:3001" \
+    --region {{aws_region}} \
+    --profile {{aws_profile}} \
+    --no-verify-ssl \
+    out/response.json

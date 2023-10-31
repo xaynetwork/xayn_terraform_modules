@@ -31,7 +31,7 @@ variable "ephemeral_storage_size" {
 variable "timeout" {
   description = "The amount of time your Lambda Function has to run in seconds."
   type        = number
-  default     = 3
+  default     = 30
 }
 
 variable "reserved_concurrent_executions" {

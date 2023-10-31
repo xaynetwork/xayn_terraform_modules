@@ -22,7 +22,7 @@ sam-build:
 sam-local-invoke:
   #!/usr/bin/env -S bash -eu -o pipefail
   cd tf-resources
-  sam local invoke --hook-name terraform -e ../events/event.json
+  AWS_PROFILE={{aws_profile}} sam local invoke --hook-name terraform -e ../events/event.json
 
 sam-start-lambda:
   #!/usr/bin/env -S bash -eu -o pipefail

@@ -1,5 +1,12 @@
+data "aws_region" "current" {}
+data "aws_partition" "current" {}
+data "aws_caller_identity" "current" {}
+
 locals {
-  api_name = "api_${var.tenant}"
+  api_name   = "api_${var.tenant}"
+  account_id = data.aws_caller_identity.current.account_id
+  partition  = data.aws_partition.current.partition
+  region     = data.aws_region.current.name
 }
 
 resource "aws_api_gateway_rest_api" "tenant" {
@@ -79,7 +86,7 @@ resource "aws_api_gateway_integration" "proxy" {
 
 #########
 ## Exceptions mainly for timeouts
-######### 
+#########
 
 resource "aws_api_gateway_resource" "documents" {
   rest_api_id = aws_api_gateway_rest_api.tenant.id
@@ -211,6 +218,9 @@ resource "aws_api_gateway_deployment" "tenant" {
       aws_api_gateway_integration.options_cors_documents.id,
       aws_api_gateway_method.options_cors_documents_proxy.id,
       aws_api_gateway_integration.options_cors_documents_proxy.id,
+      try(aws_api_gateway_resource.rag[0].id, ""),
+      try(aws_api_gateway_method.rag[0].id, ""),
+      try(aws_api_gateway_integration.rag[0].id, "")
     ]))
   }
 
@@ -347,6 +357,44 @@ resource "aws_api_gateway_integration" "options_cors_documents_proxy" {
   }
 }
 
+# rag endpoint
+resource "aws_api_gateway_resource" "rag" {
+  count       = var.enable_rag_endpoint ? 1 : 0
+  rest_api_id = aws_api_gateway_rest_api.tenant.id
+  parent_id   = aws_api_gateway_rest_api.tenant.root_resource_id
+  path_part   = "rag"
+}
+
+resource "aws_api_gateway_method" "rag" {
+  count            = var.enable_rag_endpoint ? 1 : 0
+  rest_api_id      = aws_api_gateway_rest_api.tenant.id
+  resource_id      = aws_api_gateway_resource.rag[0].id
+  http_method      = "POST"
+  authorization    = "CUSTOM"
+  authorizer_id    = aws_api_gateway_authorizer.lambda_authorizer.id
+  api_key_required = true
+}
+
+resource "aws_api_gateway_integration" "rag" {
+  count                   = var.enable_rag_endpoint ? 1 : 0
+  rest_api_id             = aws_api_gateway_rest_api.tenant.id
+  resource_id             = aws_api_gateway_resource.rag[0].id
+  http_method             = aws_api_gateway_method.rag[0].http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = var.rag_integration_config.invoke_arn
+}
+
+resource "aws_lambda_permission" "rag" {
+  count         = var.enable_rag_endpoint ? 1 : 0
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = var.rag_integration_config.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "arn:${local.partition}:execute-api:${local.region}:${local.account_id}:${aws_api_gateway_rest_api.tenant.id}/*/${aws_api_gateway_method.rag[0].http_method}${aws_api_gateway_resource.rag[0].path}"
+}
+
 # aws waf
 resource "aws_wafv2_web_acl_association" "api_gateway" {
   count        = var.web_acl_arn != null ? 1 : 0
@@ -355,7 +403,6 @@ resource "aws_wafv2_web_acl_association" "api_gateway" {
 }
 
 # CloudWatch alarms
-data "aws_caller_identity" "current" {}
 module "alarms" {
   providers = {
     aws = aws.monitoring-account

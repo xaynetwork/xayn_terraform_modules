@@ -1,5 +1,6 @@
 #!/bin/env python
 
+import json
 import os
 from typing import Optional
 
@@ -13,7 +14,7 @@ import boto3
 from xayn_infra_lib.models import QuestionRequest
 
 aws_region = os.getenv("AWS_REGION")
-sagemaker_endpoint_url = os.getenv("SAGEMAKER_ENDPOINT_URL")
+sagemaker_endpoint_name = os.getenv("SAGEMAKER_ENDPOINT_NAME")
 nlb_url = os.getenv("NLB_URL")
 
 app = APIGatewayRestResolver()
@@ -29,6 +30,18 @@ def lambda_handler(event: dict, context: LambdaContext) -> dict:
 @app.post("/rag")
 def get_answer():
     tenant_id: Optional[str] = app.current_event.request_context.authorizer.principal_id
+
+    client = session.client("sagemaker-runtime")
+
+    response = client.invoke_endpoint(
+        EndpointName=sagemaker_endpoint_name,
+        Body=json.dumps({"inputs": "abc"}).encode(),
+        ContentType="application/json",
+    )
+
+    result = json.loads(response["Body"].read().decode())
+
+    print(result)
 
     try:
         request: QuestionRequest = parse(

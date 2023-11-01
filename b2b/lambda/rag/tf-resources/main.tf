@@ -24,4 +24,5 @@ module "rag" {
   attach_policy_statements          = var.attach_policy_statements
   policy_statements                 = var.policy_statements
   tags                              = var.tags
+  layers                            = var.layers
 }

@@ -22,7 +22,11 @@ sam-build:
 sam-local-invoke:
   #!/usr/bin/env -S bash -eu -o pipefail
   cd tf-resources
-  AWS_PROFILE={{aws_profile}} sam local invoke --hook-name terraform -e ../events/event.json
+  # AWS_DEFAULT_REGION is required when using lambda layers otherwise the command fails with:
+  # `Error: You must specify a region.`. Setting AWS_REGION does not work.
+  AWS_PROFILE={{aws_profile}} \
+  AWS_DEFAULT_REGION={{aws_region}} \
+  sam local invoke --hook-name terraform -e ../events/event.json
 
 sam-start-lambda:
   #!/usr/bin/env -S bash -eu -o pipefail

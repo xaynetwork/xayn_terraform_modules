@@ -146,6 +146,10 @@ variable "rag_integration_config" {
   # {
   #   invoke_arn = ""
   #   function_name = ""
+  #   throttling = {
+  #     burst_limit = 1
+  #     rate_limit  = 2
+  #   }
   # }
 }
 

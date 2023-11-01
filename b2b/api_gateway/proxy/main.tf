@@ -187,7 +187,6 @@ resource "aws_api_gateway_integration" "candidates" {
 #########
 
 resource "aws_api_gateway_deployment" "tenant" {
-  depends_on  = [aws_api_gateway_method.proxy, aws_api_gateway_method.documents, aws_api_gateway_method.documents_proxy, aws_api_gateway_method.candidates, aws_api_gateway_method.options_cors_proxy]
   rest_api_id = aws_api_gateway_rest_api.tenant.id
 
   triggers = {
@@ -393,6 +392,24 @@ resource "aws_lambda_permission" "rag" {
   principal     = "apigateway.amazonaws.com"
 
   source_arn = "arn:${local.partition}:execute-api:${local.region}:${local.account_id}:${aws_api_gateway_rest_api.tenant.id}/*/${aws_api_gateway_method.rag[0].http_method}${aws_api_gateway_resource.rag[0].path}"
+}
+
+resource "aws_api_gateway_method_settings" "rag" {
+  count       = var.enable_rag_endpoint ? 1 : 0
+  rest_api_id = aws_api_gateway_rest_api.tenant.id
+  stage_name  = aws_api_gateway_stage.tenant.stage_name
+
+  method_path = "${aws_api_gateway_resource.rag[0].path}/${aws_api_gateway_method.rag[0].http_method}"
+  settings {
+    logging_level          = "INFO"
+    throttling_burst_limit = var.rag_integration_config.throttling.burst_limit
+    throttling_rate_limit  = var.rag_integration_config.throttling.rate_limit
+    metrics_enabled        = var.metrics_enabled_api
+  }
+
+  depends_on = [
+    aws_cloudwatch_log_group.stage
+  ]
 }
 
 # aws waf

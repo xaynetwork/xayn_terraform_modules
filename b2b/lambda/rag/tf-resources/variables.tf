@@ -100,6 +100,30 @@ variable "layers" {
   default     = null
 }
 
+variable "create_security_group" {
+  description = "Determines if a security group is created"
+  type        = bool
+  default     = false
+}
+
+variable "security_group_name" {
+  description = "Name to use on security group created"
+  type        = string
+  default     = null
+}
+
+variable "security_group_description" {
+  description = "Description of the security group created"
+  type        = string
+  default     = null
+}
+
+variable "security_group_rules" {
+  description = "Security group rules to add to the security group created"
+  type        = any
+  default     = {}
+}
+
 variable "tags" {
   description = "Custom tags to set on the underlining resources"
   type        = map(string)

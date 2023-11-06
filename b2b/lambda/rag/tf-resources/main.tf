@@ -17,6 +17,23 @@ resource "aws_security_group" "this" {
   }
 }
 
+resource "aws_security_group_rule" "this" {
+  for_each = { for k, v in var.security_group_rules : k => v if var.create_security_group }
+
+  security_group_id = aws_security_group.this[0].id
+  protocol          = each.value.protocol
+  from_port         = each.value.from_port
+  to_port           = each.value.to_port
+  type              = each.value.type
+
+  description              = try(each.value.description, null)
+  cidr_blocks              = try(each.value.cidr_blocks, null)
+  ipv6_cidr_blocks         = try(each.value.ipv6_cidr_blocks, null)
+  prefix_list_ids          = try(each.value.prefix_list_ids, null)
+  self                     = try(each.value.self, null)
+  source_security_group_id = try(each.value.source_security_group_id, null)
+}
+
 module "rag" {
   source                            = "terraform-aws-modules/lambda/aws"
   version                           = "~> 6.0"
@@ -44,4 +61,6 @@ module "rag" {
   policy_statements                 = var.policy_statements
   tags                              = var.tags
   layers                            = var.layers
+
+  depends_on = [aws_security_group_rule.this]
 }

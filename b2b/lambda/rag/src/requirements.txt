@@ -1,4 +1,5 @@
 boto3
-xayn_infra_lib @ git+https://github.com/xaynetwork/xayn_terraform_modules@ET-4955-rag-lambda#subdirectory=shared/python
+xayn_infra_lib @ git+https://github.com/xaynetwork/xayn_terraform_modules@ET-4955-rag#subdirectory=shared/python
 aws-lambda-powertools
 aws-lambda-powertools[parser]
+requests

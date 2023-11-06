@@ -1,7 +1,7 @@
 # define required varables here:
 environment_variables = {
   "AWS_REGION"              = "eu-central-1"
-  "SAGEMAKER_ENDPOINT_NAME" = "gte-base-endpoint"
+  "SAGEMAKER_ENDPOINT_NAME" = "em-german-leo-mistral-Q8-endpoint"
   "NLB_URL"                 = "http://nlb-dev-649f929e99958326.elb.eu-central-1.amazonaws.com"
 }
 # define required varables here:

@@ -132,6 +132,27 @@ variable "default_method_throttle_settings" {
   default = null
 }
 
+variable "enable_rag_endpoint" {
+  description = "Enable RAG integration."
+  type        = bool
+  default     = false
+}
+
+variable "rag_integration_config" {
+  description = "RAG integration configuration."
+  type        = any
+  default     = {}
+  # example
+  # {
+  #   invoke_arn = ""
+  #   function_name = ""
+  #   throttling = {
+  #     burst_limit = 1
+  #     rate_limit  = 2
+  #   }
+  # }
+}
+
 variable "alarm_http_5xx_error" {
   description = "Alarm for API Gateway HTTP-5XX errors."
   type        = any

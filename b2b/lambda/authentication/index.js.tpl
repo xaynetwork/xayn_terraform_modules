@@ -23,7 +23,7 @@ exports.handler = async (event) => {
 
   const allowMap = {
     "${api_key_documents}": ["/documents","/candidates"],
-    "${api_key_users}": ["/users", "/semantic_search", "/recommendations"],
+    "${api_key_users}": ["/users", "/semantic_search", "/recommendations", "/rag"],
   }
 
   if (apiToken in allowMap) {
@@ -43,7 +43,7 @@ exports.handler = async (event) => {
 // https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-lambda-authorizer-output.html
 function build_policy(api_token, methodArn, effect) {
   return {
-    principalId: "customer_id_" + api_token,
+    principalId: "${tenant_id}",
     // used by the usage plan
     usageIdentifierKey: api_token,
     policyDocument: {

@@ -28,7 +28,8 @@ resource "local_sensitive_file" "authentication_code" {
   content = templatefile("${path.module}/index.js.tpl", {
     api_key : aws_api_gateway_api_key.tenant.value,
     api_key_users : aws_api_gateway_api_key.ext_users.value,
-    api_key_documents : aws_api_gateway_api_key.ext_documents.value
+    api_key_documents : aws_api_gateway_api_key.ext_documents.value,
+    tenant_id : var.tenant
   })
   filename = local.filename
 }

@@ -41,7 +41,7 @@ class Xayn(SearchProvider):
         payload = {
             "document": {"query": query},
             "count": count,
-            "include_properties": self.return_property is not "",
+            "include_properties": self.return_property != "",
             "enable_hybrid_search": self.enable_hybrid_search,
         }
 

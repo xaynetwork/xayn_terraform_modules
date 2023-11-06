@@ -55,14 +55,14 @@ class LocalLlamaCpp(LLMProvider):
 
 
 class SageMakerLLM(LLMProvider):
-    def __init__(self, aws_region: str, client: str, sage_maker_endpoint_name: str):
+    def __init__(self, aws_region: str, client: str, sagemaker_endpoint_name: str):
         try:
             import boto3
         except ImportError:
             raise ImportError(
                 "Please install the boto3 package to use the SageMakerLLM provider"
             )
-        self.sage_maker_endpoint_name = sage_maker_endpoint_name
+        self.sagemaker_endpoint_name = sagemaker_endpoint_name
         self.session = boto3.Session(region_name=aws_region)
         self.client = self.session.client("sagemaker-runtime")
 

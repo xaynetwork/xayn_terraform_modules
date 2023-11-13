@@ -1,2 +1,3 @@
 boto3
 xayn_infra_lib @ git+https://github.com/xaynetwork/xayn_terraform_modules@ET-4955-rag-lambda#subdirectory=shared/python
+requests

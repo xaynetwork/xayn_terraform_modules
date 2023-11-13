@@ -10,6 +10,7 @@ from aws_lambda_powertools import Logger
 from aws_lambda_powertools.logging import correlation_paths
 from aws_lambda_powertools.utilities.parser import parse, ValidationError
 import boto3
+import requests
 
 from xayn_infra_lib.models import QuestionRequest
 
@@ -31,17 +32,15 @@ def lambda_handler(event: dict, context: LambdaContext) -> dict:
 def get_answer():
     tenant_id: Optional[str] = app.current_event.request_context.authorizer.principal_id
 
-    client = session.client("sagemaker-runtime")
-
-    response = client.invoke_endpoint(
-        EndpointName=sagemaker_endpoint_name,
-        Body=json.dumps({"inputs": "abc"}).encode(),
-        ContentType="application/json",
-    )
-
-    result = json.loads(response["Body"].read().decode())
-
-    print(result)
+    if tenant_id is not None:
+        r = requests.post(
+            f"{nlb_url}/semantic_search",
+            headers={"X-Tenant-Id": tenant_id},
+            json={
+                "document": {"query": "test"},
+            },
+        )
+        print(r.text)
 
     try:
         request: QuestionRequest = parse(

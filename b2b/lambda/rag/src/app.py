@@ -19,7 +19,6 @@ from xayn_rag.generation import huggingfaceTGI
 nlb_url = os.getenv("NLB_URL")
 frontoffice_base_url = os.getenv("FRONTOFFICE_BASE_URL")
 frontoffice_token = os.getenv("FRONTOFFICE_TOKEN")
-tenant_id = os.getenv("TENANT_ID", "")
 llm_url = os.getenv("LLM_URL")
 llm_bearer_token = os.getenv("LLM_BEARER_TOKEN")
 use_top_n_results = os.getenv("USE_TOP_N_RESULTS", "2")

@@ -78,6 +78,6 @@
         "domainName": "localhost",
         "apiId": "123456"
     },
-    "body": "{\"question\": \"bla\"}",
+    "body": "{\"query\": \"Wer hat Anspruch auf Elterngeld?\"}",
     "isBase64Encoded": false
 }

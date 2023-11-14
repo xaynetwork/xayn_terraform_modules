@@ -1,0 +1,6 @@
+tf-resources/.aws-sam
+tf-resources/.aws-sam-iacs
+tf-resources/.terraform
+tf-resources/builds
+out/*
+!out/.gitkeep

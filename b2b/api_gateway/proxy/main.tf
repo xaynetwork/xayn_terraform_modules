@@ -219,7 +219,9 @@ resource "aws_api_gateway_deployment" "tenant" {
       aws_api_gateway_integration.options_cors_documents_proxy.id,
       try(aws_api_gateway_resource.rag[0].id, ""),
       try(aws_api_gateway_method.rag[0].id, ""),
-      try(aws_api_gateway_integration.rag[0].id, "")
+      try(aws_api_gateway_integration.rag[0].id, ""),
+      try(aws_api_gateway_method.rag_options[0].id, ""),
+      try(aws_api_gateway_integration.rag_options[0].id, "")
     ]))
   }
 
@@ -386,12 +388,41 @@ resource "aws_api_gateway_integration" "rag" {
 
 resource "aws_lambda_permission" "rag" {
   count         = var.enable_rag_endpoint ? 1 : 0
-  statement_id  = "AllowExecutionFromAPIGateway"
+  statement_id  = "AllowPOSTExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
   function_name = var.rag_integration_config.function_name
   principal     = "apigateway.amazonaws.com"
 
   source_arn = "arn:${local.partition}:execute-api:${local.region}:${local.account_id}:${aws_api_gateway_rest_api.tenant.id}/*/${aws_api_gateway_method.rag[0].http_method}${aws_api_gateway_resource.rag[0].path}"
+}
+
+# CORS
+resource "aws_api_gateway_method" "rag_options" {
+  count         = var.enable_rag_endpoint ? 1 : 0
+  rest_api_id   = aws_api_gateway_rest_api.tenant.id
+  resource_id   = aws_api_gateway_resource.rag[0].id
+  http_method   = "OPTIONS"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "rag_options" {
+  count                   = var.enable_rag_endpoint ? 1 : 0
+  rest_api_id             = aws_api_gateway_rest_api.tenant.id
+  resource_id             = aws_api_gateway_resource.rag[0].id
+  http_method             = aws_api_gateway_method.rag_options[0].http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = var.rag_integration_config.invoke_arn
+}
+
+resource "aws_lambda_permission" "rag_options" {
+  count         = var.enable_rag_endpoint ? 1 : 0
+  statement_id  = "AllowOPTIONSExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = var.rag_integration_config.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "arn:${local.partition}:execute-api:${local.region}:${local.account_id}:${aws_api_gateway_rest_api.tenant.id}/*/${aws_api_gateway_method.rag_options[0].http_method}${aws_api_gateway_resource.rag[0].path}"
 }
 
 resource "aws_api_gateway_method_settings" "rag" {

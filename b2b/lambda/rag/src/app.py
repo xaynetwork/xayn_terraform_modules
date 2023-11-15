@@ -9,7 +9,6 @@ from aws_lambda_powertools.utilities.typing import LambdaContext
 from aws_lambda_powertools import Logger
 from aws_lambda_powertools.logging import correlation_paths, utils
 from aws_lambda_powertools.utilities.parser import parse, ValidationError
-import boto3
 
 from xayn_infra_lib.models import QuestionRequest
 from xayn_rag.retrieval import Xayn

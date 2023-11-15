@@ -70,4 +70,4 @@ def get_answer():
     except Exception as e:
         return {"status_code": 409, "message": str(e)}
 
-    return {"status_code": 200, "tenant_id": tenant_id, "response": answer}
+    return {"status_code": 200, "response": answer}

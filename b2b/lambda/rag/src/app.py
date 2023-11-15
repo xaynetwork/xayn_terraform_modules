@@ -1,16 +1,15 @@
 #!/bin/env python
 
-import json
 import os
 from typing import Optional
 
-from aws_lambda_powertools.event_handler import APIGatewayRestResolver
+from aws_lambda_powertools.event_handler import APIGatewayRestResolver, CORSConfig
 from aws_lambda_powertools.utilities.typing import LambdaContext
 from aws_lambda_powertools import Logger
 from aws_lambda_powertools.logging import correlation_paths, utils
 from aws_lambda_powertools.utilities.parser import parse, ValidationError
+from aws_lambda_powertools.utilities.parser import BaseModel
 
-from xayn_infra_lib.models import QuestionRequest
 from xayn_rag.retrieval import Xayn
 from xayn_rag.llm_templating import em_german_rag
 from xayn_rag.generation import huggingfaceTGI
@@ -22,9 +21,16 @@ llm_url = os.getenv("LLM_URL")
 llm_bearer_token = os.getenv("LLM_BEARER_TOKEN")
 use_top_n_results = os.getenv("USE_TOP_N_RESULTS", "2")
 
-app = APIGatewayRestResolver()
+cors_config = CORSConfig(
+    max_age=300, allow_credentials=True, allow_headers=["authorizationToken"]
+)
+app = APIGatewayRestResolver(cors=cors_config)
 logger = Logger()
 utils.copy_config_to_registered_loggers(source_logger=logger)
+
+
+class QuestionRequest(BaseModel):
+    query: str
 
 
 @logger.inject_lambda_context(correlation_id_path=correlation_paths.API_GATEWAY_REST)
@@ -51,7 +57,7 @@ def get_answer():
     search_results = search_engine.search(request.query, int(use_top_n_results))
     if search_results is None:
         return {"status_code": 500, "message": "Search failed"}
-    
+
     llm = huggingfaceTGI(llm_url, llm_bearer_token)
 
     turns = []

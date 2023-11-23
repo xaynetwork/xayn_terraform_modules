@@ -388,7 +388,7 @@ resource "aws_api_gateway_integration" "rag" {
 
 resource "aws_lambda_permission" "rag" {
   count         = var.enable_rag_endpoint ? 1 : 0
-  statement_id  = "AllowPOSTExecutionFromAPIGateway"
+  statement_id  = "AllowPOSTExecutionFromAPIGatewayFor${var.tenant}"
   action        = "lambda:InvokeFunction"
   function_name = var.rag_integration_config.function_name
   principal     = "apigateway.amazonaws.com"
@@ -417,7 +417,7 @@ resource "aws_api_gateway_integration" "rag_options" {
 
 resource "aws_lambda_permission" "rag_options" {
   count         = var.enable_rag_endpoint ? 1 : 0
-  statement_id  = "AllowOPTIONSExecutionFromAPIGateway"
+  statement_id  = "AllowOPTIONSExecutionFromAPIGatewayFor${var.tenant}"
   action        = "lambda:InvokeFunction"
   function_name = var.rag_integration_config.function_name
   principal     = "apigateway.amazonaws.com"

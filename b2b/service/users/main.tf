@@ -3,10 +3,11 @@ data "aws_partition" "current" {}
 data "aws_caller_identity" "current" {}
 
 locals {
-  create_task_role = length(var.sagemaker_endpoint) > 0 ? true : false
-  account_id       = data.aws_caller_identity.current.account_id
-  partition        = data.aws_partition.current.partition
-  region           = data.aws_region.current.name
+  create_task_role    = length(var.sagemaker_endpoint) > 0 ? true : false
+  use_openai_endpoint = length(var.openai_endpoint) > 0 ? true : false
+  account_id          = data.aws_caller_identity.current.account_id
+  partition           = data.aws_partition.current.partition
+  region              = data.aws_region.current.name
 }
 
 resource "null_resource" "validate" {
@@ -18,6 +19,10 @@ resource "null_resource" "validate" {
     postcondition {
       condition     = (local.create_task_role && try(var.sagemaker_endpoint.name, null) != null && try(var.sagemaker_endpoint.model_embedding_size, null) != null) || !local.create_task_role
       error_message = "In combination with sagemaker, the model embedding size need to be specified."
+    }
+    postcondition {
+      condition     = !(local.create_task_role && local.use_openai_endpoint)
+      error_message = "Can not define sagemaker and openai_endpoints together, just use one of both."
     }
   }
 }
@@ -175,6 +180,11 @@ module "service" {
     }, local.create_task_role ? {
     XAYN_WEB_API__EMBEDDING__TYPE           = "sagemaker",
     XAYN_WEB_API__EMBEDDING__ENDPOINT       = var.sagemaker_endpoint.name,
+    XAYN_WEB_API__EMBEDDING__EMBEDDING_SIZE = var.sagemaker_endpoint.model_embedding_size
+    } : local.use_openai_endpoint ? {
+    XAYN_WEB_API__EMBEDDING__TYPE           = "open_ai",
+    XAYN_WEB_API__EMBEDDING__URL            = "${var.openai_endpoint.url}&user=${var.tenant}",
+    XAYN_WEB_API__EMBEDDING__API_KEY        = var.openai_endpoint.api_key,
     XAYN_WEB_API__EMBEDDING__EMBEDDING_SIZE = var.sagemaker_endpoint.model_embedding_size
     } : {
     XAYN_WEB_API__EMBEDDING__TYPE       = "pipeline",

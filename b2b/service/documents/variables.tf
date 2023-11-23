@@ -221,7 +221,7 @@ variable "enable_dev_options" {
 }
 
 variable "sagemaker_endpoint" {
-  description = "The name of the sagemaker endpoint config."
+  description = "The sagemaker endpoint config. Can not work with openai. "
   type        = any
   default     = {}
   # example
@@ -230,6 +230,18 @@ variable "sagemaker_endpoint" {
   # model_embedding_size = 384
   # target_model         = "model.tar.gz" or null
   # max_retries          = 1 or null
+  # }
+}
+
+variable "openai_endpoint" {
+  description = "The openai endpoint config, can not work with sagemaker."
+  type        = any
+  default     = {}
+  # example
+  # {
+  # url                  = i.e. "https://openai.azure.com/openai/deployments/text-embedding-ada-002/embeddings?api-version=2023-07-01-preview"
+  # api_key              = your very secret key
+  # model_embedding_size = 384  
   # }
 }
 

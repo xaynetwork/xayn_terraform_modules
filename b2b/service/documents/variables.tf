@@ -149,6 +149,16 @@ variable "max_snippet_size" {
   default     = 2048
 }
 
+variable "snippet_language" {
+  description = "The language used for the snippet. This is useful i.e. for the splitter."
+  type        = string
+  default     = "english"
+  validation {
+    condition     = contains(["german", "english", "czech", "danish", "dutch", "estonian", "finnish", "frensh", "greek", "italian", "malayalam", "norwegian", "polish", "portuguese", "russian", "slovene", "spanish", "swedish", "turkish"], var.snippet_language)
+    error_message = "Allowed values for input_parameter are: ${join(", ", ["german", "english", "czech", "danish", "dutch", "estonian", "finnish", "frensh", "greek", "italian", "malayalam", "norwegian", "polish", "portuguese", "russian", "slovene", "spanish", "swedish", "turkish"])}."
+  }
+}
+
 variable "max_properties_size" {
   description = "The max size for properties"
   type        = number

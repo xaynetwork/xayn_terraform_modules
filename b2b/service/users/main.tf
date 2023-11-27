@@ -185,7 +185,7 @@ module "service" {
     XAYN_WEB_API__EMBEDDING__TYPE           = "open_ai",
     XAYN_WEB_API__EMBEDDING__URL            = "${var.openai_endpoint.url}&user=${var.tenant}",
     XAYN_WEB_API__EMBEDDING__API_KEY        = var.openai_endpoint.api_key,
-    XAYN_WEB_API__EMBEDDING__EMBEDDING_SIZE = var.sagemaker_endpoint.model_embedding_size
+    XAYN_WEB_API__EMBEDDING__EMBEDDING_SIZE = var.openai_endpoint.model_embedding_size
     } : {
     XAYN_WEB_API__EMBEDDING__TYPE       = "pipeline",
     XAYN_WEB_API__EMBEDDING__TOKEN_SIZE = var.token_size

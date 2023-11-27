@@ -162,21 +162,22 @@ module "service" {
   task_execution_role_arn = module.task_role.arn
   task_role_arn           = local.create_task_role ? aws_iam_role.task_role[0].arn : null
   environment = merge({
-    XAYN_WEB_API__NET__BIND_TO                          = "0.0.0.0:${var.container_port}"
-    XAYN_WEB_API__STORAGE__ELASTIC__URL                 = var.elasticsearch_url
-    XAYN_WEB_API__STORAGE__ELASTIC__INDEX_NAME          = var.elasticsearch_index
-    XAYN_WEB_API__STORAGE__ELASTIC__USER                = var.elasticsearch_username
-    XAYN_WEB_API__STORAGE__POSTGRES__BASE_URL           = "${var.postgres_url}/${var.tenant}"
-    XAYN_WEB_API__STORAGE__POSTGRES__USER               = var.postgres_username
-    XAYN_WEB_API__STORAGE__POSTGRES__APPLICATION_NAME   = var.tenant
-    XAYN_WEB_API__NET__KEEP_ALIVE                       = var.keep_alive
-    XAYN_WEB_API__NET__CLIENT_REQUEST_TIMEOUT           = var.request_timeout
-    XAYN_WEB_API__LOGGING__LEVEL                        = var.logging_level
-    XAYN_WEB_API__INGESTION__MAX_SNIPPET_SIZE           = var.max_snippet_size
-    XAYN_WEB_API__INGESTION__MAX_PROPERTIES_SIZE        = var.max_properties_size
-    XAYN_WEB_API__INGESTION__MAX_PROPERTIES_STRING_SIZE = var.max_properties_string_size
-    XAYN_WEB_API__INGESTION__MAX_DOCUMENT_BATCH_SIZE    = var.max_document_batch_size
-    XAYN_WEB_API__TENANTS__ENABLE_DEV                   = var.enable_dev_options
+    XAYN_WEB_API__NET__BIND_TO                           = "0.0.0.0:${var.container_port}"
+    XAYN_WEB_API__STORAGE__ELASTIC__URL                  = var.elasticsearch_url
+    XAYN_WEB_API__STORAGE__ELASTIC__INDEX_NAME           = var.elasticsearch_index
+    XAYN_WEB_API__STORAGE__ELASTIC__USER                 = var.elasticsearch_username
+    XAYN_WEB_API__STORAGE__POSTGRES__BASE_URL            = "${var.postgres_url}/${var.tenant}"
+    XAYN_WEB_API__STORAGE__POSTGRES__USER                = var.postgres_username
+    XAYN_WEB_API__STORAGE__POSTGRES__APPLICATION_NAME    = var.tenant
+    XAYN_WEB_API__NET__KEEP_ALIVE                        = var.keep_alive
+    XAYN_WEB_API__NET__CLIENT_REQUEST_TIMEOUT            = var.request_timeout
+    XAYN_WEB_API__LOGGING__LEVEL                         = var.logging_level
+    XAYN_WEB_API__INGESTION__MAX_SNIPPET_SIZE            = var.max_snippet_size
+    XAYN_WEB_API__INGESTION__MAX_PROPERTIES_SIZE         = var.max_properties_size
+    XAYN_WEB_API__INGESTION__MAX_PROPERTIES_STRING_SIZE  = var.max_properties_string_size
+    XAYN_WEB_API__INGESTION__SNIPPET_EXTRACTOR__LANGUAGE = var.snippet_language
+    XAYN_WEB_API__INGESTION__MAX_DOCUMENT_BATCH_SIZE     = var.max_document_batch_size
+    XAYN_WEB_API__TENANTS__ENABLE_DEV                    = var.enable_dev_options
     }, local.sagemaker_enabled ? {
     XAYN_WEB_API__EMBEDDING__TYPE           = "sagemaker",
     XAYN_WEB_API__EMBEDDING__ENDPOINT       = var.sagemaker_endpoint.name,
@@ -185,7 +186,7 @@ module "service" {
     XAYN_WEB_API__EMBEDDING__TYPE           = "open_ai",
     XAYN_WEB_API__EMBEDDING__URL            = "${var.openai_endpoint.url}&user=${var.tenant}",
     XAYN_WEB_API__EMBEDDING__API_KEY        = var.openai_endpoint.api_key,
-    XAYN_WEB_API__EMBEDDING__EMBEDDING_SIZE = var.sagemaker_endpoint.model_embedding_size
+    XAYN_WEB_API__EMBEDDING__EMBEDDING_SIZE = var.openai_endpoint.model_embedding_size
     } : {
     XAYN_WEB_API__EMBEDDING__TYPE       = "pipeline",
     XAYN_WEB_API__EMBEDDING__TOKEN_SIZE = var.token_size

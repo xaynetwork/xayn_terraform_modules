@@ -43,7 +43,7 @@ module "rag" {
   source_path                       = "../src/"
   function_name                     = var.function_name
   handler                           = "app.lambda_handler"
-  runtime                           = "python3.9"
+  runtime                           = "python3.11"
   create_sam_metadata               = true
   publish                           = true
   memory_size                       = var.memory_size

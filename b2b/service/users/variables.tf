@@ -50,6 +50,12 @@ variable "elasticsearch_index" {
   type        = string
 }
 
+variable "elasticsearch_timeout" {
+  description = "Time until a search request to elastic goes into timout (it is also retried 3 times by default)"
+  type        = number
+  default     = 2
+}
+
 variable "elasticsearch_password_ssm_parameter_arn" {
   description = "ARN of the Elasticsearch password SSM parameter"
   type        = string

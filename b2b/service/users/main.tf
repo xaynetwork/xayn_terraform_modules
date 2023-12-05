@@ -165,6 +165,7 @@ module "service" {
     XAYN_WEB_API__STORAGE__ELASTIC__URL                     = var.elasticsearch_url
     XAYN_WEB_API__STORAGE__ELASTIC__INDEX_NAME              = var.elasticsearch_index
     XAYN_WEB_API__STORAGE__ELASTIC__USER                    = var.elasticsearch_username
+    XAYN_WEB_API__STORAGE__ELASTIC__TIMEOUT                 = var.elasticsearch_timeout
     XAYN_WEB_API__STORAGE__POSTGRES__BASE_URL               = "${var.postgres_url}/${var.tenant}"
     XAYN_WEB_API__STORAGE__POSTGRES__USER                   = var.postgres_username
     XAYN_WEB_API__STORAGE__POSTGRES__APPLICATION_NAME       = var.tenant

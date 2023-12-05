@@ -5,7 +5,7 @@ import psycopg2
 from dotenv import load_dotenv
 
 # Legacy name filename
-legacy_file_name = 'legacy_schema'
+legacy_file_name = '/tmp/legacy_schema'
 
 # Upload file to S3
 def upload_to_s3(file_path, bucket_name, file_name, client):
@@ -73,8 +73,10 @@ def pg_backup(db_name, db_user, db_password, backup_name, s3_client, bucket_name
 		# Extracting schema name
 		schema_name(cursor)
 
+		backup_location = f"/tmp/{backup_name}"
+
 		print("Creating Backup")
-		pg_db_create = f"pg_dump -v -Fc -Z 9 '{url}' > {backup_name}"
+		pg_db_create = f"pg_dump -v -Fc -Z 9 '{url}' > {backup_location}"
 		process = Popen(pg_db_create, shell=True, stdout=PIPE, stderr=PIPE)
 			
 		stdout, stderr = process.communicate()
@@ -82,7 +84,7 @@ def pg_backup(db_name, db_user, db_password, backup_name, s3_client, bucket_name
 		if process.returncode == 0:
 			print("Backup successful!")
 			# Upload backup to S3
-			upload_to_s3(backup_name, bucket_name, f"{db_name}/{backup_name}", s3_client)
+			upload_to_s3(backup_location, bucket_name, f"{db_name}/{backup_name}", s3_client)
 			# Upload schema name to S3
 			upload_to_s3(legacy_file_name, bucket_name, f"{db_name}/{legacy_file_name}", s3_client)
 		else:
@@ -102,8 +104,10 @@ def pg_restore(db_host, db_port, db_name, db_user, db_password, backup_name, s3_
 
 	url=f'postgresql://{db_user}:{db_password}@localhost/{db_name}'
 
+	backup_location = f"/tmp/{backup_name}"
+
 	# Download backup
-	download_s3(backup_name, bucket_name, f"{db_name}/{backup_name}", s3_client)
+	download_s3(backup_location, bucket_name, f"{db_name}/{backup_name}", s3_client)
 	# Download legacy_file_name
 	download_s3(legacy_file_name, bucket_name, f"{db_name}/{legacy_file_name}", s3_client)
 	legacy_schema_name = schema()
@@ -134,10 +138,8 @@ def pg_restore(db_host, db_port, db_name, db_user, db_password, backup_name, s3_
 		print("DB Configuration Done")
 		print("Restoring Data")
 
-		pg_db_create = f"pg_dump -v -Fc -Z 9 '{url}' > {backup_name}"
-
 		# Schemas restore
-		pg_db_restore_schema = f"pg_restore -v -s -h {db_host} -p 5432 -d {db_name} -U {db_user} {backup_name}"
+		pg_db_restore_schema = f"pg_restore -v -s -h {db_host} -p 5432 -d {db_name} -U {db_user} {backup_location}"
 		process_schema = Popen(pg_db_restore_schema, shell=True, stdout=PIPE, stderr=PIPE)
 		stdout_schema, stderr_schema = process_schema.communicate()
 
@@ -147,7 +149,7 @@ def pg_restore(db_host, db_port, db_name, db_user, db_password, backup_name, s3_
 			print(f"Schemas restore failed. Error: {stderr_schema.decode('utf-8')}")
 
 		# Data restore
-		pg_db_restore_data = f"pg_restore -v -a -h {db_host} -p 5432 -d {db_name} -U {db_user} {backup_name}"
+		pg_db_restore_data = f"pg_restore -v -a -h {db_host} -p 5432 -d {db_name} -U {db_user} {backup_location}"
 		process_data = Popen(pg_db_restore_data, shell=True, stdout=PIPE, stderr=PIPE)
 		stdout_data, stderr_data = process_data.communicate()
 

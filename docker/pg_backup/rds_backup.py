@@ -173,7 +173,7 @@ if __name__ == "__main__":
 	db_name=os.environ["DB_NAME"]
 	db_user=os.environ["DB_USER"]
 	db_password=os.environ["PGPASSWORD"]
-	strategy=os.environ["STRATEGY"]
+	task=os.environ["TASK"]
 	bucket_name=os.environ["S3_BUCKET"]
 
 	# Creating an S3 client
@@ -181,10 +181,10 @@ if __name__ == "__main__":
 
 	backup_name = "backup.dump"
 	
-	if(strategy == 'backup'):
+	if(task == 'backup'):
 		pg_backup(db_name, db_user, db_password, backup_name, s3, bucket_name)
-	elif(strategy == 'restore'):
+	elif(task == 'restore'):
 		pg_restore(db_host, db_port, db_name, db_user, db_password, backup_name, s3, bucket_name)
-	else: 
+	else:
 		print("Error")
 	

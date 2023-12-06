@@ -52,6 +52,13 @@ resource "aws_ecs_task_definition" "this" {
     cpu_architecture        = var.cpu_architecture
   }
 
+  dynamic "ephemeral_storage" {
+    for_each = var.ephemeral_storage == null ? [] : [1]
+    content {
+      size_in_gib = var.ephemeral_storage
+    }
+  }
+
   tags = var.tags
 }
 

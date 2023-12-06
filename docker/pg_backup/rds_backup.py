@@ -4,8 +4,10 @@ import boto3
 import psycopg2
 from dotenv import load_dotenv
 
-# Legacy name filename
-legacy_file_name = '/tmp/legacy_schema'
+legacy_file_location = '/temp/legacy_schema'
+db_port = 5432
+backup_name = "backup.dump"
+backup_location = f"/temp/{backup_name}"
 
 # Upload file to S3
 def upload_to_s3(file_path, bucket_name, file_name, client):
@@ -41,23 +43,33 @@ def schema_name(cursor):
 	schemas = cursor.fetchall()
 
 	# Write the schema names that start with 'Legacy:' to the file
-	with open(legacy_file_name, 'w') as file:
+	with open(legacy_file_location, 'w') as file:
 		for schema in schemas:
 			schema_name = schema[0]
 			if schema_name.startswith('t:legacy'):
 				file.write(schema_name)
 
 # Get legacy name from the schema file
-def schema():
-	with open(legacy_file_name, 'r') as file:
+def get_legacy_schema_name():
+	with open(legacy_file_location, 'r') as file:
 		content = file.read()
-
+	
 	return(content)
 
+def get_host_name(url):
+	splitted_url = url.split('@')
+	
+	return splitted_url[1]
+	
 # Create an aurora DB backup and store it on S3
-def pg_backup(db_name, db_user, db_password, backup_name, s3_client, bucket_name):
+def pg_backup(db_name, db_user, db_password, db_url, s3_client, bucket_name):
 
-	url=f'postgresql://{db_user}:{db_password}@localhost/{db_name}'
+	url = db_url
+
+	# Retrieve host name
+	db_host = get_host_name(url)
+	# Parse the URL
+	parsed_url = url.replace("user",db_user).replace("password",db_password)
 
 	# Connect to the database
 	try:
@@ -73,10 +85,8 @@ def pg_backup(db_name, db_user, db_password, backup_name, s3_client, bucket_name
 		# Extracting schema name
 		schema_name(cursor)
 
-		backup_location = f"/tmp/{backup_name}"
-
 		print("Creating Backup")
-		pg_db_create = f"pg_dump -v -Fc -Z 9 '{url}' > {backup_location}"
+		pg_db_create = f"pg_dump -v -Fc -Z 9 '{parsed_url}/{db_name}' > {backup_location}"
 		process = Popen(pg_db_create, shell=True, stdout=PIPE, stderr=PIPE)
 			
 		stdout, stderr = process.communicate()
@@ -86,7 +96,7 @@ def pg_backup(db_name, db_user, db_password, backup_name, s3_client, bucket_name
 			# Upload backup to S3
 			upload_to_s3(backup_location, bucket_name, f"{db_name}/{backup_name}", s3_client)
 			# Upload schema name to S3
-			upload_to_s3(legacy_file_name, bucket_name, f"{db_name}/{legacy_file_name}", s3_client)
+			upload_to_s3(legacy_file_location, bucket_name, f"{db_name}/legacy_schema", s3_client)
 		else:
 			error_message = f"Backup failed. Error: {stderr.decode('utf-8')}"
 			print(error_message)
@@ -100,17 +110,16 @@ def pg_backup(db_name, db_user, db_password, backup_name, s3_client, bucket_name
 			connection.close()
 
 # Restore DB from a backup stored in S3
-def pg_restore(db_host, db_port, db_name, db_user, db_password, backup_name, s3_client, bucket_name):
+def pg_restore(db_name, db_user, db_password, db_url, s3_client, bucket_name):
 
-	url=f'postgresql://{db_user}:{db_password}@localhost/{db_name}'
-
-	backup_location = f"/tmp/{backup_name}"
+	# Retrieve host name
+	db_host = get_host_name(db_url)
 
 	# Download backup
 	download_s3(backup_location, bucket_name, f"{db_name}/{backup_name}", s3_client)
-	# Download legacy_file_name
-	download_s3(legacy_file_name, bucket_name, f"{db_name}/{legacy_file_name}", s3_client)
-	legacy_schema_name = schema()
+	# Download legacy_file_location
+	download_s3(legacy_file_location, bucket_name, f"{db_name}/legacy_schema", s3_client)
+	legacy_schema_name = get_legacy_schema_name()
 
 	# Connect to the database
 	try:
@@ -170,23 +179,28 @@ def pg_restore(db_host, db_port, db_name, db_user, db_password, backup_name, s3_
 if __name__ == "__main__":
 	load_dotenv()
 	# Retrieve environental variables
-	db_host=os.environ["DB_HOST"]
-	db_port=os.environ["DB_PORT"]
 	db_name=os.environ["DB_NAME"]
 	db_user=os.environ["DB_USER"]
 	db_password=os.environ["PGPASSWORD"]
+	db_url=os.environ["DB_URL"]
 	task=os.environ["TASK"]
 	bucket_name=os.environ["S3_BUCKET"]
 
 	# Creating an S3 client
 	s3 = boto3.client('s3')
 
-	backup_name = "backup.dump"
-	
-	if(task == 'backup'):
-		pg_backup(db_name, db_user, db_password, backup_name, s3, bucket_name)
-	elif(task == 'restore'):
-		pg_restore(db_host, db_port, db_name, db_user, db_password, backup_name, s3, bucket_name)
-	else:
-		print("Error")
-	
+	try: 
+		if(task.upper() == 'BACKUP'):
+			pg_backup(db_name, db_user, db_password, db_url, s3, bucket_name)
+		elif(task.upper() == 'RESTORE'):
+			pg_restore(db_name, db_user, db_password, db_url, s3, bucket_name)
+		else:
+			print("Error: Invalid task specified")
+			exit(1)  # Exit with a non-zero status code for error
+		
+		print("Task completed successfully")
+		exit(0)  # Exit with a status code of 0 for success
+		
+	except Exception as e:
+		print(f"Error: {e}")
+		exit(1)  # Exit with a non-zero status code for error

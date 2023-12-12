@@ -8,11 +8,6 @@ variable "tenant" {
   }
 }
 
-variable "cluster_id" {
-  description = "ID of the ECS cluster"
-  type        = string
-}
-
 variable "task_role_name" {
   description = "IAM role that allows your Amazon ECS container task to make calls to other AWS services."
   type        = string
@@ -23,22 +18,6 @@ variable "task_role_arn" {
   description = "ARN of IAM role that allows your Amazon ECS container task to make calls to other AWS services."
   type        = string
   default     = ""
-}
-
-variable "rds_security_group_id" {
-  description = "Security group ID of the RDS"
-  type        = string
-}
-
-## network
-variable "subnet_ids" {
-  description = "VPC subnet IDs to launch in the ECS service"
-  type        = list(string)
-}
-
-variable "vpc_id" {
-  description = "The ID of the VPC"
-  type        = string
 }
 
 ## container
@@ -82,12 +61,6 @@ variable "log_retention_in_days" {
   description = "Specifies the number of days you want to retain log events of the container"
   type        = number
   default     = 7
-}
-
-variable "health_check_grace_period_seconds" {
-  description = "Seconds to ignore failing load balancer health checks on newly instantiated tasks to prevent premature shutdown"
-  type        = number
-  default     = null
 }
 
 # Environmental Variables

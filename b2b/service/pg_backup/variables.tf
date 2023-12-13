@@ -11,13 +11,11 @@ variable "tenant" {
 variable "task_role_name" {
   description = "IAM role that allows your Amazon ECS container task to make calls to other AWS services."
   type        = string
-  default     = ""
 }
 
 variable "task_role_arn" {
   description = "ARN of IAM role that allows your Amazon ECS container task to make calls to other AWS services."
   type        = string
-  default     = ""
 }
 
 ## container

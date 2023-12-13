@@ -7,7 +7,7 @@ WORKDIR /app
 RUN mkdir /temp
 
 # Download Python file 
-COPY ./rds_backup.py requirements.txt /app/
+ADD ./rds_backup.py requirements.txt /app/
 
 # Install pip librarires
 RUN pip install -r requirements.txt
@@ -16,4 +16,4 @@ RUN pip install -r requirements.txt
 RUN apt-get update && apt-get install -y postgresql-client
 
 # Run
-CMD ["python", "rds_backup.py"]
+ENTRYPOINT ["python", "rds_backup.py"]

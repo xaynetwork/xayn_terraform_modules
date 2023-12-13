@@ -35,7 +35,7 @@ def download_s3(file_name, bucket_name, s3_file, client):
 		print(f"Failed to download object. Response status code: {object['ResponseMetadata']['HTTPStatusCode']}")
 
 # Retrieve schema name from postgres
-def schema_name(cursor):
+def write_schema_name_to_disk(cursor):
 	# Execute a query to fetch schema names
 	cursor.execute("SELECT schema_name FROM information_schema.schemata")
 
@@ -83,7 +83,7 @@ def pg_backup(db_name, db_user, db_password, db_url, s3_client, bucket_name):
 		cursor = connection.cursor()
 		print("Connection established to Aurora")
 		# Extracting schema name
-		schema_name(cursor)
+		write_schema_name_to_disk(cursor)
 
 		print("Creating Backup")
 		pg_db_create = f"pg_dump -v -Fc -Z 9 '{parsed_url}/{db_name}' > {backup_location}"

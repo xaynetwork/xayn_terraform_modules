@@ -191,6 +191,8 @@ module "service" {
     XAYN_WEB_API__EMBEDDING__TYPE       = "pipeline",
     XAYN_WEB_API__EMBEDDING__TOKEN_SIZE = var.token_size
     },
+    try(var.prefix_query, null) != null ? { XAYN_WEB_API__EMBEDDING__PREFIX__QUERY = var.prefix_query } : {},
+    try(var.prefix_snippet, null) != null ? { XAYN_WEB_API__EMBEDDING__PREFIX__SNIPPET = var.prefix_snippet } : {},
     local.create_task_role && try(var.sagemaker_endpoint.target_model, null) != null ? { XAYN_WEB_API__EMBEDDING__TARGET_MODEL = var.sagemaker_endpoint.target_model } : {},
     local.create_task_role && try(var.sagemaker_endpoint.max_retries, null) != null ? { XAYN_WEB_API__EMBEDDING__RETRY_MAX_ATTEMPTS = var.sagemaker_endpoint.max_retries } : {},
   )

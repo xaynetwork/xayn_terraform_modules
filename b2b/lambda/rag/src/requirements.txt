@@ -1,1 +1,1 @@
-xayn_rag @ git+ssh://git@github.com/xaynetwork/xayn_rag@rag_extensions
+xayn_rag @ git+ssh://git@github.com/xaynetwork/xayn_rag@cf7e5c5

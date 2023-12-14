@@ -20,6 +20,7 @@ from xayn_rag.context import (
     EnvKey,
     ConfigEnvLoader,
 )
+from xayn_rag.retrieval import SimpleSearchQuery
 
 
 nlb_url = os.getenv("NLB_URL")
@@ -39,6 +40,9 @@ utils.copy_config_to_registered_loggers(source_logger=logger)
 
 class QuestionRequest(BaseModel):
     query: str
+    filter: str | None
+    include_properties: bool = True
+    use_hybrid_search: bool = False
 
 
 @logger.inject_lambda_context(correlation_id_path=correlation_paths.API_GATEWAY_REST)
@@ -49,7 +53,12 @@ def lambda_handler(event: dict, context: LambdaContext) -> dict:
 @app.post("/rag")
 def get_answer():
     tenant_id: Optional[str] = app.current_event.request_context.authorizer.principal_id
-    error_wrap = app.current_event.get_query_string_value(name='error_wrap', default_value='false') == 'true'
+    error_wrap = (
+        app.current_event.get_query_string_value(
+            name="error_wrap", default_value="false"
+        )
+        == "true"
+    )
     if not tenant_id:
         logger.error(
             "request_context.authorizer.principal_id is not set! This lambda must be called with a valid TenantId!"
@@ -85,23 +94,51 @@ def get_answer():
             error_wrap=error_wrap,
         )
 
-    context = ConfigContext(
-        config={
-            Config.LLM_PLATFORM: LlmPlatformValues.HUGGINGFACE,
-            Config.SEARCH_PLATFORM: SearchPlatformValues.XAYN_INTERNAL,
+    configs = {
+        "porschedemoe5": {
+            "type": "EM_GERMAN_RAG",
+            "config": {
+                "LLM_PLATFORM": "HUGGINGFACE",
+                "SEARCH_PLATFORM": "XAYN_INTERNAL",
+            },
+            "envs": {
+                "XAYN_SEARCH_ENDPOINT": nlb_url,
+                "TENANT_ID": tenant_id,
+                "HUGGINGFACE_ENDPOINT_TOKEN": llm_bearer_token,
+                "HUGGINGFACE_ENDPOINT_URL": llm_url,
+                "USE_TOP_N_RESULTS": 5,
+            },
         },
-        env_loader=ConfigEnvLoader(
-            {
-                EnvKey.XAYN_SEARCH_ENDPOINT: nlb_url,
-                EnvKey.TENANT_ID: tenant_id,
-                EnvKey.HUGGINGFACE_ENDPOINT_TOKEN: llm_bearer_token,
-                EnvKey.HUGGINGFACE_ENDPOINT_URL: llm_url,
-                EnvKey.USE_TOP_N_RESULTS: 5,
-            }
-        ),
+        "legaldemolarge": {
+            "type": "EM_GERMAN_RAG",
+            "config": {
+                "LLM_PLATFORM": "HUGGINGFACE",
+                "SEARCH_PLATFORM": "XAYN_INTERNAL",
+            },
+            "envs": {
+                "XAYN_SEARCH_ENDPOINT": nlb_url,
+                "TENANT_ID": tenant_id,
+                "HUGGINGFACE_ENDPOINT_TOKEN": llm_bearer_token,
+                "HUGGINGFACE_ENDPOINT_URL": llm_url,
+                "USE_TOP_N_RESULTS": 5,
+            },
+        },
+    }
+
+    config = configs[tenant_id]
+    context = ConfigContext(
+        config=config['config'],
+        env_loader=ConfigEnvLoader(config['envs']),
     )
     res = run_query(
-        query=request.query, context=context, rag_type=RagType.EM_GERMAN_RAG
+        query=SimpleSearchQuery(
+            query=request.query,
+            filter_json=request.filter,
+            include_properties=request.include_properties,
+            use_hybrid_search=request.use_hybrid_search,
+        ),
+        context=context,
+        rag_type=configs[tenant_id]['type'],
     )
     return convert_response(res, error_wrap=error_wrap)
 

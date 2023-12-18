@@ -1,8 +1,10 @@
 import os 
+import sys
 from subprocess import Popen, PIPE
 import boto3 
 import psycopg2
 from dotenv import load_dotenv
+import tarfile
 
 legacy_file_location = '/temp/legacy_schema'
 db_port = 5432
@@ -10,27 +12,23 @@ backup_name = "backup.dump"
 backup_location = f"/temp/{backup_name}"
 
 # Upload file to S3
-def upload_to_s3(file_path, bucket_name, file_name, client):
-	# Upload the file
+def upload_to_s3(local_file_path, bucket_name, file_name_s3, client):
     try:
-        client.upload_file(file_path, bucket_name, file_name)
+        client.upload_file(local_file_path, bucket_name, file_name_s3)
         print("Upload Successful!")
-        return True
     except FileNotFoundError:
         print("The file was not found")
-        return False
 
 # Download S3 file
-def download_s3(file_name, bucket_name, s3_file, client):
-	# Upload the file
-	object = client.get_object(Bucket=bucket_name, Key=s3_file)
+def download_s3(local_file_name, bucket_name, file_name_s3, client):
+	object = client.get_object(Bucket=bucket_name, Key=file_name_s3)
 	print("Download backup successful!")
 
 	# Check if the response status is 200 (OK) before writing to file
 	if object['ResponseMetadata']['HTTPStatusCode'] == 200:
-		with open(file_name, 'wb') as f:
+		with open(local_file_name, 'wb') as f:
 			f.write(object['Body'].read())
-		print(f"Object downloaded and saved to: {file_name}")
+		print(f"Object downloaded and saved to: {local_file_name}")
 	else:
 		print(f"Failed to download object. Response status code: {object['ResponseMetadata']['HTTPStatusCode']}")
 
@@ -38,8 +36,6 @@ def download_s3(file_name, bucket_name, s3_file, client):
 def write_schema_name_to_disk(cursor):
 	# Execute a query to fetch schema names
 	cursor.execute("SELECT schema_name FROM information_schema.schemata")
-
-	# Fetch all rows from the result set
 	schemas = cursor.fetchall()
 
 	# Write the schema names that start with 'Legacy:' to the file
@@ -53,22 +49,39 @@ def write_schema_name_to_disk(cursor):
 def get_legacy_schema_name():
 	with open(legacy_file_location, 'r') as file:
 		content = file.read()
-	
+
 	return(content)
 
+# Get the hostname from the Aurora cluster
 def get_host_name(url):
 	splitted_url = url.split('@')
 	
 	return splitted_url[1]
+
+# Compress file
+def crompress_file(file):
+	print("Compressing File")
+	# Check if the file exists
+	if not os.path.exists(file):
+		raise FileNotFoundError(f"The file '{file}' does not exist.")
 	
+	with tarfile.open(f'{file}.tar', "w") as tar:
+		tar.add(file)
+
+# Extract file
+def extract_tarfile(file):
+	try:
+		print("Extracting File")
+		with tarfile.open(file, "r") as tar:
+			tar.extractall()
+	except Exception as e:
+		print(f"Error extracting file '{file}': {e}")
+
 # Create an aurora DB backup and store it on S3
 def pg_backup(db_name, db_user, db_password, db_url, s3_client, bucket_name):
-
+	# Retrieve host name and parse the url
 	url = db_url
-
-	# Retrieve host name
 	db_host = get_host_name(url)
-	# Parse the URL
 	parsed_url = url.replace("user",db_user).replace("password",db_password)
 
 	# Connect to the database
@@ -80,9 +93,9 @@ def pg_backup(db_name, db_user, db_password, db_url, s3_client, bucket_name):
 			user=db_user,
 			password=db_password
 		)
-		cursor = connection.cursor()
 		print("Connection established to Aurora")
-		# Extracting schema name
+		 # Extracting schema name
+		cursor = connection.cursor()
 		write_schema_name_to_disk(cursor)
 
 		print("Creating Backup")
@@ -92,14 +105,18 @@ def pg_backup(db_name, db_user, db_password, db_url, s3_client, bucket_name):
 		stdout, stderr = process.communicate()
 
 		if process.returncode == 0:
-			print("Backup successful!")
-			# Upload backup to S3
-			upload_to_s3(backup_location, bucket_name, f"{db_name}/{backup_name}", s3_client)
-			# Upload schema name to S3
-			upload_to_s3(legacy_file_location, bucket_name, f"{db_name}/legacy_schema", s3_client)
+			# Compress and upload files
+			try:
+				crompress_file(backup_location)
+				upload_to_s3(f"{backup_location}.tar", bucket_name, f"{db_name}/{backup_name}.tar", s3_client)
+				upload_to_s3(legacy_file_location, bucket_name, f"{db_name}/legacy_schema", s3_client)
+			except (FileNotFoundError, Exception) as e:
+				print(f"Error: {e}")
+				sys.exit(1)
 		else:
 			error_message = f"Backup failed. Error: {stderr.decode('utf-8')}"
 			print(error_message)
+			sys.exit(1)
 	
 	except Exception as e:
 		print(f"Error: {e}")
@@ -111,15 +128,17 @@ def pg_backup(db_name, db_user, db_password, db_url, s3_client, bucket_name):
 
 # Restore DB from a backup stored in S3
 def pg_restore(db_name, db_user, db_password, db_url, s3_client, bucket_name):
-
 	# Retrieve host name
 	db_host = get_host_name(db_url)
 
-	# Download backup
-	download_s3(backup_location, bucket_name, f"{db_name}/{backup_name}", s3_client)
-	# Download legacy_file_location
-	download_s3(legacy_file_location, bucket_name, f"{db_name}/legacy_schema", s3_client)
-	legacy_schema_name = get_legacy_schema_name()
+	# Download files from S3
+	try:
+		download_s3(f"{backup_location}.tar", bucket_name, f"{db_name}/{backup_name}.tar", s3_client)
+		extract_tarfile(f"{backup_location}.tar")
+		download_s3(legacy_file_location, bucket_name, f"{db_name}/legacy_schema", s3_client)
+		legacy_schema_name = get_legacy_schema_name()
+	except Exception as e:
+				sys.exit(1)
 
 	# Connect to the database
 	try:
@@ -196,11 +215,11 @@ if __name__ == "__main__":
 			pg_restore(db_name, db_user, db_password, db_url, s3, bucket_name)
 		else:
 			print("Error: Invalid task specified")
-			exit(1)  # Exit with a non-zero status code for error
+			sys.exit(1)  # Exit with a non-zero status code for error
 		
 		print("Task completed successfully")
-		exit(0)  # Exit with a status code of 0 for success
+		sys.exit(0)  # Exit with a status code of 0 for success
 		
 	except Exception as e:
 		print(f"Error: {e}")
-		exit(1)  # Exit with a non-zero status code for error
+		sys.exit(1)  # Exit with a non-zero status code for error

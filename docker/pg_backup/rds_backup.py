@@ -73,7 +73,7 @@ def extract_tarfile(file):
 	try:
 		print("Extracting File")
 		with tarfile.open(file, "r") as tar:
-			tar.extractall()
+			tar.extractall(path="/")
 	except Exception as e:
 		print(f"Error extracting file '{file}': {e}")
 
@@ -175,6 +175,7 @@ def pg_restore(db_name, db_user, db_password, db_url, s3_client, bucket_name):
 			print("Schemas restore successful!")
 		else:
 			print(f"Schemas restore failed. Error: {stderr_schema.decode('utf-8')}")
+			sys.exit(1)
 
 		# Data restore
 		pg_db_restore_data = f"pg_restore -v -a -h {db_host} -p 5432 -d {db_name} -U {db_user} {backup_location}"
@@ -185,6 +186,7 @@ def pg_restore(db_name, db_user, db_password, db_url, s3_client, bucket_name):
 			print("Data restore successful!")
 		else:
 			print(f"Data restore failed. Error: {stderr_data.decode('utf-8')}")
+			sys.exit(1)
 
 	except Exception as e:
 		print(f"Error: {e}")

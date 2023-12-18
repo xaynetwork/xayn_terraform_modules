@@ -255,6 +255,18 @@ variable "openai_endpoint" {
   # }
 }
 
+variable "prefix_query" {
+  description = "The value of the prefix for all queries to add before computing their embedding"
+  type        = string
+  default     = null
+}
+
+variable "prefix_snippet" {
+  description = "The value of the prefix for all snippets to add before computing their embedding"
+  type        = string
+  default     = null
+}
+
 variable "health_check_grace_period_seconds" {
   description = "Seconds to ignore failing load balancer health checks on newly instantiated tasks to prevent premature shutdown"
   type        = number

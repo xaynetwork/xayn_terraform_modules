@@ -101,6 +101,12 @@ variable "environment" {
   default     = {}
 }
 
+variable "ephemeral_storage" {
+  description = "Ephemeral storage size if the task requires a specific amount of ephemeral storage"
+  type        = number
+  default     = null
+}
+
 variable "secrets" {
   description = "An object representing the secret to expose to the container"
   type        = map(string)

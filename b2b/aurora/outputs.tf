@@ -10,10 +10,21 @@ output "postgres_username" {
   sensitive   = true
 }
 
+output "postgres_username_ssm_parameter_arn" {
+  description = "ARN of the aurora username SSM parameter"
+  value       = aws_ssm_parameter.postgres_username.arn
+}
+
 output "postgres_password_ssm_parameter_arn" {
   description = "ARN of the aurora password SSM parameter"
   value       = aws_ssm_parameter.postgres_password.arn
 }
+
+output "postgres_url_ssm_parameter_arn" {
+  description = "ARN of the aurora URL SSM parameter"
+  value       = aws_ssm_parameter.postgres_url.arn
+}
+
 
 output "postgres_username_ssm_parameter_name" {
   description = "Name of the aurora username SSM parameter"
@@ -28,6 +39,11 @@ output "postgres_password_ssm_parameter_name" {
 output "postgres_url_ssm_parameter_name" {
   description = "Name of the aurora URL SSM parameter"
   value       = aws_ssm_parameter.postgres_url.name
+}
+
+output "security_group_id" {
+  description = "The ID of the security group"
+  value       = module.security_group.security_group_id
 }
 
 output "alarm_arns" {

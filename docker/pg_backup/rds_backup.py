@@ -8,8 +8,9 @@ import tarfile
 
 legacy_file_location = '/temp/legacy_schema'
 db_port = 5432
-backup_name = "backup.dump"
-backup_location = f"/temp/{backup_name}"
+backup_name = "backup"
+backup_location = "/temp"
+backup = f"{backup_location}/{backup_name}"
 
 # Upload file to S3
 def upload_to_s3(local_file_path, bucket_name, file_name_s3, client):
@@ -59,20 +60,20 @@ def get_host_name(url):
 	return splitted_url[1]
 
 # Compress file
-def crompress_file(file):
+def compress_files(name, directory):
 	print("Compressing File")
 	# Check if the file exists
-	if not os.path.exists(file):
-		raise FileNotFoundError(f"The file '{file}' does not exist.")
+	if not os.path.exists(directory):
+		raise FileNotFoundError(f"The directory '{directory}' does not exist.")
 	
-	with tarfile.open(f'{file}.tar', "w") as tar:
-		tar.add(file)
+	with tarfile.open(f'{name}.tar.gz', "w:gz") as tar:
+		tar.add(directory, recursive=True)
 
 # Extract file
-def extract_tarfile(file):
+def extract_files(file):
 	try:
 		print("Extracting File")
-		with tarfile.open(file, "r") as tar:
+		with tarfile.open(file, "r:gz") as tar:
 			tar.extractall(path="/")
 	except Exception as e:
 		print(f"Error extracting file '{file}': {e}")
@@ -99,7 +100,7 @@ def pg_backup(db_name, db_user, db_password, db_url, s3_client, bucket_name):
 		write_schema_name_to_disk(cursor)
 
 		print("Creating Backup")
-		pg_db_create = f"pg_dump -v -Fc -Z 9 '{parsed_url}/{db_name}' > {backup_location}"
+		pg_db_create = f"pg_dump -v -Fc -Z 9 '{parsed_url}/{db_name}' > {backup}"
 		process = Popen(pg_db_create, shell=True, stdout=PIPE, stderr=PIPE)
 			
 		stdout, stderr = process.communicate()
@@ -107,9 +108,8 @@ def pg_backup(db_name, db_user, db_password, db_url, s3_client, bucket_name):
 		if process.returncode == 0:
 			# Compress and upload files
 			try:
-				crompress_file(backup_location)
-				upload_to_s3(f"{backup_location}.tar", bucket_name, f"{db_name}/{backup_name}.tar", s3_client)
-				upload_to_s3(legacy_file_location, bucket_name, f"{db_name}/legacy_schema", s3_client)
+				compress_files(backup_name, backup_location)
+				upload_to_s3(f"{backup_name}.tar.gz", bucket_name, f"{db_name}/{backup_name}.tar.gz", s3_client)
 			except (FileNotFoundError, Exception) as e:
 				print(f"Error: {e}")
 				sys.exit(1)
@@ -133,9 +133,8 @@ def pg_restore(db_name, db_user, db_password, db_url, s3_client, bucket_name):
 
 	# Download files from S3
 	try:
-		download_s3(f"{backup_location}.tar", bucket_name, f"{db_name}/{backup_name}.tar", s3_client)
-		extract_tarfile(f"{backup_location}.tar")
-		download_s3(legacy_file_location, bucket_name, f"{db_name}/legacy_schema", s3_client)
+		download_s3(f"{backup}.tar.gz", bucket_name, f"{db_name}/{backup_name}.tar.gz", s3_client)
+		extract_files(f"{backup}.tar.gz")
 		legacy_schema_name = get_legacy_schema_name()
 	except Exception as e:
 				sys.exit(1)

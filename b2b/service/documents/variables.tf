@@ -224,6 +224,12 @@ variable "max_document_batch_size" {
   default     = 100
 }
 
+variable "max_indexed_properties" {
+  description = "The maximum number of Indexable properties"
+  type        = number
+  default     = 11
+}
+
 variable "enable_dev_options" {
   description = "Determines if dev options are enabled."
   type        = bool

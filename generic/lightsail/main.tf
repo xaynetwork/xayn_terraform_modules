@@ -10,13 +10,16 @@ resource "aws_lightsail_container_service" "this" {
     }
   }
 
-  public_domain_names {
-    certificate {
-      certificate_name = var.certificate_name
-      domain_names = [
-        var.subdomain_name,
-        "www.${var.subdomain_name}"
-      ]
+  dynamic "public_domain_names" {
+    for_each = var.domain_name != "" ? [1] : []
+    content {
+      certificate {
+        certificate_name = var.certificate_name
+        domain_names = [
+          var.subdomain_name,
+          "www.${var.subdomain_name}"
+        ]
+      }
     }
   }
 }

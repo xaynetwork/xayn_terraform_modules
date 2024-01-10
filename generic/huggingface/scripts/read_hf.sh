@@ -25,3 +25,5 @@ if [ "$HTTP_STATUS_CODE" -ne 200 ]; then
   echo "Error Message: $JSON_ERROR_MESSAGE"
   exit 1
 fi
+
+echo $JSON_ERROR_MESSAGE | jq '{name:.name, model:.model.repository}'

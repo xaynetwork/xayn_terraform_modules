@@ -4,6 +4,11 @@ output "postgres_url" {
   sensitive   = true
 }
 
+output "postgres_cluster_arn" {
+  description = "ARN of the postgres cluster"
+  value       = aws_rds_cluster.this.arn
+}
+
 output "postgres_username" {
   description = "Aurora username"
   value       = aws_ssm_parameter.postgres_username.value

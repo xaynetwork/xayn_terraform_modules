@@ -4,26 +4,25 @@ variable "service_name" {
 }
 
 ## Container data
-variable "container_image" {
-  description = " The name of the container image."
+variable "containers" {
+  description = "Configuration for the containers to deploy"
+  type = list(object({
+    name    = string
+    image   = string
+    port    = map(string)
+    command = list(string)
+    envs    = map(string)
+  }))
+}
+
+variable "public_container" {
+  description = " The name of the main container to access"
   type        = string
 }
 
-variable "ports" {
-  description = "The number of the port to access the container."
-  type        = map(string)
-}
-
-variable "environmental_variables" {
-  description = "Pair of key-value environmental variables for the container."
-  type        = map(string)
-  default     = {}
-}
-
-variable "container_command" {
-  description = "Launch commands for the container."
-  type        = list(string)
-  default     = []
+variable "public_port" {
+  description = "The number of the port to access the public container."
+  type        = string
 }
 
 variable "health_check_path" {

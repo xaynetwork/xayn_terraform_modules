@@ -1,18 +1,18 @@
 resource "aws_lightsail_container_service_deployment_version" "this" {
-  container {
-    container_name = var.service_name
-    image          = var.container_image
-
-    command = var.container_command
-
-    environment = var.environmental_variables
-
-    ports = var.ports
+  dynamic "container" {
+    for_each = var.containers
+    content {
+      container_name = container.value.name
+      image          = container.value.image
+      command        = container.value.command
+      environment    = container.value.envs
+      ports          = container.value.port
+    }
   }
 
   public_endpoint {
-    container_name = var.service_name
-    container_port = keys(var.ports)[0]
+    container_name = var.public_container
+    container_port = var.public_port
 
     health_check {
       healthy_threshold   = 2

@@ -36,11 +36,11 @@ variable "health_check" {
     success_code        = string
   }))
   default = [{
-    healthy_threshold    = 2
-    unhealthy_threshold  = 2
-    timeout_sec          = 2
-    interval_sec         = 5
-    path                 = "/"
-    health_success_codes = "200-499"
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    timeout_sec         = 2
+    interval_sec        = 5
+    path                = "/"
+    success_code        = "200-499"
   }]
 }

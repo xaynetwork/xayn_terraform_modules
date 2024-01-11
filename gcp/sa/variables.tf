@@ -1,18 +1,20 @@
 variable "name" {
-  description = "Name of the service account"
+  description = "The displayed name of the project"
   type        = string
 }
 
 variable "account_id" {
-  description = "The ID of the GCP account that creates the service account"
-}
-
-variable "gcp_project_id" {
-  description = "The id of the project to create the service account for"
+  description = "The ID of the account for the service account"
   type        = string
 }
 
 variable "roles" {
   description = "The roles to assign to the service account"
+  type        = list(string)
+}
+
+variable "project_id" {
+  description = "The ID of the project to be created"
   type        = string
+  default     = ""
 }

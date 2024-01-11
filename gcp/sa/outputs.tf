@@ -1,4 +1,4 @@
-output "id" {
+output "sa_id" {
   description = "Service Account identifier"
   value       = google_service_account.this.id
 }

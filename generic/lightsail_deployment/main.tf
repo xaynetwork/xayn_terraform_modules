@@ -19,8 +19,8 @@ resource "aws_lightsail_container_service_deployment_version" "this" {
       unhealthy_threshold = var.health_check.unhealthy_threshold
       timeout_seconds     = var.health_check.timeout_sec
       interval_seconds    = var.health_check.interval_sec
-      path                = var.health_check.check_path
-      success_codes       = var.health_check.success_codes
+      path                = var.health_check.path
+      success_codes       = var.health_check.success_code
     }
   }
 

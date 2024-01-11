@@ -25,14 +25,22 @@ variable "public_port" {
   type        = string
 }
 
-variable "health_check_path" {
-  description = "The path to check the container health."
-  type        = string
-  default     = "/"
-}
-
-variable "health_success_codes" {
-  description = "The success code for the health of the container."
-  type        = string
-  default     = "200-499"
+variable "health_check" {
+  description = "The health check configuration for the container"
+  type = list(object({
+    healthy_threshold   = number
+    unhealthy_threshold = number
+    timeout_sec         = number
+    interval_sec        = number
+    path                = string
+    success_code        = string
+  }))
+  default = [{
+    healthy_threshold    = 2
+    unhealthy_threshold  = 2
+    timeout_sec          = 2
+    interval_sec         = 5
+    path                 = "/"
+    health_success_codes = "200-499"
+  }]
 }

@@ -26,14 +26,17 @@ variable "private_registry_access" {
 variable "certificate_name" {
   description = "Name of the validated certificate for SSL"
   type        = string
+  default     = ""
 }
 
 variable "domain_name" {
   description = "The name of the DNS region."
   type        = string
+  default     = ""
 }
 
 variable "subdomain_name" {
   description = "The domain name for the app."
   type        = string
+  default     = ""
 }

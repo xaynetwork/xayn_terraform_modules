@@ -4,36 +4,43 @@ variable "service_name" {
 }
 
 ## Container data
-variable "container_image" {
-  description = " The name of the container image."
+variable "containers" {
+  description = "Configuration for the containers to deploy"
+  type = list(object({
+    name    = string
+    image   = string
+    port    = map(string)
+    command = list(string)
+    envs    = map(string)
+  }))
+}
+
+variable "public_container" {
+  description = " The name of the main container to access"
   type        = string
 }
 
-variable "ports" {
-  description = "The number of the port to access the container."
-  type        = map(string)
-}
-
-variable "environmental_variables" {
-  description = "Pair of key-value environmental variables for the container."
-  type        = map(string)
-  default     = {}
-}
-
-variable "container_command" {
-  description = "Launch commands for the container."
-  type        = list(string)
-  default     = []
-}
-
-variable "health_check_path" {
-  description = "The path to check the container health."
+variable "public_port" {
+  description = "The number of the port to access the public container."
   type        = string
-  default     = "/"
 }
 
-variable "health_success_codes" {
-  description = "The success code for the health of the container."
-  type        = string
-  default     = "200-499"
+variable "health_check" {
+  description = "The health check configuration for the container"
+  type = object({
+    healthy_threshold   = number
+    unhealthy_threshold = number
+    timeout_sec         = number
+    interval_sec        = number
+    path                = string
+    success_code        = string
+  })
+  default = {
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    timeout_sec         = 2
+    interval_sec        = 5
+    path                = "/"
+    success_code        = "200-499"
+  }
 }

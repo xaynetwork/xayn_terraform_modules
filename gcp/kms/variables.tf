@@ -21,5 +21,6 @@ variable "create_key_ring" {
 
 variable "key_ring" {
   description = "Key ring name for using existent one"
+  type        = string
   default     = ""
 }

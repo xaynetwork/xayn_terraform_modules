@@ -5,4 +5,6 @@ resource "google_kms_crypto_key_iam_member" "crypto_key" {
   member        = "serviceAccount:service-${data.google_project.project.number}@${var.service_name[count.index]}.iam.gserviceaccount.com"
 }
 
-data "google_project" "project" {}
+data "google_project" "project" {
+  project_id = var.project_id
+}

@@ -10,10 +10,3 @@ resource "google_project_service" "gcp_services" {
   project  = google_project.this.id
   service  = each.key
 }
-
-resource "google_project_service_identity" "gcp_service_identity" {
-  provider = google-beta
-  count    = length(var.gcp_service_identity)
-  project  = google_project.this.id
-  service  = var.gcp_service_identity[count.index]
-}

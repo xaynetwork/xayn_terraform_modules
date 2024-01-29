@@ -1,0 +1,20 @@
+_format_version: "1.1"
+services:
+  - name: example.com
+    url: http://test-app-echo-hello.app.svc.cluster.local:8080
+    plugins:
+      - name: key-auth
+      - name: rate-limiting
+        config:
+          second: 10
+          hour: 1000
+          policy: local
+    routes:
+    - name: example
+      paths:
+      - /example
+
+consumers:
+  - username: lyz
+    keyauth_credentials:
+      - key: vRQO6xfBbTY3KRvNV7TbeFUUW7kjBmPhIFcUUxvkm4

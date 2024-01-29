@@ -1,0 +1,7 @@
+controller:
+  enabled: false
+
+gateway:
+  dblessConfig:
+    config: |
+      ${indent(6, gateway_config)}

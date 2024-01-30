@@ -12,7 +12,7 @@ resource "kubernetes_namespace" "this" {
 resource "helm_release" "kong" {
   repository = var.repository_name
   chart      = var.name
-  version    = trimprefix(var.chart_version, "v")
+  version    = var.chart_version
 
   name      = var.name
   namespace = var.namespace_name == null ? var.namespace_name : kubernetes_namespace.this.metadata[0].name

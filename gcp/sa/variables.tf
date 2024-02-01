@@ -19,6 +19,18 @@ variable "project_id" {
   default     = ""
 }
 
+variable "external_account" {
+  description = "The name of the external SA to give access in this project"
+  type        = string
+  default     = ""
+}
+
+variable "external_roles" {
+  description = "The roles to give in to the external SA"
+  type        = list(string)
+  default     = []
+}
+
 variable "grant_access_to_kms_crypro_keys" {
   description = "A list of keys that the Service account should receive Encryter / Descrpter role"
   type        = list(string)

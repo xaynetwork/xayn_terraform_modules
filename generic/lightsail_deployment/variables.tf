@@ -28,12 +28,12 @@ variable "public_port" {
 variable "health_check" {
   description = "The health check configuration for the container"
   type = object({
-    healthy_threshold   = number
-    unhealthy_threshold = number
-    timeout_sec         = number
-    interval_sec        = number
+    healthy_threshold   = optional(number, 2)
+    unhealthy_threshold = optional(number, 2)
+    timeout_sec         = optional(number, 2)
+    interval_sec        = optional(number, 5)
     path                = string
-    success_code        = string
+    success_code        = optional(string, "200-499")
   })
   default = {
     healthy_threshold   = 2

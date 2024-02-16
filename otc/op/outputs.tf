@@ -6,6 +6,6 @@ output "access_key" {
 
 output "secret_key" {
   description = "The value of the access key for the user"
-  value       = data.onepassword_item.ak.password
+  value       = data.onepassword_item.sk.password
   sensitive   = true
 }

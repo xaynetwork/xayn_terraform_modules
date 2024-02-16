@@ -15,3 +15,14 @@ terraform {
     }
   }
 }
+
+provider "onepassword" {
+  account = "https://xaynag.1password.com/"
+}
+
+provider "opentelekomcloud" {
+  auth_url    = "https://iam.${var.region}.otc.t-systems.com/v3"
+  tenant_name = var.region
+  access_key  = data.onepassword_item.ak.password
+  secret_key  = data.onepassword_item.sk.password
+}

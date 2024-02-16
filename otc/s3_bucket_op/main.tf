@@ -2,10 +2,6 @@ locals {
   bucket_name = replace(lower(var.bucket_name), "_", "-")
 }
 
-provider "onepassword" {
-  account = "https://xaynag.1password.com/"
-}
-
 data "onepassword_item" "ak" {
   vault = var.vault_id
   uuid  = var.access_key_uid
@@ -14,13 +10,6 @@ data "onepassword_item" "ak" {
 data "onepassword_item" "sk" {
   vault = var.vault_id
   uuid  = var.secret_key_uid
-}
-
-provider "opentelekomcloud" {
-  auth_url    = "https://iam.${var.region}.otc.t-systems.com/v3"
-  tenant_name = var.region
-  access_key  = data.onepassword_item.ak.password
-  secret_key  = data.onepassword_item.sk.password
 }
 
 resource "opentelekomcloud_obs_bucket" "tf_remote_state" {

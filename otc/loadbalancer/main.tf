@@ -1,6 +1,6 @@
 resource "opentelekomcloud_lb_loadbalancer_v3" "elb" {
-  name        = "loadbalancer_1"
-  router_id   = opentelekomcloud_vpc_subnet_v1.this.vpc_id
+  name        = "${var.name}-lb"
+  router_id   = var.vpc_id
   network_ids = [var.subnet_id]
 
   availability_zones = var.availability_zones

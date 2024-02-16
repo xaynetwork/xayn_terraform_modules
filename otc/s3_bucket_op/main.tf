@@ -33,6 +33,27 @@ resource "opentelekomcloud_obs_bucket" "tf_remote_state" {
   }
 }
 
+resource "opentelekomcloud_obs_bucket_policy" "policy" {
+  bucket = opentelekomcloud_obs_bucket.tf_remote_state.id
+  policy = <<POLICY
+{
+  "Statement": [{
+    "Effect": "Allow",
+    "Principal": {
+      "ID": ["*"]
+    },
+    "Action": [
+      "GetObject",
+      "PutObject"
+    ],
+    "Resource": [
+      "${opentelekomcloud_obs_bucket.tf_remote_state.bucket}/*"
+    ]
+  }]
+}
+POLICY
+}
+
 resource "random_id" "id" {
   byte_length = 4
 }

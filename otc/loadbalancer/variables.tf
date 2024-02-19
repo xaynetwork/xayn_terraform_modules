@@ -26,12 +26,12 @@ variable "availability_zones" {
 
 variable "l4_flavor" {
   type        = string
-  description = "The flavor for the L4 ELB, if not assigned and L7 also not assigned then both will be created with default values"
+  description = "The flavor for the L4(NLB) ELB, if not assigned and L7 also not assigned then both will be created with default values"
   default     = null
 }
 
 variable "l7_flavor" {
   type        = string
-  description = "The flavor for the L7 ELB, if not assigned and L4 also not assigned then both will be created with default values"
+  description = "The flavor for the L7(ALB) ELB, if not assigned and L4 also not assigned then both will be created with default values"
   default     = null
 }

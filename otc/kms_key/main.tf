@@ -8,4 +8,8 @@ resource "opentelekomcloud_kms_key_v1" "key" {
   key_description = var.description
   pending_days    = var.pending_days
   realm           = var.region_zone
+
+  lifecycle {
+    ignore_changes = [realm]
+  }
 }

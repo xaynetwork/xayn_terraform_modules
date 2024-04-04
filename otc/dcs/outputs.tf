@@ -1,7 +1,7 @@
-output "id" {
-  value = opentelekomcloud_kms_key_v1.key.id
+output "dcs_ip" {
+  value = opentelekomcloud_dcs_instance_v1.instance_1.ip
 }
 
 output "alias" {
-  value = opentelekomcloud_kms_key_v1.key.key_alias
+  value = opentelekomcloud_dcs_instance_v1.instance_1.user_name
 }

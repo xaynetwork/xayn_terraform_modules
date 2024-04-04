@@ -21,11 +21,6 @@ variable "capacity" {
   default     = 0.125
 }
 
-variable "password" {
-  type        = string
-  description = "The password for the redis instance"
-}
-
 variable "region_zone" {
   type        = string
   description = "The region zone identifier: i.e. eu-de-01"

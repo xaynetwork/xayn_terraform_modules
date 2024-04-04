@@ -11,3 +11,7 @@ terraform {
     }
   }
 }
+
+provider "onepassword" {
+  account = "https://xaynag.1password.com/"
+}

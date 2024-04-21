@@ -12,19 +12,18 @@ resource "opentelekomcloud_swr_repository_v2" "repo_1" {
 }
 
 resource "opentelekomcloud_identity_user_v3" "ci_cd" {
-  name        = "${var.name}-ci-cd"
   access_type = "programmatic"
+  name        = "${var.name}-ci-cd"
 }
 
 resource "opentelekomcloud_swr_organization_permissions_v2" "ci_cd" {
+  auth         = 3
   organization = opentelekomcloud_swr_organization_v2.org.name
-
-  user_id  = opentelekomcloud_identity_user_v3.ci_cd.id
-  username = opentelekomcloud_identity_user_v3.ci_cd.name
-  auth     = 3
+  user_id      = opentelekomcloud_identity_user_v3.ci_cd.id
+  username     = opentelekomcloud_identity_user_v3.ci_cd.name
 }
 
-resource opentelekomcloud_identity_credential_v3 "ci_cd" {
-  user_id     = opentelekomcloud_identity_user_v3.ci_cd.id
+resource "opentelekomcloud_identity_credential_v3" "ci_cd" {
   description = "Created by Terraform"
+  user_id     = opentelekomcloud_identity_user_v3.ci_cd.id
 }

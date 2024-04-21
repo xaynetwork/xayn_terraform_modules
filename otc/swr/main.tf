@@ -23,3 +23,8 @@ resource "opentelekomcloud_swr_organization_permissions_v2" "ci_cd" {
   username = opentelekomcloud_identity_user_v3.ci_cd.name
   auth     = 3
 }
+
+resource opentelekomcloud_identity_credential_v3 "ci_cd" {
+  user_id     = opentelekomcloud_identity_user_v3.ci_cd.id
+  description = "Created by Terraform"
+}

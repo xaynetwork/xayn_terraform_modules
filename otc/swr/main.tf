@@ -10,3 +10,16 @@ resource "opentelekomcloud_swr_repository_v2" "repo_1" {
   category     = var.repository[count.index].repository_category
   is_public    = var.repository[count.index].repository_public
 }
+
+resource "opentelekomcloud_identity_user_v3" "ci_cd" {
+  name        = "${var.name}-ci-cd"
+  access_type = "programmatic"
+}
+
+resource "opentelekomcloud_swr_organization_permissions_v2" "ci_cd" {
+  organization = opentelekomcloud_swr_organization_v2.org.name
+
+  user_id  = opentelekomcloud_identity_user_v3.ci_cd.id
+  username = opentelekomcloud_identity_user_v3.ci_cd.name
+  auth     = 3
+}

@@ -41,7 +41,7 @@ variable "vault_id" {
   description = "ID of the vault where the keys are stored"
 }
 
-variable "dcs_password_uid" {
+variable "dcs_password" {
   type        = string
-  description = "ID of the item for the DCS password"
+  description = "DCS password value"
 }

@@ -1,4 +1,5 @@
 output "ci_cd_docker_credentials" {
+  sensitive = true
   value = {
     login    = format("%s@%s", "${var.name}-ci-cd", opentelekomcloud_identity_credential_v3.ci_cd.access)
     login_key_command = <<SHELL

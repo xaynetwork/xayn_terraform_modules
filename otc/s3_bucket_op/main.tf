@@ -2,16 +2,6 @@ locals {
   bucket_name = replace(lower(var.bucket_name), "_", "-")
 }
 
-data "onepassword_item" "ak" {
-  vault = var.vault_id
-  uuid  = var.access_key_uid
-}
-
-data "onepassword_item" "sk" {
-  vault = var.vault_id
-  uuid  = var.secret_key_uid
-}
-
 resource "opentelekomcloud_obs_bucket" "tf_remote_state" {
   bucket     = local.bucket_name
   acl        = "private"

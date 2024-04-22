@@ -1,3 +1,8 @@
+variable "project_name" {
+  type        = string
+  description = "OTC project name, e.g., eu-de_myproject"
+}
+
 variable "name" {
   type        = string
   description = "Project name."

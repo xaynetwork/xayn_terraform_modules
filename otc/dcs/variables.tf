@@ -36,11 +36,6 @@ variable "subnet_id" {
   description = "The ID of the subnet where to deploy the server"
 }
 
-variable "vault_id" {
-  type        = string
-  description = "ID of the vault where the keys are stored"
-}
-
 variable "dcs_password" {
   type        = string
   description = "DCS password value"

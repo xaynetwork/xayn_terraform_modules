@@ -2,28 +2,26 @@ variable "volume_name" {
   type = string
 }
 
-variable "tags" {
-  type        = map(string)
-  description = "Common tag set for project resources"
-  default     = {}
-}
-
 variable "size" {
   default     = 500
   description = "Size of the SFS volume in GB. (Default: 500)"
+  type        = number
 }
 
 variable "share_type" {
   default     = "STANDARD"
   description = "Filesystem type of the SFS volume. (Default: STANDARD)"
+  type        = string
 }
 
 variable "availability_zone" {
   default = "eu-de-01"
+  type    = string
 }
 
 variable "vpc_id" {
   description = "VPC id where the SFS volume will be created in."
+  type        = string
 }
 
 variable "subnet_id" {

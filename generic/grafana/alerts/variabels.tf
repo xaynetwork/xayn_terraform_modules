@@ -10,18 +10,18 @@ variable "name" {
 
 variable "rules" {
   description = "Rules for the grafana alerts"
-  type = object({
+  type = list(object({
     name      = string
     condition = string
-    data = object({
+    data = list(object({
       ref_id           = string
       time_range_start = number
       time_range_end   = number
       datasource_uid   = string
       model            = string
-    })
+    }))
     no_data_state  = string
     exec_err_state = string
     summary        = string
-  })
+  }))
 }

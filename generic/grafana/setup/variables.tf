@@ -5,7 +5,7 @@ variable "grafana_url" {
 
 variable "contact_point_name" {
   type        = string
-  description = "Name for the  "
+  description = "Name for the contact settings "
 }
 
 variable "slack_config" {
@@ -13,8 +13,8 @@ variable "slack_config" {
   type = object({
     disable_resolve_message = bool
     mention_channel         = string
-    mention_groups          = list(string)
-    mention_users           = list(string)
+    mention_groups          = string
+    mention_users           = string
     text                    = string
     title                   = string
     url                     = string

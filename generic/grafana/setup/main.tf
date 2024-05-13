@@ -38,11 +38,11 @@ resource "grafana_notification_policy" "this" {
   repeat_interval = "3h"
 
   dynamic "policy" {
-    for_each = var.notification_policy != null ? len(var.notification_policy) : []
+    for_each = var.notification_policy != null ? var.notification_policy : []
 
     content {
       dynamic "matcher" {
-        for_each = var.notification_policy[policy.key].matcher != null ? len(var.notification_policy[policy.key].matcher) : []
+        for_each = var.notification_policy[policy.key].matcher != null ? var.notification_policy[policy.key].matcher : []
 
         content {
           label = var.notification_policy[policy.key].label

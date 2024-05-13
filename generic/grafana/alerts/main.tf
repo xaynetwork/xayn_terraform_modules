@@ -8,14 +8,14 @@ resource "grafana_rule_group" "this" {
   interval_seconds = 180
 
   dynamic "rule" {
-    for_each = var.rules != null ? len(var.rules) : []
+    for_each = var.rules != null ? var.rules : []
 
     content {
       name      = var.rules[rule.key].name
       condition = var.rules[rule.key].condition
 
       dynamic "data" {
-        for_each = var.rules[rule.key].data != null ? len(var.rules[rule.key].data) : []
+        for_each = var.rules[rule.key].data != null ? var.rules[rule.key].data : []
 
         content {
           ref_id = var.rules[rule.key].data[data.key].ref_id

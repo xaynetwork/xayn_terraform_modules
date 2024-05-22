@@ -11,7 +11,7 @@ data "wireguard_config_document" "server" {
   listen_port = var.vpn_port
   addresses   = [var.network_mask]
 
-  dynamic peer {
+  dynamic "peer" {
     for_each = {
       for peer in local.peers : peer.name => peer
     }

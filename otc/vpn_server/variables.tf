@@ -51,7 +51,7 @@ variable "namespace" {
 
 variable "peers" {
   description = "Remote servers that must be Wireguard clients"
-  type        = list(object({
+  type = list(object({
     # Name defines a name of the Service in Kubernetes
     name = string
     # Name of the Kubernetes Service that will for

@@ -21,7 +21,7 @@ output "wg_config_server" {
 }
 
 output "wg_config_peer" {
-  value     = {for key, peer in local.peers : peer.name => data.wireguard_config_document.peer[peer.name].conf}
+  value     = { for key, peer in local.peers : peer.name => data.wireguard_config_document.peer[peer.name].conf }
   sensitive = true
 }
 

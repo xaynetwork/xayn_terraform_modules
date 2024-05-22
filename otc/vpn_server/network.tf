@@ -26,7 +26,7 @@ resource "opentelekomcloud_networking_secgroup_rule_v2" "ssh" {
   security_group_id = opentelekomcloud_networking_secgroup_v2.wireguard_server.id
 }
 
-resource "opentelekomcloud_networking_secgroup_rule_v2" "vllm" {
+resource "opentelekomcloud_networking_secgroup_rule_v2" "peer" {
   for_each = {
     for peer in local.peers : peer.name => peer
   }

@@ -1,0 +1,26 @@
+#cloud-config
+package_update: true
+package_upgrade: true
+packages:
+  - iptables
+
+write_files:
+  - path: /etc/sysctl.d/98-wireguard.conf
+    content: net.ipv4.ip_forward = 1
+
+runcmd:
+%{ for key, peer in peers }
+  - iptables -t nat -A PREROUTING -i ens3 -p tcp --dport ${peer.server_port} -j DNAT --to-destination ${peer.ip}:${peer.port}
+  - iptables -A FORWARD -i ens3 -o wg0 -p tcp --dport ${peer.port} -d ${peer.ip} -j ACCEPT
+%{ endfor ~}
+  - iptables -A FORWARD -i wg0 -o ens3 -m state --state ESTABLISHED,RELATED -j ACCEPT
+  - iptables -t nat -A POSTROUTING -o wg0 -j MASQUERADE
+  - netfilter-persistent save
+  - sysctl --system
+
+ssh_authorized_keys: ${ssh_public_keys}
+wireguard:
+  interfaces:
+    - name: wg0
+      config_path: /etc/wireguard/wg0.conf
+      content: ${server_config}

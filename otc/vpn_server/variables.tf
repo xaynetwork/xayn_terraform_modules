@@ -21,7 +21,7 @@ variable "ssh_public_keys" {
   default     = []
 }
 
-variable "network_mask" {
+variable "vpn_network_mask" {
   description = "VPN network mask in CIDR notation"
   type        = string
 }
@@ -65,12 +65,12 @@ variable "peers" {
 
 locals {
   # Wireguard server takes the first IP
-  server_ip = cidrhost(var.network_mask, 1)
+  server_ip = cidrhost(var.vpn_network_mask, 1)
 
   peers = toset([
     for peer in var.peers : {
       # IP address in the VPN
-      ip : cidrhost(var.network_mask, peer.host_num)
+      ip : cidrhost(var.vpn_network_mask, peer.host_num)
       name : peer.name
       port : peer.port
       # Port number on the VPN server that will forward traffic to the given peer

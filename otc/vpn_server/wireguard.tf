@@ -9,7 +9,7 @@ resource "wireguard_asymmetric_key" "peer" {
 data "wireguard_config_document" "server" {
   private_key = wireguard_asymmetric_key.server.private_key
   listen_port = var.vpn_port
-  addresses   = [var.network_mask]
+  addresses   = [var.vpn_network_mask]
 
   dynamic "peer" {
     for_each = {

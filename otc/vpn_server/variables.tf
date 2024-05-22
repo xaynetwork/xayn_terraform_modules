@@ -1,9 +1,3 @@
-# variable "region" {
-#   description = "The region for Open Telekom Cloud"
-#   type        = string
-#   default     = "eu-de"
-# }
-#
 variable "name" {
   description = "Name of the ECS"
   type        = string
@@ -86,19 +80,3 @@ locals {
     }
   ])
 }
-
-# variable "security_group_id" {
-#   description = "The ID of the security group to assign to the instance"
-#   type        = string
-# }
-#
-# variable "key_pair" {
-#   description = "The name of the key pair to use for the instance"
-#   type        = string
-# }
-#
-# variable "private_key" {
-#   description = "The private key for WireGuard Server"
-#   type        = string
-# }
-#

@@ -17,6 +17,8 @@ resource "opentelekomcloud_networking_secgroup_rule_v2" "wireguard" {
 }
 
 resource "opentelekomcloud_networking_secgroup_rule_v2" "ssh" {
+  count = length(var.ssh_public_keys) > 0 ? 1 : 0
+
   direction         = "ingress"
   ethertype         = "IPv4"
   protocol          = "tcp"

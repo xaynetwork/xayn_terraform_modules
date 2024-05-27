@@ -33,16 +33,6 @@ variable "flavor" {
   default     = "rds.pg.c2.medium"
 }
 
-variable "subnet_id" {
-  type        = string
-  description = "The ID of the subnet where to deploy the server"
-}
-
-variable "vpc_id" {
-  type        = string
-  description = "The ID of the vpc where to deploy the server"
-}
-
 variable "volume" {
   type = object({
     type = string
@@ -67,4 +57,21 @@ variable "backup_strategy" {
 variable "region_zone" {
   type        = string
   description = "The region zone identifier: i.e. eu-de-01"
+}
+
+##### NETWORKING
+
+variable "subnet_id" {
+  type        = string
+  description = "The ID of the subnet where to deploy the server"
+}
+
+variable "vpc_id" {
+  type        = string
+  description = "The ID of the vpc where to deploy the server"
+}
+
+variable "remote_cidr" {
+  type        = string
+  description = "The value of the CIDR of the remote to access the db"
 }

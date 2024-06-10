@@ -1,0 +1,56 @@
+## See https://github.com/bitnami/charts/blob/main/bitnami/redis/values.yaml
+
+architecture: standalone
+
+auth:
+  existingSecret: "${secret_name}"
+  existingSecretPasswordKey: "${secret_key_name}"
+
+master:
+  extraFlags:
+    - "--save ''"
+    - "--appendonly no"
+  kind: Deployment
+  persistence:
+    enabled: false
+
+metrics:
+  enabled: true
+
+  serviceMonitor:
+    enabled: true
+
+  prometheusRule:
+    enabled: true
+    rules:
+      - alert: RedisDown
+        expr: redis_up{service="${name}-metrics"} == 0
+        for: 2m
+        labels:
+          severity: error
+        annotations:
+          summary: Redis instance {{ "{{ $labels.instance }}" }} down
+          description: Redis instance {{ "{{ $labels.instance }}" }} is down
+      - alert: RedisMemoryHigh
+        expr: >
+          redis_memory_used_bytes{service="${name}-metrics"} * 100
+          /
+          redis_memory_max_bytes{service="${name}-metrics"}
+          > 90
+        for: 2m
+        labels:
+          severity: error
+        annotations:
+          summary: Redis instance {{ "{{ $labels.instance }}" }} is using too much memory
+          description: |
+            Redis instance {{ "{{ $labels.instance }}" }} is using {{ "{{ $value }}" }}% of its available memory.
+      - alert: RedisKeyEviction
+        expr: |
+          increase(redis_evicted_keys_total{service="${name}-metrics"}[5m]) > 0
+        for: 1s
+        labels:
+          severity: error
+        annotations:
+          summary: Redis instance {{ "{{ $labels.instance }}" }} has evicted keys
+          description: |
+            Redis instance {{ "{{ $labels.instance }}" }} has evicted {{ "{{ $value }}" }} keys in the last 5 minutes.

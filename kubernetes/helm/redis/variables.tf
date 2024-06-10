@@ -20,3 +20,9 @@ variable "secret_key_name" {
   description = "Name of field in the Kubernetes Secret that contains Redis password"
   type        = string
 }
+
+variable "values" {
+  default     = ""
+  description = "YAML document that contains values fro the Helm chart"
+  type        = string
+}

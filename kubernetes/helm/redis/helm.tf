@@ -8,11 +8,17 @@ resource "helm_release" "this" {
   create_namespace = false
   namespace        = var.namespace
 
+  set {
+    name  = "auth.existingSecret"
+    value = var.secret_name
+  }
+
+  set {
+    name  = "auth.existingSecretPasswordKey"
+    value = var.secret_key_name
+  }
+
   values = [
-    templatefile("${path.module}/values.yaml", {
-      name            = var.name
-      secret_key_name = var.secret_key_name
-      secret_name     = var.secret_name
-    })
+    var.values
   ]
 }

@@ -93,8 +93,8 @@ resource "aws_rds_cluster_instance" "this" {
   monitoring_role_arn          = aws_iam_role.rds_enhanced_monitoring.arn
 
   # The default latest CA
-  ca_cert_identifier           = "rds-ca-rsa2048-g1"
-  tags                         = var.tags
+  ca_cert_identifier = "rds-ca-rsa2048-g1"
+  tags               = var.tags
 }
 
 resource "aws_db_subnet_group" "db_subnet_group" {

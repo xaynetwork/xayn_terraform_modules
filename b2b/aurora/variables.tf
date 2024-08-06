@@ -48,7 +48,7 @@ variable "instance_class" {
 variable "engine_version" {
   description = "The version of the db engine"
   type        = string
-  default     = "14.5"
+  default     = "14.9"
 }
 
 variable "backup_retention_period" {
